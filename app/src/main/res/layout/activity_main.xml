@@ -4,15 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#3772E7"
+    android:background="@color/main_screen_background"
     android:orientation="vertical"
-    android:paddingHorizontal="16dp">
+    android:paddingHorizontal="@dimen/main_layout_horizontal_padding">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="14dp"
-        android:paddingBottom="40dp"
+        android:paddingTop="@dimen/header_top_padding"
+        android:paddingBottom="@dimen/header_bottom_padding"
         android:text="@string/main_header"
         android:textColor="@color/white"
         android:textSize="@dimen/screen_header" />
