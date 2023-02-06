@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:background="@color/main_screen_background"
     android:orientation="vertical"
-    android:paddingHorizontal="@dimen/main_layout_horizontal_padding">
+    android:paddingHorizontal="@dimen/main_layout_horizontal_padding"
+    tools:context=".MainActivity">
 
     <TextView
         android:layout_width="match_parent"
