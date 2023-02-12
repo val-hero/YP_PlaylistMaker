@@ -4,76 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/main_screen_background"
     android:orientation="vertical"
     android:paddingHorizontal="@dimen/main_layout_horizontal_padding"
+    android:paddingTop="14dp"
+    android:paddingBottom="20dp"
+    android:theme="@style/MainScreen"
     tools:context=".MainActivity">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/header_top_padding"
+        style="@style/ScreenHeaderText"
         android:paddingBottom="@dimen/header_bottom_padding"
         android:text="@string/main_header"
-        android:textColor="@color/white"
-        android:textSize="@dimen/screen_header" />
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/song_search_button"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="@dimen/space_between_main_buttons"
-        android:layout_weight="3"
-        android:backgroundTint="@color/white"
-        android:foreground="?attr/selectableItemBackground"
-        android:letterSpacing="0"
+        style="@style/MainScreenButton"
         android:text="@string/search_title"
-        android:textAllCaps="false"
-        android:textColor="@color/YP_black"
-        android:textSize="@dimen/screen_header"
-        app:cornerRadius="@dimen/main_button_corner_radius"
-        app:icon="@drawable/search"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/main_button_icon_padding"
-        app:iconTint="@color/YP_black" />
+        app:icon="@drawable/search" />
 
     <Button
         android:id="@+id/library_button"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="@dimen/space_between_main_buttons"
-        android:layout_weight="3"
-        android:backgroundTint="@color/white"
-        android:foreground="?attr/selectableItemBackground"
-        android:letterSpacing="0"
+        style="@style/MainScreenButton"
         android:text="@string/library_title"
-        android:textAllCaps="false"
-        android:textColor="@color/YP_black"
-        android:textSize="@dimen/screen_header"
-        app:cornerRadius="@dimen/main_button_corner_radius"
-        app:icon="@drawable/library"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/main_button_icon_padding"
-        app:iconTint="@color/YP_black" />
+        app:icon="@drawable/library" />
 
     <Button
         android:id="@+id/settings_button"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="28dp"
-        android:layout_weight="3"
-        android:backgroundTint="@color/white"
-        android:foreground="?attr/selectableItemBackground"
-        android:letterSpacing="0"
+        style="@style/MainScreenButton"
         android:text="@string/settings_title"
-        android:textAllCaps="false"
-        android:textColor="@color/YP_black"
-        android:textSize="@dimen/screen_header"
-        app:cornerRadius="@dimen/main_button_corner_radius"
-        app:icon="@drawable/settings"
-        app:iconGravity="textStart"
-        app:iconPadding="@dimen/main_button_icon_padding"
-        app:iconTint="@color/YP_black" />
-
+        app:icon="@drawable/settings" />
 
 </LinearLayout>
