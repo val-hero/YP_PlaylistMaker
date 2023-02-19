@@ -28,23 +28,23 @@
             android:fontWeight="400"
             android:paddingVertical="@dimen/settings_item_vertical_padding"
             android:text="@string/settings_dark_theme"
-            android:textSize="@dimen/settings_item_title" />
+            android:textSize="@dimen/regular_text" />
 
         <TextView
             android:id="@+id/share_app"
-            style="@style/SettingsScreenItem"
+            style="@style/RegularText.SettingsItem"
             android:text="@string/settings_share_app"
             app:drawableEndCompat="@drawable/share_app" />
 
         <TextView
             android:id="@+id/chat_support"
-            style="@style/SettingsScreenItem"
+            style="@style/RegularText.SettingsItem"
             android:text="@string/settings_support_chat"
             app:drawableEndCompat="@drawable/chat_support" />
 
         <TextView
             android:id="@+id/user_agreement"
-            style="@style/SettingsScreenItem"
+            style="@style/RegularText.SettingsItem"
             android:text="@string/settings_user_agreement"
             app:drawableEndCompat="@drawable/user_agreement" />
 

@@ -7,12 +7,13 @@
     android:orientation="vertical"
     android:paddingHorizontal="@dimen/main_layout_horizontal_padding"
     android:paddingTop="14dp"
+
     android:paddingBottom="20dp"
     android:theme="@style/MainScreen"
     tools:context=".MainActivity">
 
     <TextView
-        style="@style/ScreenHeaderText"
+        style="@style/HeaderText"
         android:paddingBottom="@dimen/header_bottom_padding"
         android:text="@string/main_header"
         android:textColor="@color/white" />
