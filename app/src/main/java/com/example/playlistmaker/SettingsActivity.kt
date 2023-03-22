@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.widget.TextView
 import com.google.android.material.appbar.MaterialToolbar
 
-
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,7 +20,7 @@ class SettingsActivity : AppCompatActivity() {
         val shareApp = findViewById<TextView>(R.id.share_app)
         shareApp.setOnClickListener {
             val sendIntent = Intent(Intent.ACTION_SEND)
-            val message = "https://practicum.yandex.ru/android-developer/"
+            val message = getString(R.string.share_app_link)
             sendIntent.putExtra(Intent.EXTRA_TEXT, message)
             sendIntent.type = "text/plain"
             val share = Intent.createChooser(sendIntent, null)
@@ -31,10 +30,11 @@ class SettingsActivity : AppCompatActivity() {
         val supportChat = findViewById<TextView>(R.id.chat_support)
         supportChat.setOnClickListener {
             val sendMailIntent = Intent(Intent.ACTION_SENDTO)
-            val subject = "Сообщение разработчикам и разработчицам приложения Playlist Maker"
-            val message = "Спасибо разработчикам и разработчицам за крутое приложение!"
+            val subject = getString(R.string.mail_to_devs_subject)
+            val message = getString(R.string.mail_to_devs_message)
+            val receiver = getString(R.string.mail_to_devs_receiver)
             sendMailIntent.data = Uri.parse("mailto:")
-            sendMailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf("valhero@yandex.ru"))
+            sendMailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(receiver))
             sendMailIntent.putExtra(Intent.EXTRA_SUBJECT, subject)
             sendMailIntent.putExtra(Intent.EXTRA_TEXT, message)
             val sendMail = Intent.createChooser(sendMailIntent, null)
@@ -44,7 +44,7 @@ class SettingsActivity : AppCompatActivity() {
         val userAgreement = findViewById<TextView>(R.id.user_agreement)
         userAgreement.setOnClickListener {
             val viewIntent = Intent(Intent.ACTION_VIEW)
-            val link = "https://yandex.ru/legal/practicum_offer/"
+            val link = getString(R.string.user_agreement_link)
             viewIntent.data = Uri.parse(link)
             val openLink = Intent.createChooser(viewIntent, null)
             startActivity(openLink)
