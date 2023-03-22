@@ -1,38 +1,45 @@
 package com.example.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.ContentInfo
-import android.view.InputDevice
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import com.example.playlistmaker.R.*
+import com.google.android.material.appbar.MaterialToolbar
 
 class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_EDIT_TEXT = "SEARCH_EDIT_TEXT"
     }
 
-    private lateinit var searchField: EditText
-    private lateinit var searchEditText: CharSequence
+    private var searchText: CharSequence = ""
+    private lateinit var searchEditText: EditText
     private lateinit var clearButton: ImageView
+    private lateinit var backButton: MaterialToolbar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layout.activity_search)
-        searchField = findViewById(id.search_field)
+        searchEditText = findViewById(id.search_field)
         clearButton = findViewById(id.clear_button)
+        backButton = findViewById(id.search_back_button)
+
+        backButton.setNavigationOnClickListener {
+            val backIntent = Intent(this, MainActivity::class.java)
+            startActivity(backIntent)
+        }
 
         clearButton.setOnClickListener {
-            searchField.setText("")
+            searchEditText.setText("")
             val inputMethodManager =
                 getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
             inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)
-            searchField.clearFocus()
+            searchEditText.clearFocus()
         }
 
         val textWatcher = object : TextWatcher {
@@ -43,22 +50,22 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(text: Editable?) {
-                searchEditText = text!!
+                searchText = text!!
             }
         }
-        searchField.addTextChangedListener(textWatcher)
+        searchEditText.addTextChangedListener(textWatcher)
 
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putCharSequence(SEARCH_EDIT_TEXT, searchEditText)
+        outState.putCharSequence(SEARCH_EDIT_TEXT, searchText)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        searchEditText = savedInstanceState.getCharSequence(SEARCH_EDIT_TEXT, "")
-        searchField.setText(searchEditText)
+        searchText = savedInstanceState.getCharSequence(SEARCH_EDIT_TEXT, "")
+        searchEditText.setText(searchText)
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
