@@ -13,8 +13,7 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
         val back = findViewById<MaterialToolbar>(R.id.settings_back_button)
         back.setNavigationOnClickListener {
-            val backIntent = Intent(this, MainActivity::class.java)
-            startActivity(backIntent)
+            finish()
         }
 
         val shareApp = findViewById<TextView>(R.id.share_app)

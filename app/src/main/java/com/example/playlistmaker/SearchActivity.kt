@@ -1,7 +1,6 @@
 package com.example.playlistmaker
 
 import android.content.Context
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -10,7 +9,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
-import com.example.playlistmaker.R.*
 import com.google.android.material.appbar.MaterialToolbar
 
 class SearchActivity : AppCompatActivity() {
@@ -24,14 +22,13 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var backButton: MaterialToolbar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(layout.activity_search)
-        searchEditText = findViewById(id.search_field)
-        clearButton = findViewById(id.clear_button)
-        backButton = findViewById(id.search_back_button)
+        setContentView(R.layout.activity_search)
+        searchEditText = findViewById(R.id.search_field)
+        clearButton = findViewById(R.id.clear_button)
+        backButton = findViewById(R.id.search_back_button)
 
         backButton.setNavigationOnClickListener {
-            val backIntent = Intent(this, MainActivity::class.java)
-            startActivity(backIntent)
+            finish()
         }
 
         clearButton.setOnClickListener {
