@@ -42,6 +42,19 @@
         <item name="android:textColor">?attr/colorOnPrimary</item>
     </style>
 
+    <style name="RegularText.TrackInfo">
+        <item name="android:textSize">@dimen/track_info_text</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="RegularText.TrackInfo.TrackName">
+        <item name="android:textSize">@dimen/regular_text</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
     <style name="Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

@@ -10,7 +10,7 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/settings_back_button"
         style="@style/Toolbar"
-        app:navigationIcon="@drawable/arrow_back"
+        app:navigationIcon="@drawable/navigate_back"
         app:title="@string/settings_title" />
 
     <LinearLayout
@@ -42,6 +42,6 @@
             android:id="@+id/user_agreement"
             style="@style/RegularText.SettingsItem"
             android:text="@string/settings_user_agreement"
-            app:drawableEndCompat="@drawable/user_agreement" />
+            app:drawableEndCompat="@drawable/navigate_forward" />
     </LinearLayout>
 </LinearLayout>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="14dp"
+    android:paddingVertical="8dp">
+
+    <ImageView
+        android:id="@+id/track_image"
+        android:layout_width="@dimen/track_image_xy"
+        android:layout_height="@dimen/track_image_xy"
+        android:scaleType="centerCrop"
+        android:src="@drawable/track_image_placeholder" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingHorizontal="8dp">
+
+        <TextView
+            android:id="@+id/track_name"
+            style="@style/RegularText.TrackInfo.TrackName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="6dp"
+            tools:text="Here Comes The Sun (Remastered Version)" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/artist_name"
+                style="@style/RegularText.TrackInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                tools:text="The Beatles" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:src="@drawable/inbetween_dot"
+                app:tint="?attr/colorSecondary" />
+
+            <TextView
+                android:id="@+id/track_duration"
+                style="@style/RegularText.TrackInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="4:01" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:src="@drawable/navigate_forward"
+        app:tint="?attr/colorSecondary" />
+</LinearLayout>
