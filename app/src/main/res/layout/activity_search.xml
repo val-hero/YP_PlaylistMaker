@@ -10,7 +10,7 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/search_back_button"
         style="@style/Toolbar"
-        app:navigationIcon="@drawable/arrow_back"
+        app:navigationIcon="@drawable/navigate_back"
         app:title="@string/search_title"
         app:titleTextAppearance="@style/Toolbar" />
 
@@ -55,4 +55,11 @@
             android:visibility="gone"
             app:tint="?attr/colorPrimaryVariant" />
     </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/track_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 </LinearLayout>
