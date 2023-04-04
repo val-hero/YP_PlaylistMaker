@@ -30,6 +30,8 @@
             android:hint="@string/search_title"
             android:inputType="text"
             android:maxLines="1"
+            android:singleLine="true"
+            android:imeOptions="actionDone"
             android:minHeight="36dp"
             android:paddingHorizontal="42dp"
             android:textColor="?attr/colorOnSecondary"
