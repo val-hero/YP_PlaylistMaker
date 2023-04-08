@@ -13,4 +13,7 @@
     <string name="mail_to_devs_message">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="mail_to_devs_receiver">valhero@yandex.ru</string>
     <string name="user_agreement_link">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="track_not_found">Ничего не нашлось</string>
+    <string name="server_error">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="refresh">Обновить</string>
 </resources>

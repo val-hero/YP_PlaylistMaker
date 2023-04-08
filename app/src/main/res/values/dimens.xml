@@ -7,6 +7,9 @@
     <dimen name="main_layout_horizontal_padding">16dp</dimen>
     <dimen name="regular_text">16sp</dimen>
     <dimen name="settings_item_vertical_padding">20dp</dimen>
+    <dimen name="track_image_corner_radius">2dp</dimen>
     <dimen name="track_info_text">11sp</dimen>
     <dimen name="track_image_xy">45dp</dimen>
+    <dimen name="placeholder_text">19sp</dimen>
+    <dimen name="action_button_text">14sp</dimen>
 </resources>

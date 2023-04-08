@@ -13,23 +13,25 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val trackNameView: TextView
     val artistNameView: TextView
     val trackDurationView: TextView
-    val artistImageView: ImageView
+    val trackImageView: ImageView
 
     init {
         trackNameView = itemView.findViewById(R.id.track_name)
         artistNameView = itemView.findViewById(R.id.artist_name)
         trackDurationView = itemView.findViewById(R.id.track_duration)
-        artistImageView = itemView.findViewById(R.id.track_image)
+        trackImageView = itemView.findViewById(R.id.track_image)
     }
 
     fun bind(model: Track) {
         trackNameView.text = model.trackName
         artistNameView.text = model.artistName
-        trackDurationView.text = model.duration
+        trackDurationView.text =
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.duration)
+
         Glide.with(itemView)
             .load(model.imageUrl)
             .placeholder(R.drawable.track_image_placeholder)
-            .transform(RoundedCorners(2))
-            .into(artistImageView)
+            .transform(RoundedCorners(itemView.resources.getDimensionPixelSize(R.dimen.track_image_corner_radius)))
+            .into(trackImageView)
     }
 }
