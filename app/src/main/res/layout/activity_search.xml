@@ -28,10 +28,12 @@
             android:background="@drawable/rounded_edit_text"
             android:backgroundTint="?attr/colorSecondaryVariant"
             android:hint="@string/search_title"
+            android:imeOptions="actionDone"
             android:inputType="text"
             android:maxLines="1"
             android:minHeight="36dp"
             android:paddingHorizontal="42dp"
+            android:singleLine="true"
             android:textColor="?attr/colorOnSecondary"
             android:textColorHint="?attr/colorPrimaryVariant"
             android:textCursorDrawable="@drawable/edit_text_cursor"
@@ -62,4 +64,47 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    <LinearLayout
+        android:id="@+id/not_found_error"
+        style="@style/SearchError">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/not_found_error" />
+
+        <TextView
+            style="@style/SearchErrorText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/track_not_found" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/server_error"
+        style="@style/SearchError">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/server_error" />
+
+        <TextView
+            style="@style/SearchErrorText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:text="@string/server_error" />
+
+        <Button
+            android:id="@+id/refresh_button"
+            style="@style/ActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/refresh" />
+    </LinearLayout>
+
+
 </LinearLayout>
