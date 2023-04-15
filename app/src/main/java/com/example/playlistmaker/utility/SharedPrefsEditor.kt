@@ -1,25 +1,14 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.utility
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class SharedPrefsManager<T>(val sharedPreferences: SharedPreferences) {
-
-
-    inline fun <reified T> itemToJson(item: T): String = Gson().toJson(item)
-    inline fun <reified T> itemListToJson(items: ArrayList<T>): String = Gson().toJson(items)
-
-    inline fun <reified T> jsonToItem(json: String): T =
-        Gson().fromJson(json, T::class.java)
-
-    inline fun <reified T> jsonToItemList(json: String): ArrayList<T> =
-        Gson().fromJson(json, object : TypeToken<ArrayList<T>>() {}.type)
-
+class SharedPrefsEditor(val sharedPreferences: SharedPreferences) {
 
     inline fun <reified T> addItem(key: String, item: T) {
-        sharedPreferences.edit { putString(key, itemToJson(item)) }
+        sharedPreferences.edit { putString(key, JsonConverter.itemToJson(item)) }
     }
 
     inline fun <reified T> addItemList(key: String, items: ArrayList<T>) {
@@ -29,7 +18,7 @@ class SharedPrefsManager<T>(val sharedPreferences: SharedPreferences) {
 
     inline fun <reified T> getItems(key: String): ArrayList<T> {
         val json = sharedPreferences.getString(key, null) ?: return arrayListOf()
-        return jsonToItemList(json)
+        return JsonConverter.jsonToItemList(json)
     }
 
     fun clear() {

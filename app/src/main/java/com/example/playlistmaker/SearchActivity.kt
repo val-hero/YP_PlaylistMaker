@@ -13,8 +13,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.utility.JsonConverter
+import com.example.playlistmaker.utility.OnClickSupport
+import com.example.playlistmaker.utility.OnItemClickListener
+import com.example.playlistmaker.utility.SharedPrefsEditor
 import com.google.android.material.appbar.MaterialToolbar
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,9 +26,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
-    companion object {
-        const val SEARCH_EDIT_TEXT = "SEARCH_EDIT_TEXT"
-        const val SHARED_PREFS_KEY = "TRACK_HISTORY"
+    private companion object {
+        const val SEARCH_EDIT_TEXT = "search_edit_text"
+        const val SEARCH_HISTORY_PREFS = "search_history"
+        const val TRACKS = "tracks"
         const val API_BASE_URL = "https://itunes.apple.com"
     }
 
@@ -48,7 +52,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var tracksRecycler: RecyclerView
     private lateinit var searchHistoryRecycler: RecyclerView
     private lateinit var sharedPrefs: SharedPreferences
-    private lateinit var sharedPrefsManager: SharedPrefsManager<Track>
+    private lateinit var sharedPrefsEditor: SharedPrefsEditor
     private lateinit var searchHistory: LinearLayout
     private lateinit var clearHistoryButton: Button
     //endregion
@@ -60,7 +64,7 @@ class SearchActivity : AppCompatActivity() {
         setupTextWatcher()
         tracksRecycler.adapter = searchAdapter
         searchHistoryRecycler.adapter = historyAdapter
-        historyAdapter.updateTracks(sharedPrefsManager.getItems("tracks"))
+        historyAdapter.updateTracks(sharedPrefsEditor.getItems(TRACKS))
 
         backButton.setNavigationOnClickListener {
             finish()
@@ -88,15 +92,30 @@ class SearchActivity : AppCompatActivity() {
         OnClickSupport.addTo(tracksRecycler).onItemClick(object : OnItemClickListener {
             override fun onItemClick(recyclerView: RecyclerView, position: Int, view: View) {
                 historyAdapter.addToHistory(searchAdapter.tracks[position])
-                sharedPrefsManager.addItemList("tracks", historyAdapter.tracks)
+                sharedPrefsEditor.addItemList(TRACKS, historyAdapter.tracks)
             }
         })
 
         clearHistoryButton.setOnClickListener {
-            sharedPrefsManager.clear()
+            sharedPrefsEditor.clear()
             historyAdapter.updateTracks()
             searchHistory.visibility = View.GONE
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putCharSequence(SEARCH_EDIT_TEXT, searchText)
+        outState.putString(TRACKS, JsonConverter.itemListToJson(searchAdapter.tracks))
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        searchText = savedInstanceState.getCharSequence(SEARCH_EDIT_TEXT, "")
+        searchEditText.setText(searchText)
+        val savedTracks = savedInstanceState.getString(TRACKS, null)
+        if (savedTracks != null)
+            searchAdapter.updateTracks(JsonConverter.jsonToItemList(savedTracks))
     }
 
     override fun onDestroy() {
@@ -115,8 +134,8 @@ class SearchActivity : AppCompatActivity() {
         searchHistoryRecycler = findViewById(R.id.search_history_recycler)
         searchHistory = findViewById(R.id.search_history)
         clearHistoryButton = findViewById(R.id.clear_history)
-        sharedPrefs = getSharedPreferences(SHARED_PREFS_KEY, MODE_PRIVATE)
-        sharedPrefsManager = SharedPrefsManager(sharedPrefs)
+        sharedPrefs = getSharedPreferences(SEARCH_HISTORY_PREFS, MODE_PRIVATE)
+        sharedPrefsEditor = SharedPrefsEditor(sharedPrefs)
     }
 
     private fun setupTextWatcher() {
@@ -182,20 +201,8 @@ class SearchActivity : AppCompatActivity() {
         hideErrors()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putCharSequence(SEARCH_EDIT_TEXT, searchText)
-
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        searchText = savedInstanceState.getCharSequence(SEARCH_EDIT_TEXT, "")
-        searchEditText.setText(searchText)
-    }
-
     private fun searchHistoryVisibility(view: View, text: CharSequence?): Int {
-        return if (historyAdapter.tracks.isNotEmpty() && view.hasFocus() && text?.isEmpty() == true)
+        return if (historyAdapter.tracks.isNotEmpty() && view.hasFocus() && text.isNullOrEmpty())
             View.VISIBLE
         else
             View.GONE

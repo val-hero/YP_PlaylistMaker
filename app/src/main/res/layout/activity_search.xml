@@ -85,6 +85,7 @@
         android:id="@+id/search_history"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -102,8 +103,8 @@
             android:id="@+id/search_history_recycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             android:layout_marginTop="8dp"
+            android:layout_weight="1"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         <Button
@@ -140,6 +141,4 @@
             android:layout_marginTop="24dp"
             android:text="@string/refresh" />
     </LinearLayout>
-
-
 </LinearLayout>

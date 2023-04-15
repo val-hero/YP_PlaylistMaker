@@ -1,7 +1,8 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.utility
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.R
 
 class OnClickSupport private constructor(private val recyclerView: RecyclerView) {
 

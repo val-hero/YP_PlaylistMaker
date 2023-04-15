@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     lateinit var nightTheme: SwitchCompat
@@ -63,10 +62,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun matchSwitchToCurrentTheme() {
         val appContext = applicationContext as App
-        if (appContext.sharedPrefs.contains(App.DARK_THEME_ENABLED))
-            nightTheme.isChecked = appContext.sharedPrefs.getBoolean(App.DARK_THEME_ENABLED, false)
-        else
-            nightTheme.isChecked = appContext.systemThemeIsDark
-
+        nightTheme.isChecked =
+            appContext.sharedPrefs.getBoolean(App.DARK_THEME_ENABLED, appContext.systemThemeIsDark)
     }
 }
