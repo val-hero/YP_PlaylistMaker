@@ -5,15 +5,26 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
+import androidx.appcompat.widget.SwitchCompat
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
+    lateinit var nightTheme: SwitchCompat
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
         val back = findViewById<MaterialToolbar>(R.id.settings_back_button)
         back.setNavigationOnClickListener {
             finish()
+        }
+
+        nightTheme = findViewById(R.id.night_theme_switch)
+        matchSwitchToCurrentTheme()
+        nightTheme.setOnCheckedChangeListener { _, checked ->
+            (applicationContext as App).switchTheme(checked)
         }
 
         val shareApp = findViewById<TextView>(R.id.share_app)
@@ -48,5 +59,14 @@ class SettingsActivity : AppCompatActivity() {
             val openLink = Intent.createChooser(viewIntent, null)
             startActivity(openLink)
         }
+    }
+
+    private fun matchSwitchToCurrentTheme() {
+        val appContext = applicationContext as App
+        if (appContext.sharedPrefs.contains(App.DARK_THEME_ENABLED))
+            nightTheme.isChecked = appContext.sharedPrefs.getBoolean(App.DARK_THEME_ENABLED, false)
+        else
+            nightTheme.isChecked = appContext.systemThemeIsDark
+
     }
 }
