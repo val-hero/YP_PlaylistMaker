@@ -1,7 +1,6 @@
 package com.example.playlistmaker
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -13,10 +12,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.utility.JsonConverter
 import com.example.playlistmaker.utility.OnClickSupport
-import com.example.playlistmaker.utility.OnItemClickListener
 import com.example.playlistmaker.utility.SharedPrefsEditor
 import com.google.android.material.appbar.MaterialToolbar
 import retrofit2.Call
@@ -51,10 +50,10 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var serverError: LinearLayout
     private lateinit var tracksRecycler: RecyclerView
     private lateinit var searchHistoryRecycler: RecyclerView
-    private lateinit var sharedPrefs: SharedPreferences
     private lateinit var sharedPrefsEditor: SharedPrefsEditor
-    private lateinit var searchHistory: LinearLayout
+    private lateinit var searchHistoryView: LinearLayout
     private lateinit var clearHistoryButton: Button
+    private lateinit var searchHistory: SearchHistory
     //endregion
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,27 +78,27 @@ class SearchActivity : AppCompatActivity() {
         }
 
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
+            if (actionId == EditorInfo.IME_ACTION_DONE && searchEditText.text.isNotEmpty()) {
                 search()
             }
             false
         }
 
         searchEditText.setOnFocusChangeListener { view, _ ->
-            searchHistory.visibility = searchHistoryVisibility(view, searchEditText.text)
+            searchHistoryView.isVisible = searchHistoryVisibility(view, searchEditText.text)
         }
 
-        OnClickSupport.addTo(tracksRecycler).onItemClick(object : OnItemClickListener {
-            override fun onItemClick(recyclerView: RecyclerView, position: Int, view: View) {
-                historyAdapter.addToHistory(searchAdapter.tracks[position])
-                sharedPrefsEditor.addItemList(TRACKS, historyAdapter.tracks)
-            }
-        })
+        OnClickSupport.addTo(tracksRecycler).onItemClick { _, position, _ ->
+            searchHistory.addTrack(searchAdapter.tracks[position])
+            historyAdapter.updateTracks(searchHistory.tracks)
+            sharedPrefsEditor.addItemList(TRACKS, historyAdapter.tracks)
+        }
 
         clearHistoryButton.setOnClickListener {
             sharedPrefsEditor.clear()
+            searchHistory.tracks.clear()
             historyAdapter.updateTracks()
-            searchHistory.visibility = View.GONE
+            searchHistoryView.isVisible = false
         }
     }
 
@@ -132,9 +131,10 @@ class SearchActivity : AppCompatActivity() {
         serverError = findViewById(R.id.server_error)
         tracksRecycler = findViewById(R.id.track_list_recycler)
         searchHistoryRecycler = findViewById(R.id.search_history_recycler)
-        searchHistory = findViewById(R.id.search_history)
+        searchHistoryView = findViewById(R.id.search_history)
         clearHistoryButton = findViewById(R.id.clear_history)
-        sharedPrefs = getSharedPreferences(SEARCH_HISTORY_PREFS, MODE_PRIVATE)
+        searchHistory = SearchHistory()
+        val sharedPrefs = getSharedPreferences(SEARCH_HISTORY_PREFS, MODE_PRIVATE)
         sharedPrefsEditor = SharedPrefsEditor(sharedPrefs)
     }
 
@@ -143,9 +143,10 @@ class SearchActivity : AppCompatActivity() {
             override fun beforeTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                clearButton.visibility = clearButtonVisibility(text)
-                searchHistory.visibility = searchHistoryVisibility(searchEditText, text)
-
+                clearButton.isVisible = clearButtonVisibility(text)
+                searchHistoryView.isVisible = searchHistoryVisibility(searchEditText, text)
+                if (text.isNullOrEmpty())
+                    hideErrors()
             }
 
             override fun afterTextChanged(text: Editable?) {
@@ -183,12 +184,12 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showError(errorView: View) {
         searchAdapter.updateTracks()
-        errorView.visibility = View.VISIBLE
+        errorView.isVisible = true
     }
 
     private fun hideErrors() {
-        notFoundError.visibility = View.GONE
-        serverError.visibility = View.GONE
+        notFoundError.isVisible = false
+        serverError.isVisible = false
     }
 
     private fun clearSearchRequest() {
@@ -198,20 +199,12 @@ class SearchActivity : AppCompatActivity() {
         inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)
         searchEditText.clearFocus()
         searchAdapter.updateTracks()
-        hideErrors()
     }
 
-    private fun searchHistoryVisibility(view: View, text: CharSequence?): Int {
-        return if (historyAdapter.tracks.isNotEmpty() && view.hasFocus() && text.isNullOrEmpty())
-            View.VISIBLE
-        else
-            View.GONE
-    }
+    private fun searchHistoryVisibility(view: View, text: CharSequence?): Boolean =
+        historyAdapter.tracks.isNotEmpty() && view.hasFocus() && text.isNullOrEmpty()
 
-    private fun clearButtonVisibility(text: CharSequence?): Int {
-        return if (text.isNullOrEmpty())
-            View.GONE
-        else
-            View.VISIBLE
-    }
+
+    private fun clearButtonVisibility(text: CharSequence?): Boolean =
+        !text.isNullOrEmpty()
 }

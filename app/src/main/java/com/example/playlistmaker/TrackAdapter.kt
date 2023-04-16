@@ -2,12 +2,24 @@ package com.example.playlistmaker
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import java.util.Queue
 
 class TrackAdapter : RecyclerView.Adapter<TrackViewHolder>() {
-    companion object {
-        const val HISTORY_CAPACITY = 10
+
+    private inner class TrackDiffCallback(
+        private val oldTracks: ArrayList<Track>,
+        private val newTracks: ArrayList<Track>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize(): Int = oldTracks.size
+
+        override fun getNewListSize(): Int = newTracks.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            oldTracks[oldItemPosition].trackId == newTracks[newItemPosition].trackId
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            oldTracks[oldItemPosition].trackName == newTracks[newItemPosition].trackName
     }
 
     val tracks = ArrayList<Track>()
@@ -25,32 +37,10 @@ class TrackAdapter : RecyclerView.Adapter<TrackViewHolder>() {
     }
 
     fun updateTracks(tracks: ArrayList<Track> = arrayListOf()) {
+        val diffCallback = TrackDiffCallback(this.tracks, tracks)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         this.tracks.clear()
-        if (tracks.isNotEmpty()) {
-            this.tracks.addAll(tracks)
-        }
-        notifyDataSetChanged()
-    }
-
-    fun addToHistory(track: Track) {
-        removeDuplicate(track)
-        if (tracks.size < HISTORY_CAPACITY) {
-            tracks.add(0, track)
-        } else {
-            tracks.removeLast()
-            notifyItemRemoved(tracks.lastIndex)
-            tracks.add(0, track)
-        }
-        notifyItemChanged(0)
-        notifyItemInserted(0)
-    }
-
-    private fun removeDuplicate(track: Track) {
-        tracks.forEachIndexed { index, comparable ->
-            if (track.trackId == comparable.trackId) {
-                tracks.removeAt(index)
-                notifyItemRemoved(index)
-            }
-        }
+        this.tracks.addAll(tracks)
+        diffResult.dispatchUpdatesTo(this)
     }
 }

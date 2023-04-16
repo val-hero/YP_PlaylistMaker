@@ -13,7 +13,7 @@ class App : Application() {
     }
 
     var systemThemeIsDark = false
-    var appThemeIsDark = false
+    private var appThemeIsDark = false
     lateinit var sharedPrefs: SharedPreferences
 
     override fun onCreate() {
