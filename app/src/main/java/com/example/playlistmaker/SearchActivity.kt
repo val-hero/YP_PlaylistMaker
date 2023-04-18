@@ -12,7 +12,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.utility.JsonConverter
+import com.example.playlistmaker.utility.OnClickSupport
+import com.example.playlistmaker.utility.SharedPrefsEditor
 import com.google.android.material.appbar.MaterialToolbar
 import retrofit2.Call
 import retrofit2.Callback
@@ -21,8 +25,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
-    companion object {
-        const val SEARCH_EDIT_TEXT = "SEARCH_EDIT_TEXT"
+    private companion object {
+        const val SEARCH_EDIT_TEXT = "search_edit_text"
+        const val SEARCH_HISTORY_PREFS = "search_history"
+        const val TRACKS = "tracks"
         const val API_BASE_URL = "https://itunes.apple.com"
     }
 
@@ -33,7 +39,8 @@ class SearchActivity : AppCompatActivity() {
 
     //region Variables
     private val iTunesApi = retrofit.create(ITunesApi::class.java)
-    private val adapter = TrackAdapter()
+    private val searchAdapter = TrackAdapter()
+    private val historyAdapter = TrackAdapter()
     private var searchText: CharSequence = ""
     private lateinit var searchEditText: EditText
     private lateinit var clearButton: ImageView
@@ -42,6 +49,11 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var notFoundError: LinearLayout
     private lateinit var serverError: LinearLayout
     private lateinit var tracksRecycler: RecyclerView
+    private lateinit var searchHistoryRecycler: RecyclerView
+    private lateinit var sharedPrefsEditor: SharedPrefsEditor
+    private lateinit var searchHistoryView: LinearLayout
+    private lateinit var clearHistoryButton: Button
+    private lateinit var searchHistory: SearchHistory
     //endregion
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +61,9 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
         initialize()
         setupTextWatcher()
-        tracksRecycler.adapter = adapter
+        tracksRecycler.adapter = searchAdapter
+        searchHistoryRecycler.adapter = historyAdapter
+        historyAdapter.updateTracks(sharedPrefsEditor.getItems(TRACKS))
 
         backButton.setNavigationOnClickListener {
             finish()
@@ -64,12 +78,48 @@ class SearchActivity : AppCompatActivity() {
         }
 
         searchEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
+            if (actionId == EditorInfo.IME_ACTION_DONE && searchEditText.text.isNotEmpty()) {
                 search()
             }
             false
         }
 
+        searchEditText.setOnFocusChangeListener { view, _ ->
+            searchHistoryView.isVisible = searchHistoryVisibility(view, searchEditText.text)
+        }
+
+        OnClickSupport.addTo(tracksRecycler).onItemClick { _, position, _ ->
+            searchHistory.addTrack(searchAdapter.tracks[position])
+            historyAdapter.updateTracks(searchHistory.tracks)
+            sharedPrefsEditor.addItemList(TRACKS, historyAdapter.tracks)
+        }
+
+        clearHistoryButton.setOnClickListener {
+            sharedPrefsEditor.clear()
+            searchHistory.tracks.clear()
+            historyAdapter.updateTracks()
+            searchHistoryView.isVisible = false
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putCharSequence(SEARCH_EDIT_TEXT, searchText)
+        outState.putString(TRACKS, JsonConverter.itemListToJson(searchAdapter.tracks))
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        searchText = savedInstanceState.getCharSequence(SEARCH_EDIT_TEXT, "")
+        searchEditText.setText(searchText)
+        val savedTracks = savedInstanceState.getString(TRACKS, null)
+        if (savedTracks != null)
+            searchAdapter.updateTracks(JsonConverter.jsonToItemList(savedTracks))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        OnClickSupport.removeFrom(tracksRecycler)
     }
 
     private fun initialize() {
@@ -79,7 +129,13 @@ class SearchActivity : AppCompatActivity() {
         refreshButton = findViewById(R.id.refresh_button)
         notFoundError = findViewById(R.id.not_found_error)
         serverError = findViewById(R.id.server_error)
-        tracksRecycler = findViewById(R.id.track_list)
+        tracksRecycler = findViewById(R.id.track_list_recycler)
+        searchHistoryRecycler = findViewById(R.id.search_history_recycler)
+        searchHistoryView = findViewById(R.id.search_history)
+        clearHistoryButton = findViewById(R.id.clear_history)
+        searchHistory = SearchHistory()
+        val sharedPrefs = getSharedPreferences(SEARCH_HISTORY_PREFS, MODE_PRIVATE)
+        sharedPrefsEditor = SharedPrefsEditor(sharedPrefs)
     }
 
     private fun setupTextWatcher() {
@@ -87,11 +143,15 @@ class SearchActivity : AppCompatActivity() {
             override fun beforeTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                clearButton.visibility = clearButtonVisibility(text)
+                clearButton.isVisible = clearButtonVisibility(text)
+                searchHistoryView.isVisible = searchHistoryVisibility(searchEditText, text)
+                if (text.isNullOrEmpty())
+                    hideErrors()
             }
 
             override fun afterTextChanged(text: Editable?) {
                 searchText = text!!
+
             }
         }
         searchEditText.addTextChangedListener(textWatcher)
@@ -105,7 +165,7 @@ class SearchActivity : AppCompatActivity() {
                 ) {
                     if (response.code() == 200) {
                         if (response.body()?.results?.isNotEmpty() == true) {
-                            adapter.updateTracks(response.body()!!.results)
+                            searchAdapter.updateTracks(response.body()!!.results)
                         } else {
                             showError(notFoundError)
                         }
@@ -123,13 +183,13 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showError(errorView: View) {
-        adapter.updateTracks()
-        errorView.visibility = View.VISIBLE
+        searchAdapter.updateTracks()
+        errorView.isVisible = true
     }
 
     private fun hideErrors() {
-        notFoundError.visibility = View.GONE
-        serverError.visibility = View.GONE
+        notFoundError.isVisible = false
+        serverError.isVisible = false
     }
 
     private fun clearSearchRequest() {
@@ -138,24 +198,13 @@ class SearchActivity : AppCompatActivity() {
             getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)
         searchEditText.clearFocus()
-        adapter.updateTracks()
+        searchAdapter.updateTracks()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putCharSequence(SEARCH_EDIT_TEXT, searchText)
-    }
+    private fun searchHistoryVisibility(view: View, text: CharSequence?): Boolean =
+        historyAdapter.tracks.isNotEmpty() && view.hasFocus() && text.isNullOrEmpty()
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        searchText = savedInstanceState.getCharSequence(SEARCH_EDIT_TEXT, "")
-        searchEditText.setText(searchText)
-    }
 
-    private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if (s.isNullOrEmpty()) {
-            View.GONE
-        } else
-            View.VISIBLE
-    }
+    private fun clearButtonVisibility(text: CharSequence?): Boolean =
+        !text.isNullOrEmpty()
 }

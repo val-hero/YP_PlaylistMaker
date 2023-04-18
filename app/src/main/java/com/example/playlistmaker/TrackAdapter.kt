@@ -2,10 +2,27 @@ package com.example.playlistmaker
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 
 class TrackAdapter : RecyclerView.Adapter<TrackViewHolder>() {
-    private val tracks = ArrayList<Track>()
+
+    private inner class TrackDiffCallback(
+        private val oldTracks: ArrayList<Track>,
+        private val newTracks: ArrayList<Track>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize(): Int = oldTracks.size
+
+        override fun getNewListSize(): Int = newTracks.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            oldTracks[oldItemPosition].trackId == newTracks[newItemPosition].trackId
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            oldTracks[oldItemPosition].trackName == newTracks[newItemPosition].trackName
+    }
+
+    val tracks = ArrayList<Track>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val view =
@@ -20,11 +37,10 @@ class TrackAdapter : RecyclerView.Adapter<TrackViewHolder>() {
     }
 
     fun updateTracks(tracks: ArrayList<Track> = arrayListOf()) {
+        val diffCallback = TrackDiffCallback(this.tracks, tracks)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         this.tracks.clear()
-        if (tracks.isNotEmpty()) {
-            this.tracks.addAll(tracks)
-        }
-        notifyDataSetChanged()
+        this.tracks.addAll(tracks)
+        diffResult.dispatchUpdatesTo(this)
     }
-
 }
