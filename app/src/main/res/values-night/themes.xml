@@ -2,19 +2,19 @@
     <!-- Base application theme. -->
     <style name="Theme.PlaylistMaker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/black</item>
-        <item name="colorPrimaryVariant">@color/black</item>
+        <item name="colorPrimary">@color/yp_black</item>
+        <item name="colorPrimaryVariant">@color/yp_black</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/white</item>
         <item name="colorSecondaryVariant">@color/white</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSecondary">@color/yp_black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/purple_500</item>
         <!-- Customize your theme here. -->
         <item name="colorAccent">@color/yp_blue</item>
         <item name="colorSurface">@color/white</item>
-        <item name="colorOnSurface">@color/black</item>
+        <item name="colorOnSurface">@color/yp_black</item>
     </style>
 
     <style name="MainScreen" parent="Theme.PlaylistMaker">

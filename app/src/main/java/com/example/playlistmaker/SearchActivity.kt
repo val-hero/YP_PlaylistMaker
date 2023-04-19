@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -92,6 +93,11 @@ class SearchActivity : AppCompatActivity() {
             searchHistory.addTrack(searchAdapter.tracks[position])
             historyAdapter.updateTracks(searchHistory.tracks)
             sharedPrefsEditor.addItemList(TRACKS, historyAdapter.tracks)
+            openTrack(searchAdapter.tracks[position])
+        }
+
+        OnClickSupport.addTo(searchHistoryRecycler).onItemClick { _, position, _ ->
+            openTrack(historyAdapter.tracks[position])
         }
 
         clearHistoryButton.setOnClickListener {
@@ -136,6 +142,12 @@ class SearchActivity : AppCompatActivity() {
         searchHistory = SearchHistory()
         val sharedPrefs = getSharedPreferences(SEARCH_HISTORY_PREFS, MODE_PRIVATE)
         sharedPrefsEditor = SharedPrefsEditor(sharedPrefs)
+    }
+
+    private fun openTrack(track: Track) {
+        val intent = Intent(this, PlayerActivity::class.java)
+        intent.putExtra("track", JsonConverter.itemToJson(track))
+        startActivity(intent)
     }
 
     private fun setupTextWatcher() {
@@ -205,6 +217,5 @@ class SearchActivity : AppCompatActivity() {
         historyAdapter.tracks.isNotEmpty() && view.hasFocus() && text.isNullOrEmpty()
 
 
-    private fun clearButtonVisibility(text: CharSequence?): Boolean =
-        !text.isNullOrEmpty()
+    private fun clearButtonVisibility(text: CharSequence?): Boolean = !text.isNullOrEmpty()
 }
