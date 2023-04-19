@@ -29,7 +29,8 @@ class PlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
-        val currentTrack = JsonConverter.jsonToItem<Track>(intent.extras?.getString("track")!!)
+        val currentTrack =
+            JsonConverter.jsonToItem<Track>(intent.extras?.getString(SearchActivity.SELECTED_TRACK)!!)
         initialize()
         fillViewsWithTrackInfo(currentTrack)
         setAlbumVisibility()

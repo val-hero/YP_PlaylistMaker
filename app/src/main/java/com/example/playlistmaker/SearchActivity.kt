@@ -26,11 +26,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
-    private companion object {
+    companion object {
         const val SEARCH_EDIT_TEXT = "search_edit_text"
         const val SEARCH_HISTORY_PREFS = "search_history"
         const val TRACKS = "tracks"
         const val API_BASE_URL = "https://itunes.apple.com"
+        const val SELECTED_TRACK = "selected_track"
     }
 
     private val retrofit = Retrofit.Builder()
@@ -146,7 +147,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun openTrack(track: Track) {
         val intent = Intent(this, PlayerActivity::class.java)
-        intent.putExtra("track", JsonConverter.itemToJson(track))
+        intent.putExtra(SELECTED_TRACK, JsonConverter.itemToJson(track))
         startActivity(intent)
     }
 
