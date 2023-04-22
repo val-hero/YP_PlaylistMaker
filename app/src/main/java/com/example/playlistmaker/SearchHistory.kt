@@ -16,10 +16,8 @@ class SearchHistory {
     }
 
     private fun removeDuplicate(track: Track) {
-        tracks.forEachIndexed { index, comparable ->
-            if (track.trackId == comparable.trackId) {
-                tracks.removeAt(index)
-            }
+        tracks.forEachIndexed { _, comparable ->
+            tracks.removeIf { track.trackId == comparable.trackId }
         }
     }
 }

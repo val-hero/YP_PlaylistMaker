@@ -13,6 +13,8 @@
 
     <TextView
         style="@style/HeaderText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:paddingBottom="40dp"
         android:text="@string/main_header"
         android:textColor="@color/white" />

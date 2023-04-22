@@ -27,8 +27,6 @@
     </style>
 
     <style name="HeaderText">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/header_text</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:fontWeight">500</item>
@@ -97,5 +95,35 @@
         <item name="colorControlActivated">@color/yp_blue</item>
         <item name="colorSwitchThumbNormal">@color/yp_gray</item>
         <item name="android:colorForeground">@color/yp_gray</item>
+    </style>
+
+    <style name="PlayerSecondaryFAB" parent="Widget.Material3.Button.UnelevatedButton">
+        <item name="android:layout_width">@dimen/player_secondary_fab</item>
+        <item name="android:layout_height">@dimen/player_secondary_fab</item>
+        <item name="fabCustomSize">@dimen/player_secondary_fab</item>
+        <item name="layout_constraintHorizontal_chainStyle">spread_inside</item>
+    </style>
+
+    <style name="PlayerPlayFAB" parent="Widget.Material3.Button.UnelevatedButton">
+        <item name="android:layout_width">@dimen/player_play_fab</item>
+        <item name="android:layout_height">@dimen/player_play_fab</item>
+        <item name="fabCustomSize">@dimen/player_play_fab</item>
+        <item name="android:foregroundTint">?attr/colorOnPrimary</item>
+        <item name="backgroundTint">?attr/colorPrimary</item>
+    </style>
+
+    <style name="PlayerTrackInfo" parent="RegularText">
+        <item name="android:textColor">@color/yp_gray</item>
+        <item name="android:textSize">@dimen/player_track_info</item>
+    </style>
+
+    <style name="PlayerTrackInfo.Value">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textSize">@dimen/player_track_info_value</item>
+        <item name="layout_constraintHorizontal_bias">1</item>
+        <item name="layout_constrainedWidth">true</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
     </style>
 </resources>
