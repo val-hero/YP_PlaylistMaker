@@ -1,8 +1,8 @@
 package com.example.playlistmaker
 
 class SearchHistory {
-    companion object {
-        const val HISTORY_CAPACITY = 10
+    private companion object {
+        private const val HISTORY_CAPACITY = 10
     }
 
     val tracks = ArrayList<Track>()
