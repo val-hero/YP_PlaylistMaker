@@ -57,6 +57,7 @@ class PlayerActivity : AppCompatActivity() {
             JsonConverter.jsonToItem(intent.extras?.getString(SearchActivity.SELECTED_TRACK)!!)
         fillViews(currentTrack)
         setAlbumVisibility()
+        playTimer.text = DEFAULT_TIMER_VALUE
         trackName.isSelected = true // to enable marquee effect
 
         preparePlayer()
