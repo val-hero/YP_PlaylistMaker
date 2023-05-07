@@ -58,6 +58,15 @@
             app:tint="?attr/colorPrimaryVariant" />
     </FrameLayout>
 
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="140dp"
+        android:indeterminateTint="?attr/colorAccent"
+        android:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/track_list_recycler"
         android:layout_width="match_parent"

@@ -1,10 +1,6 @@
 package com.example.playlistmaker
 
 class SearchHistory {
-    companion object {
-        const val HISTORY_CAPACITY = 10
-    }
-
     val tracks = ArrayList<Track>()
 
     fun addTrack(track: Track) {
@@ -16,8 +12,16 @@ class SearchHistory {
     }
 
     private fun removeDuplicate(track: Track) {
-        tracks.forEachIndexed { _, comparable ->
-            tracks.removeIf { track.trackId == comparable.trackId }
+        val iterator = tracks.iterator()
+        while (iterator.hasNext()) {
+            val currentTrack = iterator.next()
+            if (track.trackId == currentTrack.trackId) {
+                iterator.remove()
+            }
         }
+    }
+
+    private companion object {
+        private const val HISTORY_CAPACITY = 10
     }
 }

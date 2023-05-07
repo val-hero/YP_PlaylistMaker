@@ -160,8 +160,7 @@
             app:layout_constraintBottom_toTopOf="@id/barrier"
             app:layout_constraintEnd_toStartOf="@id/end_guideline"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="@id/start_guideline"
-            tools:text="0:30" />
+            app:layout_constraintStart_toStartOf="@id/start_guideline" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/play_button"
