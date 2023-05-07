@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken
 
 object JsonConverter {
     inline fun <reified T> itemToJson(item: T): String = Gson().toJson(item)
+
     inline fun <reified T> itemListToJson(items: ArrayList<T>): String = Gson().toJson(items)
 
     inline fun <reified T> jsonToItem(json: String): T = Gson().fromJson(json, T::class.java)

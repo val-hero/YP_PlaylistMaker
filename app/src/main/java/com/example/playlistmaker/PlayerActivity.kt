@@ -1,5 +1,6 @@
 package com.example.playlistmaker
 
+import android.app.Activity
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -24,12 +25,6 @@ enum class PlayerState {
 }
 
 class PlayerActivity : AppCompatActivity() {
-    private companion object {
-        const val TIMER_UPDATE_DELAY = 500L
-        const val DEFAULT_TIMER_VALUE = "00:00"
-        const val MMSS_FORMAT_PATTERN = "%1\$tM:%1\$tS"
-    }
-
     private lateinit var trackImage: ImageView
     private lateinit var trackName: TextView
     private lateinit var artistName: TextView
@@ -172,5 +167,11 @@ class PlayerActivity : AppCompatActivity() {
             ResourcesCompat.getDrawable(resources, R.drawable.pause_button, null)
         else -> playbackToggle.foreground =
             ResourcesCompat.getDrawable(resources, R.drawable.play_button, null)
+    }
+
+    private companion object {
+        const val TIMER_UPDATE_DELAY = 500L
+        const val DEFAULT_TIMER_VALUE = "00:00"
+        const val MMSS_FORMAT_PATTERN = "%1\$tM:%1\$tS"
     }
 }
