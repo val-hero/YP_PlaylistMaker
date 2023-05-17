@@ -1,7 +1,5 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation
 
-import android.app.Activity
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,16 +11,17 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.utility.JsonConverter
+import com.example.playlistmaker.R
+import com.example.playlistmaker.data.repository.MediaPlayerImpl
+import com.example.playlistmaker.data.repository.TrackRepositoryImpl
+import com.example.playlistmaker.data.storage.SharedPrefsTrackStorage
+import com.example.playlistmaker.domain.models.PlayerState
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.usecase.GetTrack
+import com.example.playlistmaker.domain.usecase.PauseTrack
+import com.example.playlistmaker.domain.usecase.PlayTrack
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-
-enum class PlayerState {
-    DEFAULT,
-    PREPARED,
-    PLAYING,
-    PAUSED
-}
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var trackImage: ImageView
@@ -37,25 +36,25 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var albumViewGroup: Group
     private lateinit var navigation: MaterialToolbar
     private lateinit var playbackToggle: FloatingActionButton
-    private lateinit var currentTrack: Track
     private lateinit var handler: Handler
     private lateinit var timerRunnable: Runnable
 
-    private val mediaPlayer = MediaPlayer()
-    private var playerState = PlayerState.DEFAULT
+    private val trackStorage by lazy { SharedPrefsTrackStorage(applicationContext) }
+    private val trackRepository by lazy { TrackRepositoryImpl(trackStorage) }
+    private val getTrackUseCase by lazy { GetTrack(trackRepository) }
+    private val mediaPlayer by lazy { MediaPlayerImpl(trackRepository) }
+    private val playTrackUseCase by lazy { PlayTrack(mediaPlayer) }
+    private val pauseTrackUseCase by lazy { PauseTrack(mediaPlayer) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
         initialize()
-        currentTrack =
-            JsonConverter.jsonToItem(intent.extras?.getString(SearchActivity.SELECTED_TRACK)!!)
-        fillViews(currentTrack)
+        fillViews(getTrackUseCase())
         setAlbumVisibility()
         playTimer.text = DEFAULT_TIMER_VALUE
         trackName.isSelected = true // to enable marquee effect
 
-        preparePlayer()
         playbackToggle.setOnClickListener {
             playbackControl()
             setPlaybackToggleIcon()
@@ -67,33 +66,31 @@ class PlayerActivity : AppCompatActivity() {
 
         timerRunnable = object : Runnable {
             override fun run() {
-                if (mediaPlayer.isPlaying) {
-                    val currentPosition = mediaPlayer.currentPosition.toLong()
+                if (mediaPlayer.getCurrentState() == PlayerState.PLAYING) {
+                    val currentPosition = mediaPlayer.getCurrentPosition()
                     playTimer.text =
                         String.format(MMSS_FORMAT_PATTERN, currentPosition)
                     handler.postDelayed(this, TIMER_UPDATE_DELAY)
                 }
             }
         }
-
-        mediaPlayer.setOnCompletionListener {
-            playTimer.text = DEFAULT_TIMER_VALUE
-            playerState = PlayerState.PREPARED
+        if (mediaPlayer.getCurrentState() == PlayerState.COMPLETED) {
             handler.removeCallbacks(timerRunnable)
+            playTimer.text = DEFAULT_TIMER_VALUE
             setPlaybackToggleIcon()
         }
     }
 
     override fun onPause() {
         super.onPause()
-        pausePlayer()
+        pauseTrackUseCase()
         setPlaybackToggleIcon()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(timerRunnable)
-        mediaPlayer.release()
+        pauseTrackUseCase()
     }
 
     private fun initialize() {
@@ -132,37 +129,21 @@ class PlayerActivity : AppCompatActivity() {
         albumViewGroup.isVisible = album.text.isNotEmpty()
     }
 
-    private fun preparePlayer() {
-        mediaPlayer.apply {
-            setDataSource(currentTrack.previewUrl)
-            prepareAsync()
-            setOnPreparedListener {
-                playerState = PlayerState.PREPARED
-            }
-        }
-    }
-
-    private fun startPlayer() {
-        mediaPlayer.start()
-        playerState = PlayerState.PLAYING
-        handler.post(timerRunnable)
-    }
-
-    private fun pausePlayer() {
-        mediaPlayer.pause()
-        playerState = PlayerState.PAUSED
-        handler.removeCallbacks(timerRunnable)
-    }
-
     private fun playbackControl() {
-        when (playerState) {
-            PlayerState.PLAYING -> pausePlayer()
-            PlayerState.PAUSED, PlayerState.PREPARED -> startPlayer()
+        when (mediaPlayer.getCurrentState()) {
+            PlayerState.PLAYING -> {
+                pauseTrackUseCase()
+                handler.removeCallbacks(timerRunnable)
+            }
+            PlayerState.PAUSED, PlayerState.PREPARED, PlayerState.COMPLETED -> {
+                playTrackUseCase()
+                handler.post(timerRunnable)
+            }
             PlayerState.DEFAULT -> return
         }
     }
 
-    private fun setPlaybackToggleIcon() = when (playerState) {
+    private fun setPlaybackToggleIcon() = when (mediaPlayer.getCurrentState()) {
         PlayerState.PLAYING -> playbackToggle.foreground =
             ResourcesCompat.getDrawable(resources, R.drawable.pause_button, null)
         else -> playbackToggle.foreground =

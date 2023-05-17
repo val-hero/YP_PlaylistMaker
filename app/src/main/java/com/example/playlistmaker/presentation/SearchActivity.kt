@@ -1,26 +1,28 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.*
+import com.example.playlistmaker.data.repository.TrackRepositoryImpl
+import com.example.playlistmaker.data.storage.SharedPrefsTrackStorage
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.usecase.ClearSearchHistory
+import com.example.playlistmaker.domain.usecase.GetTrackList
+import com.example.playlistmaker.domain.usecase.SaveTrack
+import com.example.playlistmaker.domain.usecase.SaveTrackList
 import com.example.playlistmaker.utility.JsonConverter
 import com.example.playlistmaker.utility.OnClickSupport
-import com.example.playlistmaker.utility.SharedPrefsEditor
 import com.google.android.material.appbar.MaterialToolbar
 import retrofit2.Call
 import retrofit2.Callback
@@ -31,10 +33,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 class SearchActivity : AppCompatActivity() {
     companion object {
         const val SEARCH_EDIT_TEXT = "search_edit_text"
-        const val SEARCH_HISTORY_PREFS = "search_history"
         const val TRACKS = "tracks"
         const val API_BASE_URL = "https://itunes.apple.com"
-        const val SELECTED_TRACK = "selected_track"
         const val SEARCH_DEBOUNCE_DELAY = 2000L
         const val TRACK_CLICK_DELAY = 1000L
     }
@@ -57,7 +57,6 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var serverError: LinearLayout
     private lateinit var tracksRecycler: RecyclerView
     private lateinit var searchHistoryRecycler: RecyclerView
-    private lateinit var sharedPrefsEditor: SharedPrefsEditor
     private lateinit var searchHistoryView: LinearLayout
     private lateinit var clearHistoryButton: Button
     private lateinit var searchHistory: SearchHistory
@@ -65,6 +64,13 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var handler: Handler
     private val searchRunnable = Runnable { search() }
     private var trackIsClickable = true
+
+    private val trackStorage by lazy { SharedPrefsTrackStorage(applicationContext) }
+    private val trackRepository by lazy { TrackRepositoryImpl(trackStorage) }
+    private val saveTrackListUseCase by lazy { SaveTrackList(trackRepository) }
+    private val getTrackListUseCase by lazy { GetTrackList(trackRepository) }
+    private val saveTrackUseCase by lazy { SaveTrack(trackRepository) }
+    private val clearSearchHistoryUseCase by lazy { ClearSearchHistory(trackRepository) }
     //endregion
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,7 +80,7 @@ class SearchActivity : AppCompatActivity() {
         setupTextWatcher()
         tracksRecycler.adapter = searchAdapter
         searchHistoryRecycler.adapter = historyAdapter
-        searchHistory.tracks.addAll(sharedPrefsEditor.getItems(TRACKS))
+        searchHistory.tracks.addAll((getTrackListUseCase()))
         historyAdapter.updateTracks(searchHistory.tracks)
 
         backButton.setNavigationOnClickListener {
@@ -96,16 +102,16 @@ class SearchActivity : AppCompatActivity() {
         OnClickSupport.addTo(tracksRecycler).onItemClick { _, position, _ ->
             searchHistory.addTrack(searchAdapter.tracks[position])
             historyAdapter.updateTracks(searchHistory.tracks)
-            sharedPrefsEditor.addItemList(TRACKS, historyAdapter.tracks)
-            openTrack(searchAdapter.tracks[position])
+            saveTrackListUseCase(historyAdapter.tracks)
+            openPlayer(searchAdapter.tracks[position])
         }
 
         OnClickSupport.addTo(searchHistoryRecycler).onItemClick { _, position, _ ->
-            openTrack(historyAdapter.tracks[position])
+            openPlayer(historyAdapter.tracks[position])
         }
 
         clearHistoryButton.setOnClickListener {
-            sharedPrefsEditor.clear()
+            clearSearchHistoryUseCase()
             searchHistory.tracks.clear()
             historyAdapter.updateTracks()
             searchHistoryView.isVisible = false
@@ -146,17 +152,15 @@ class SearchActivity : AppCompatActivity() {
         clearHistoryButton = findViewById(R.id.clear_history)
         progressBar = findViewById(R.id.progress_bar)
         searchHistory = SearchHistory()
-        val sharedPrefs = getSharedPreferences(SEARCH_HISTORY_PREFS, MODE_PRIVATE)
-        sharedPrefsEditor = SharedPrefsEditor(sharedPrefs)
         handler = Handler(Looper.getMainLooper())
     }
 
-    private fun openTrack(track: Track) {
+    private fun openPlayer(track: Track) {
         if (!trackIsClickable) return
 
         trackIsClickable = false
         val intent = Intent(this, PlayerActivity::class.java)
-        intent.putExtra(SELECTED_TRACK, JsonConverter.itemToJson(track))
+        saveTrackUseCase(track)
         startActivity(intent)
         handler.postDelayed({ trackIsClickable = true }, TRACK_CLICK_DELAY)
     }

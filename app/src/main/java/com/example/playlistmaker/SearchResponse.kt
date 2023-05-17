@@ -1,3 +1,5 @@
 package com.example.playlistmaker
 
-class SearchResponse(val results: ArrayList<Track>)
+import com.example.playlistmaker.domain.models.Track
+
+data class SearchResponse(val results: ArrayList<Track>)
