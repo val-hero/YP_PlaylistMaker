@@ -7,7 +7,7 @@ import com.example.playlistmaker.domain.repository.TrackRepository
 
 class MediaPlayerImpl(trackRepository: TrackRepository) : MediaPlayer {
     private val player = android.media.MediaPlayer()
-    private var playerState: PlayerState = PlayerState.DEFAULT
+    private var stateCallback: ((PlayerState) -> Unit)? = null
 
     init {
         prepare(trackRepository.getTrack())
@@ -17,29 +17,35 @@ class MediaPlayerImpl(trackRepository: TrackRepository) : MediaPlayer {
         player.apply {
             setDataSource(track.previewUrl)
             prepareAsync()
-            setOnPreparedListener { playerState = PlayerState.PREPARED }
-            setOnCompletionListener { playerState = PlayerState.COMPLETED }
+            setOnPreparedListener { stateCallback?.invoke(PlayerState.PREPARED) }
+            setOnCompletionListener {  stateCallback?.invoke(PlayerState.COMPLETED) }
         }
 
     }
 
     override fun play() {
         player.start()
-        playerState = PlayerState.PLAYING
+        stateCallback?.invoke(PlayerState.PLAYING)
     }
 
     override fun pause() {
         player.pause()
-        playerState = PlayerState.PAUSED
+        stateCallback?.invoke(PlayerState.PAUSED)
     }
 
     override fun release() {
         player.release()
-        playerState = PlayerState.DEFAULT
+        stateCallback?.invoke(PlayerState.DEFAULT)
     }
 
-    override fun getCurrentState(): PlayerState = playerState
-
     override fun getCurrentPosition(): Long = player.currentPosition.toLong()
+
+    override fun setOnStateChangeListener(callback: (PlayerState) -> Unit) {
+        stateCallback = callback
+    }
+
+    override fun removeOnStateChangeListener() {
+        stateCallback = null
+    }
 
 }

@@ -8,6 +8,7 @@ interface MediaPlayer {
     fun play()
     fun pause()
     fun release()
-    fun getCurrentState(): PlayerState
     fun getCurrentPosition(): Long
+    fun setOnStateChangeListener(callback: (PlayerState) -> Unit)
+    fun removeOnStateChangeListener()
 }

@@ -3,6 +3,7 @@ package com.example.playlistmaker.presentation
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,7 @@ import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.usecase.GetTrack
 import com.example.playlistmaker.domain.usecase.PauseTrack
 import com.example.playlistmaker.domain.usecase.PlayTrack
+import com.example.playlistmaker.domain.usecase.ReleasePlayer
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -45,6 +47,7 @@ class PlayerActivity : AppCompatActivity() {
     private val mediaPlayer by lazy { MediaPlayerImpl(trackRepository) }
     private val playTrackUseCase by lazy { PlayTrack(mediaPlayer) }
     private val pauseTrackUseCase by lazy { PauseTrack(mediaPlayer) }
+    private val releasePlayerUseCase by lazy { ReleasePlayer(mediaPlayer) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,42 +58,44 @@ class PlayerActivity : AppCompatActivity() {
         playTimer.text = DEFAULT_TIMER_VALUE
         trackName.isSelected = true // to enable marquee effect
 
-        playbackToggle.setOnClickListener {
-            playbackControl()
-            setPlaybackToggleIcon()
-        }
-
         navigation.setNavigationOnClickListener {
             finish()
         }
 
-        timerRunnable = object : Runnable {
-            override fun run() {
-                if (mediaPlayer.getCurrentState() == PlayerState.PLAYING) {
+        mediaPlayer.setOnStateChangeListener { state ->
+            playbackToggle.setOnClickListener {
+                playbackControl(state)
+            }
+
+            if (state == PlayerState.COMPLETED) {
+                handler.removeCallbacks(timerRunnable)
+                playTimer.text = DEFAULT_TIMER_VALUE
+                setPlayIcon()
+            }
+        }
+
+        timerRunnable =
+            object : Runnable {
+                override fun run() {
                     val currentPosition = mediaPlayer.getCurrentPosition()
                     playTimer.text =
                         String.format(MMSS_FORMAT_PATTERN, currentPosition)
                     handler.postDelayed(this, TIMER_UPDATE_DELAY)
                 }
             }
-        }
-        if (mediaPlayer.getCurrentState() == PlayerState.COMPLETED) {
-            handler.removeCallbacks(timerRunnable)
-            playTimer.text = DEFAULT_TIMER_VALUE
-            setPlaybackToggleIcon()
-        }
     }
 
     override fun onPause() {
         super.onPause()
         pauseTrackUseCase()
-        setPlaybackToggleIcon()
+        setPlayIcon()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(timerRunnable)
-        pauseTrackUseCase()
+        mediaPlayer.removeOnStateChangeListener()
+        releasePlayerUseCase()
     }
 
     private fun initialize() {
@@ -129,24 +134,30 @@ class PlayerActivity : AppCompatActivity() {
         albumViewGroup.isVisible = album.text.isNotEmpty()
     }
 
-    private fun playbackControl() {
-        when (mediaPlayer.getCurrentState()) {
+
+    private fun playbackControl(state: PlayerState) {
+        when (state) {
             PlayerState.PLAYING -> {
                 pauseTrackUseCase()
                 handler.removeCallbacks(timerRunnable)
+                setPlayIcon()
             }
             PlayerState.PAUSED, PlayerState.PREPARED, PlayerState.COMPLETED -> {
                 playTrackUseCase()
                 handler.post(timerRunnable)
+                setPauseIcon()
             }
             PlayerState.DEFAULT -> return
         }
     }
 
-    private fun setPlaybackToggleIcon() = when (mediaPlayer.getCurrentState()) {
-        PlayerState.PLAYING -> playbackToggle.foreground =
+    private fun setPauseIcon() {
+        playbackToggle.foreground =
             ResourcesCompat.getDrawable(resources, R.drawable.pause_button, null)
-        else -> playbackToggle.foreground =
+    }
+
+    private fun setPlayIcon() {
+        playbackToggle.foreground =
             ResourcesCompat.getDrawable(resources, R.drawable.play_button, null)
     }
 
