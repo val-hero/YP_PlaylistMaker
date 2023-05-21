@@ -2,10 +2,10 @@ package com.example.playlistmaker.data.repository
 
 import com.example.playlistmaker.domain.models.PlayerState
 import com.example.playlistmaker.domain.models.Track
-import com.example.playlistmaker.domain.repository.MediaPlayer
+import com.example.playlistmaker.domain.repository.MediaPlayerRepository
 import com.example.playlistmaker.domain.repository.TrackRepository
 
-class MediaPlayerImpl(trackRepository: TrackRepository) : MediaPlayer {
+class MediaPlayerRepositoryImpl(trackRepository: TrackRepository) : MediaPlayerRepository {
     private val player = android.media.MediaPlayer()
     private var stateCallback: ((PlayerState) -> Unit)? = null
 
@@ -18,9 +18,8 @@ class MediaPlayerImpl(trackRepository: TrackRepository) : MediaPlayer {
             setDataSource(track.previewUrl)
             prepareAsync()
             setOnPreparedListener { stateCallback?.invoke(PlayerState.PREPARED) }
-            setOnCompletionListener {  stateCallback?.invoke(PlayerState.COMPLETED) }
+            setOnCompletionListener { stateCallback?.invoke(PlayerState.COMPLETED) }
         }
-
     }
 
     override fun play() {
@@ -47,5 +46,4 @@ class MediaPlayerImpl(trackRepository: TrackRepository) : MediaPlayer {
     override fun removeOnStateChangeListener() {
         stateCallback = null
     }
-
 }

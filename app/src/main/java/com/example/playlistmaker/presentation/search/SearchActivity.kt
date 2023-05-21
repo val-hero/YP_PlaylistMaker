@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation
+package com.example.playlistmaker.presentation.search
 
 import android.content.Context
 import android.content.Intent
@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.*
+import com.example.playlistmaker.data.network.ITunesApi
+import com.example.playlistmaker.data.network.SearchResponse
 import com.example.playlistmaker.data.repository.TrackRepositoryImpl
 import com.example.playlistmaker.data.storage.SharedPrefsTrackStorage
 import com.example.playlistmaker.domain.models.Track
@@ -21,6 +23,7 @@ import com.example.playlistmaker.domain.usecase.ClearSearchHistory
 import com.example.playlistmaker.domain.usecase.GetTrackList
 import com.example.playlistmaker.domain.usecase.SaveTrack
 import com.example.playlistmaker.domain.usecase.SaveTrackList
+import com.example.playlistmaker.presentation.player.PlayerActivity
 import com.example.playlistmaker.utility.JsonConverter
 import com.example.playlistmaker.utility.OnClickSupport
 import com.google.android.material.appbar.MaterialToolbar
