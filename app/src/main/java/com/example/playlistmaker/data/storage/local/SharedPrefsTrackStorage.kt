@@ -1,8 +1,9 @@
-package com.example.playlistmaker.data.storage
+package com.example.playlistmaker.data.storage.local
 
 import android.content.Context
 import androidx.core.content.edit
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.data.storage.TrackStorage
+import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.utility.JsonConverter
 import com.example.playlistmaker.utility.SELECTED_TRACK
 import com.example.playlistmaker.utility.TRACKS_SHARED_PREFS
@@ -22,11 +23,11 @@ class SharedPrefsTrackStorage(context: Context) : TrackStorage {
     }
 
 
-    override fun saveList(tracks: ArrayList<Track>) {
+    override fun saveList(tracks: List<Track>) {
         sharedPrefs.edit { putString(TRACK_LIST, JsonConverter.itemListToJson(tracks)) }
     }
 
-    override fun getList(): ArrayList<Track> {
+    override fun getList(): List<Track> {
         val json = sharedPrefs.getString(TRACK_LIST, null) ?: return arrayListOf()
         return JsonConverter.jsonToItemList(json)
     }

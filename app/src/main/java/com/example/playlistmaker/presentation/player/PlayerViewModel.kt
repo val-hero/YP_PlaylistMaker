@@ -2,7 +2,7 @@ package com.example.playlistmaker.presentation.player
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.playlistmaker.domain.models.PlayerState
+import com.example.playlistmaker.domain.model.PlayerState
 import com.example.playlistmaker.domain.repository.MediaPlayerRepository
 import com.example.playlistmaker.domain.usecase.GetTrack
 import com.example.playlistmaker.domain.usecase.player.PauseTrack
@@ -34,12 +34,8 @@ class PlayerViewModel(
 
     fun playbackControl() {
         when (playerState.value) {
-            PlayerState.PLAYING -> {
-                pauseTrackUseCase()
-            }
-            PlayerState.PAUSED, PlayerState.PREPARED, PlayerState.COMPLETED -> {
-                playTrackUseCase()
-            }
+            PlayerState.PLAYING -> pauseTrackUseCase()
+            PlayerState.PAUSED, PlayerState.PREPARED, PlayerState.COMPLETED -> playTrackUseCase()
             else -> return
         }
     }

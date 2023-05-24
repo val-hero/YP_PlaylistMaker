@@ -1,6 +1,6 @@
 package com.example.playlistmaker.data.storage
 
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.model.Track
 
 interface TrackStorage {
 
@@ -8,9 +8,9 @@ interface TrackStorage {
 
     fun get(): Track
 
-    fun saveList(tracks: ArrayList<Track>)
+    fun saveList(tracks: List<Track>)
 
-    fun getList(): ArrayList<Track>
+    fun getList(): List<Track>
 
     fun clear()
 

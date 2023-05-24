@@ -10,8 +10,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
-import com.example.playlistmaker.domain.models.PlayerState
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.model.PlayerState
+import com.example.playlistmaker.domain.model.Track
 import com.example.playlistmaker.utility.DEFAULT_TIMER_VALUE
 import com.example.playlistmaker.utility.TIMER_UPDATE_DELAY
 
@@ -20,8 +20,11 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var handler: Handler
     private lateinit var timerRunnable: Runnable
 
-    private val viewModel: PlayerViewModel by viewModels(
-        factoryProducer = { PlayerViewModelFactory(applicationContext) })
+    private val viewModel: PlayerViewModel by viewModels(factoryProducer = {
+        PlayerViewModelFactory(
+            context = applicationContext
+        )
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,14 +61,13 @@ class PlayerActivity : AppCompatActivity() {
             }
         }
 
-        timerRunnable =
-            object : Runnable {
-                override fun run() {
-                    viewModel.updatePlaybackTime()
-                    handler.postDelayed(this, TIMER_UPDATE_DELAY)
-                }
-
+        timerRunnable = object : Runnable {
+            override fun run() {
+                viewModel.updatePlaybackTime()
+                handler.postDelayed(this, TIMER_UPDATE_DELAY)
             }
+
+        }
     }
 
     override fun onPause() {
@@ -89,8 +91,7 @@ class PlayerActivity : AppCompatActivity() {
         binding.countryValue.text = track.country
         binding.playTimer.text = DEFAULT_TIMER_VALUE
 
-        Glide.with(this)
-            .load(track.resizedImage())
+        Glide.with(this).load(track.resizedImage())
             .placeholder(R.drawable.player_track_img_placeholder)
             .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.player_track_image_corners)))
             .into(binding.playerTrackImage)

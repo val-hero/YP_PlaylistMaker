@@ -1,6 +1,6 @@
 package com.example.playlistmaker.presentation.search
 
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.model.Track
 
 class SearchHistory {
     val tracks = ArrayList<Track>()

@@ -1,11 +1,11 @@
-package com.example.playlistmaker.presentation.search
+package com.example.playlistmaker.presentation.search.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.model.Track
 
 class TrackAdapter : RecyclerView.Adapter<TrackViewHolder>() {
     val tracks = ArrayList<Track>()
@@ -22,7 +22,7 @@ class TrackAdapter : RecyclerView.Adapter<TrackViewHolder>() {
         holder.bind(tracks[position])
     }
 
-    fun updateTracks(newTracks: ArrayList<Track> = arrayListOf()) {
+    fun updateTracks(newTracks: List<Track> = listOf()) {
         val oldTracks = this.tracks
         val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun getOldListSize(): Int = oldTracks.size

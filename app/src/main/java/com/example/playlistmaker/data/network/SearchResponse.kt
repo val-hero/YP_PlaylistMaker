@@ -1,5 +1,5 @@
 package com.example.playlistmaker.data.network
 
-import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.domain.model.Track
 
-data class SearchResponse(val results: ArrayList<Track>)
+data class SearchResponse(val results: List<Track>)
