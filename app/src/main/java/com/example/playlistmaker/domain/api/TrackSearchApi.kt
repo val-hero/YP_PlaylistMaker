@@ -6,6 +6,6 @@ import com.example.playlistmaker.domain.model.Track
 interface TrackSearchApi {
     fun getTracks(
         searchText: CharSequence,
-        callback: (Result<List<Track>>) -> Unit
+        callback: (Result<ArrayList<Track>>) -> Unit
     )
 }

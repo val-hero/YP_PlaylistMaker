@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -12,50 +11,26 @@ import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import com.example.playlistmaker.data.network.ITunesApi
-import com.example.playlistmaker.data.network.SearchResponse
 import com.example.playlistmaker.data.repository.TrackRepositoryImpl
 import com.example.playlistmaker.data.storage.local.SharedPrefsTrackStorage
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.domain.model.Track
-import com.example.playlistmaker.domain.usecase.search.ClearSearchHistory
 import com.example.playlistmaker.domain.usecase.GetTrackList
 import com.example.playlistmaker.domain.usecase.SaveTrack
 import com.example.playlistmaker.domain.usecase.SaveTrackList
+import com.example.playlistmaker.domain.usecase.search.ClearSearchHistory
 import com.example.playlistmaker.presentation.player.PlayerActivity
 import com.example.playlistmaker.presentation.search.adapters.TrackAdapter
-import com.example.playlistmaker.utility.JsonConverter
-import com.example.playlistmaker.utility.OnClickSupport
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.example.playlistmaker.utility.*
 
 class SearchActivity : AppCompatActivity() {
-    companion object {
-        const val SEARCH_EDIT_TEXT = "search_edit_text"
-        const val TRACKS = "tracks"
-        const val API_BASE_URL = "https://itunes.apple.com"
-        const val SEARCH_DEBOUNCE_DELAY = 2000L
-        const val TRACK_CLICK_DELAY = 1000L
-    }
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(API_BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
     private lateinit var binding: ActivitySearchBinding
 
-    private val iTunesApi = retrofit.create(ITunesApi::class.java)
     private val searchAdapter = TrackAdapter()
     private val historyAdapter = TrackAdapter()
-    private var searchText: CharSequence = ""
     private lateinit var handler: Handler
-    private val searchRunnable = Runnable { search() }
+    private val searchRunnable by lazy { Runnable { viewModel.search() } }
     private var trackIsClickable = true
-    private val searchHistory = SearchHistory()
 
     private val viewModel: SearchViewModel by viewModels(factoryProducer = {
         SearchViewModelFactory(
@@ -63,23 +38,22 @@ class SearchActivity : AppCompatActivity() {
         )
     })
 
-    private val trackStorage by lazy { SharedPrefsTrackStorage(applicationContext) }
-    private val trackRepository by lazy { TrackRepositoryImpl(trackStorage) }
-    private val saveTrackListUseCase by lazy { SaveTrackList(trackRepository) }
-    private val getTrackListUseCase by lazy { GetTrackList(trackRepository) }
-    private val saveTrackUseCase by lazy { SaveTrack(trackRepository) }
-    private val clearSearchHistoryUseCase by lazy { ClearSearchHistory(trackRepository) }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
         handler = Handler(mainLooper)
-        setupTextWatcher()
         binding.trackListRecycler.adapter = searchAdapter
         binding.searchHistoryRecycler.adapter = historyAdapter
-        searchHistory.tracks.addAll((getTrackListUseCase()))
-        historyAdapter.updateTracks(searchHistory.tracks)
+
+        OnClickSupport.addTo(binding.trackListRecycler).onItemClick { _, position, _ ->
+            viewModel.saveToHistory(searchAdapter.tracks[position])
+            openPlayer(searchAdapter.tracks[position])
+        }
+
+        OnClickSupport.addTo(binding.searchHistoryRecycler).onItemClick { _, position, _ ->
+            openPlayer(historyAdapter.tracks[position])
+        }
 
         binding.searchNavigation.setNavigationOnClickListener {
             finish()
@@ -93,43 +67,45 @@ class SearchActivity : AppCompatActivity() {
             searchDebounce()
         }
 
+        binding.searchField.addTextChangedListener(viewModel.setupTextWatcher())
+
         binding.searchField.setOnFocusChangeListener { view, _ ->
             binding.searchHistoryView.isVisible =
                 searchHistoryVisibility(view, binding.searchField.text)
         }
 
-        OnClickSupport.addTo(binding.trackListRecycler).onItemClick { _, position, _ ->
-            searchHistory.addTrack(searchAdapter.tracks[position])
-            historyAdapter.updateTracks(searchHistory.tracks)
-            saveTrackListUseCase(historyAdapter.tracks)
-            openPlayer(searchAdapter.tracks[position])
-        }
-
-        OnClickSupport.addTo(binding.searchHistoryRecycler).onItemClick { _, position, _ ->
-            openPlayer(historyAdapter.tracks[position])
-        }
-
         binding.clearHistory.setOnClickListener {
-            clearSearchHistoryUseCase()
-            searchHistory.tracks.clear()
-            historyAdapter.updateTracks()
+            viewModel.clearSearchHistory()
             binding.searchHistoryView.isVisible = false
         }
-    }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putCharSequence(SEARCH_EDIT_TEXT, searchText)
-        outState.putString(TRACKS, JsonConverter.itemListToJson(searchAdapter.tracks))
-    }
+        viewModel.searchHistory.observe(this) { history ->
+            history?.let { historyAdapter.updateTracks(it) }
+        }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        searchText = savedInstanceState.getCharSequence(SEARCH_EDIT_TEXT, "")
-        binding.searchField.setText(searchText)
-        val savedTracks = savedInstanceState.getString(TRACKS, null)
-        if (savedTracks != null)
-            searchAdapter.updateTracks(JsonConverter.jsonToItemList(savedTracks))
+        viewModel.progressBarVisibility.observe(this) { visibility ->
+            binding.progressBar.isVisible = visibility
+            binding.trackListRecycler.isVisible = !visibility
+        }
+
+        viewModel.searchInput.observe(this) { input ->
+            if(input.isNotBlank()) {
+                searchDebounce()
+            }
+            binding.clearButton.isVisible = clearButtonVisibility(input)
+            binding.searchHistoryView.isVisible =
+                searchHistoryVisibility(binding.searchField, input)
+        }
+
+        viewModel.searchResult.observe(this) { result ->
+            result?.let {
+                when (result) {
+                    is Result.Success -> searchAdapter.updateTracks(result.data)
+                    is Result.Error -> showError(binding.serverError)
+                    is Result.NotFound -> showError(binding.notFoundError)
+                }
+            } ?: searchAdapter.updateTracks()
+        }
     }
 
     override fun onDestroy() {
@@ -143,73 +119,18 @@ class SearchActivity : AppCompatActivity() {
 
         trackIsClickable = false
         val intent = Intent(this, PlayerActivity::class.java)
-        saveTrackUseCase(track)
+        viewModel.saveTrack(track)
         startActivity(intent)
         handler.postDelayed({ trackIsClickable = true }, TRACK_CLICK_DELAY)
     }
 
     private fun searchDebounce() {
+        hideErrors()
         handler.removeCallbacks(searchRunnable)
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 
-    private fun setupTextWatcher() {
-        val textWatcher = object : TextWatcher {
-            override fun beforeTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if (!text.isNullOrEmpty()) {
-                    searchDebounce()
-                }
-                if (text.isNullOrEmpty()) {
-                    hideErrors()
-
-                    handler.removeCallbacks(searchRunnable)
-                }
-                binding.clearButton.isVisible = clearButtonVisibility(text)
-                binding.searchHistoryView.isVisible =
-                    searchHistoryVisibility(binding.searchField, text)
-            }
-
-            override fun afterTextChanged(text: Editable?) {
-                searchText = text!!
-            }
-        }
-        binding.searchField.addTextChangedListener(viewModel.setupTextWatcher())
-    }
-
-    private fun search() {
-        binding.progressBar.isVisible = true
-        binding.trackListRecycler.isVisible = false
-        iTunesApi.getTracks(searchText.toString()).enqueue(object : Callback<SearchResponse> {
-            override fun onResponse(
-                call: Call<SearchResponse>,
-                response: Response<SearchResponse>
-            ) {
-                if (response.code() == 200) {
-                    binding.progressBar.isVisible = false
-                    if (response.body()?.results?.isNotEmpty() == true) {
-                        searchAdapter.updateTracks(response.body()!!.results)
-                        binding.trackListRecycler.isVisible = true
-                    } else {
-                        showError(binding.notFoundError)
-                    }
-                } else {
-                    showError(binding.serverError)
-                }
-            }
-
-            override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                showError(binding.serverError)
-            }
-        }
-        )
-        hideErrors()
-    }
-
     private fun showError(errorView: View) {
-        searchAdapter.updateTracks()
-        binding.progressBar.isVisible = false
         errorView.isVisible = true
     }
 
@@ -224,7 +145,7 @@ class SearchActivity : AppCompatActivity() {
             getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         inputMethodManager?.hideSoftInputFromWindow(binding.clearButton.windowToken, 0)
         binding.searchField.clearFocus()
-        searchAdapter.updateTracks()
+        hideErrors()
         handler.removeCallbacks(searchRunnable)
     }
 

@@ -23,11 +23,11 @@ class SharedPrefsTrackStorage(context: Context) : TrackStorage {
     }
 
 
-    override fun saveList(tracks: List<Track>) {
+    override fun saveList(tracks: ArrayList<Track>) {
         sharedPrefs.edit { putString(TRACK_LIST, JsonConverter.itemListToJson(tracks)) }
     }
 
-    override fun getList(): List<Track> {
+    override fun getList(): ArrayList<Track> {
         val json = sharedPrefs.getString(TRACK_LIST, null) ?: return arrayListOf()
         return JsonConverter.jsonToItemList(json)
     }

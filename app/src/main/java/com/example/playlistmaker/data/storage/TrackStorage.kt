@@ -8,9 +8,9 @@ interface TrackStorage {
 
     fun get(): Track
 
-    fun saveList(tracks: List<Track>)
+    fun saveList(tracks: ArrayList<Track>)
 
-    fun getList(): List<Track>
+    fun getList(): ArrayList<Track>
 
     fun clear()
 

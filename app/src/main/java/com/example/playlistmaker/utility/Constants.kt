@@ -14,6 +14,8 @@ const val MMSS_FORMAT_PATTERN = "%1\$tM:%1\$tS"
 const val ITUNES_API_BASE_URL = "https://itunes.apple.com"
 
 //Search Activity related
+const val FOUND_TRACKS = "found_tracks"
 const val SEARCH_EDIT_TEXT = "search_edit_text"
 const val SEARCH_DEBOUNCE_DELAY = 2000L
 const val TRACK_CLICK_DELAY = 1000L
+const val HISTORY_CAPACITY = 10

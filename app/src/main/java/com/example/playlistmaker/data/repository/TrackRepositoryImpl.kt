@@ -12,11 +12,11 @@ class TrackRepositoryImpl(private val trackStorage: TrackStorage) : TrackReposit
 
     override fun getTrack(): Track = trackStorage.get()
 
-    override fun saveTrackList(tracks: List<Track>) {
+    override fun saveTrackList(tracks: ArrayList<Track>) {
         trackStorage.saveList(tracks)
     }
 
-    override fun getTrackList(): List<Track> = trackStorage.getList()
+    override fun getTrackList(): ArrayList<Track> = trackStorage.getList()
 
     override fun delete() {
         trackStorage.delete()

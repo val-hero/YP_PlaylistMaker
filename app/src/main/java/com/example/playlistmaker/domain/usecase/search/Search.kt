@@ -8,7 +8,7 @@ class Search(private val trackApi: TrackSearchApi) {
 
     operator fun invoke(
         searchText: CharSequence,
-        callback: (Result<List<Track>>) -> Unit
+        callback: (Result<ArrayList<Track>>) -> Unit
     ) {
         return trackApi.getTracks(searchText, callback)
     }
