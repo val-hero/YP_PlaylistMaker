@@ -4,24 +4,19 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import com.example.playlistmaker.data.repository.TrackRepositoryImpl
-import com.example.playlistmaker.data.storage.local.SharedPrefsTrackStorage
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.domain.model.Track
-import com.example.playlistmaker.domain.usecase.GetTrackList
-import com.example.playlistmaker.domain.usecase.SaveTrack
-import com.example.playlistmaker.domain.usecase.SaveTrackList
-import com.example.playlistmaker.domain.usecase.search.ClearSearchHistory
 import com.example.playlistmaker.presentation.player.PlayerActivity
 import com.example.playlistmaker.presentation.search.adapters.TrackAdapter
-import com.example.playlistmaker.utility.*
+import com.example.playlistmaker.utility.OnClickSupport
+import com.example.playlistmaker.utility.Result
+import com.example.playlistmaker.utility.SEARCH_DEBOUNCE_DELAY
+import com.example.playlistmaker.utility.TRACK_CLICK_DELAY
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
