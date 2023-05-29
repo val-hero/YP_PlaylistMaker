@@ -9,7 +9,7 @@
     android:paddingTop="14dp"
     android:paddingBottom="20dp"
     android:theme="@style/MainScreen"
-    tools:context=".presentation.main.MainActivity">
+    tools:context=".ui.main.MainActivity">
 
     <TextView
         style="@style/HeaderText"

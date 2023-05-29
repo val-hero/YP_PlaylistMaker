@@ -8,6 +8,7 @@ import com.example.playlistmaker.data.repository.TrackRepositoryImpl
 import com.example.playlistmaker.data.storage.local.SharedPrefsTrackStorage
 import com.example.playlistmaker.domain.usecase.*
 import com.example.playlistmaker.domain.usecase.search.ClearSearchHistory
+import com.example.playlistmaker.domain.usecase.search.SaveToHistory
 import com.example.playlistmaker.domain.usecase.search.Search
 
 class SearchViewModelFactory(context: Context) : ViewModelProvider.Factory {
@@ -18,6 +19,7 @@ class SearchViewModelFactory(context: Context) : ViewModelProvider.Factory {
     private val saveTrackListUseCase by lazy(LazyThreadSafetyMode.NONE) { SaveTrackList(trackRepository) }
     private val getTrackListUseCase by lazy(LazyThreadSafetyMode.NONE) { GetTrackList(trackRepository) }
     private val saveTrackUseCase by lazy(LazyThreadSafetyMode.NONE) { SaveTrack(trackRepository) }
+    private val saveToHistoryUseCase by lazy(LazyThreadSafetyMode.NONE) {SaveToHistory(saveTrackListUseCase)}
     private val clearSearchHistoryUseCase by lazy(LazyThreadSafetyMode.NONE) { ClearSearchHistory(trackRepository) }
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -26,6 +28,7 @@ class SearchViewModelFactory(context: Context) : ViewModelProvider.Factory {
             saveTrackListUseCase = saveTrackListUseCase,
             getTrackListUseCase = getTrackListUseCase,
             saveTrackUseCase = saveTrackUseCase,
+            saveToHistoryUseCase = saveToHistoryUseCase,
             clearSearchHistoryUseCase = clearSearchHistoryUseCase
         ) as T
     }

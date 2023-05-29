@@ -10,8 +10,8 @@ import com.example.playlistmaker.domain.usecase.GetTrackList
 import com.example.playlistmaker.domain.usecase.SaveTrack
 import com.example.playlistmaker.domain.usecase.SaveTrackList
 import com.example.playlistmaker.domain.usecase.search.ClearSearchHistory
+import com.example.playlistmaker.domain.usecase.search.SaveToHistory
 import com.example.playlistmaker.domain.usecase.search.Search
-import com.example.playlistmaker.utility.HISTORY_CAPACITY
 import com.example.playlistmaker.utility.Result
 
 class SearchViewModel(
@@ -19,24 +19,28 @@ class SearchViewModel(
     private val saveTrackListUseCase: SaveTrackList,
     private val getTrackListUseCase: GetTrackList,
     private val saveTrackUseCase: SaveTrack,
+    private val saveToHistoryUseCase: SaveToHistory,
     private val clearSearchHistoryUseCase: ClearSearchHistory
 ): ViewModel() {
     private val _searchInput = MutableLiveData<CharSequence>()
     val searchInput: LiveData<CharSequence> = _searchInput
+
     private val _searchResult = MutableLiveData<Result<ArrayList<Track>>?>()
     val searchResult: LiveData<Result<ArrayList<Track>>?> = _searchResult
+
     private val _progressBarVisibility = MutableLiveData<Boolean>()
     val progressBarVisibility: LiveData<Boolean> = _progressBarVisibility
+
     private val _searchHistory = MutableLiveData<ArrayList<Track>>()
     val searchHistory: LiveData<ArrayList<Track>> = _searchHistory
 
     init {
-        loadHistory()
+        getHistory()
     }
 
     fun search() {
         searchUseCase(
-            searchText = _searchInput.value!!,
+            searchText = _searchInput.value ?: "",
             callback = { result ->
                 _searchResult.value = result
                 _progressBarVisibility.value = false
@@ -65,31 +69,15 @@ class SearchViewModel(
     }
 
     fun saveToHistory(track: Track) {
-        fun removeDuplicate(tracks: ArrayList<Track>) {
-            val iterator = tracks.iterator()
-            while (iterator.hasNext()) {
-                val currentTrack = iterator.next()
-                if (track.trackId == currentTrack.trackId) {
-                    iterator.remove()
-                }
-            }
-        }
-
-        val history = _searchHistory.value ?: arrayListOf()
-        removeDuplicate(history)
-        if (history.size >= HISTORY_CAPACITY) {
-            history.removeLast()
-        }
-        history.add(0, track)
-        _searchHistory.value = history
-        saveTrackListUseCase(history)
+        saveToHistoryUseCase(track, _searchHistory.value ?: arrayListOf())
+        getHistory()
     }
 
     fun saveTrack(track: Track) {
         saveTrackUseCase(track)
     }
 
-    private fun loadHistory() {
+    private fun getHistory() {
         _searchHistory.value = getTrackListUseCase()
     }
 

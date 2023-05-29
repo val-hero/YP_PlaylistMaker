@@ -16,17 +16,16 @@ class RetrofitITunesApi : TrackSearchApi {
                     call: Call<SearchResponse>,
                     response: Response<SearchResponse>
                 ) {
-                    if (response.code() != 200 || response.body()?.results.isNullOrEmpty()) {
-                        callback(Result.NotFound("Track is not found"))
-                    } else {
-                        callback(Result.Success(response.body()?.results!!))
-                    }
+                    val result = response.body()?.results
+                    if (result.isNullOrEmpty())
+                        callback(Result.Error(response.code()))
+                    else
+                        callback(Result.Success(result))
                 }
 
                 override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                    callback(Result.Error("Network error: ${t.message}"))
+                    callback(Result.Error(resultCode = -1))
                 }
-
             }
             )
     }

@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation.search
+package com.example.playlistmaker.ui.search
 
 import android.content.Context
 import android.content.Intent
@@ -11,8 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.domain.model.Track
-import com.example.playlistmaker.presentation.player.PlayerActivity
-import com.example.playlistmaker.presentation.search.adapters.TrackAdapter
+import com.example.playlistmaker.presentation.search.SearchViewModel
+import com.example.playlistmaker.presentation.search.SearchViewModelFactory
+import com.example.playlistmaker.ui.player.PlayerActivity
 import com.example.playlistmaker.utility.OnClickSupport
 import com.example.playlistmaker.utility.Result
 import com.example.playlistmaker.utility.SEARCH_DEBOUNCE_DELAY
@@ -84,7 +85,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         viewModel.searchInput.observe(this) { input ->
-            if(input.isNotBlank()) {
+            if (input.isNotBlank()) {
                 searchDebounce()
             }
             binding.clearButton.isVisible = clearButtonVisibility(input)
@@ -96,8 +97,9 @@ class SearchActivity : AppCompatActivity() {
             result?.let {
                 when (result) {
                     is Result.Success -> searchAdapter.updateTracks(result.data)
-                    is Result.Error -> showError(binding.serverError)
-                    is Result.NotFound -> showError(binding.notFoundError)
+                    is Result.Error -> showError(
+                        if (result.resultCode == 200) binding.notFoundError else binding.serverError
+                    )
                 }
             } ?: searchAdapter.updateTracks()
         }

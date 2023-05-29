@@ -1,4 +1,4 @@
-package com.example.playlistmaker.presentation.player
+package com.example.playlistmaker.ui.player
 
 import android.os.Bundle
 import android.os.Handler
@@ -12,6 +12,8 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.domain.model.PlayerState
 import com.example.playlistmaker.domain.model.Track
+import com.example.playlistmaker.presentation.player.PlayerViewModel
+import com.example.playlistmaker.presentation.player.PlayerViewModelFactory
 import com.example.playlistmaker.utility.DEFAULT_TIMER_VALUE
 import com.example.playlistmaker.utility.TIMER_UPDATE_DELAY
 
