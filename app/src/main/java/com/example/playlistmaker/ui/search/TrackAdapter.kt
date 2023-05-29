@@ -1,17 +1,18 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.databinding.TrackItemBinding
+import com.example.playlistmaker.domain.model.Track
 
 class TrackAdapter : RecyclerView.Adapter<TrackViewHolder>() {
     val tracks = ArrayList<Track>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.track_item, parent, false)
-        return TrackViewHolder(view)
+        val layoutInspector = LayoutInflater.from(parent.context)
+        return TrackViewHolder(TrackItemBinding.inflate(layoutInspector, parent, false))
     }
 
     override fun getItemCount(): Int = tracks.size
@@ -20,7 +21,7 @@ class TrackAdapter : RecyclerView.Adapter<TrackViewHolder>() {
         holder.bind(tracks[position])
     }
 
-    fun updateTracks(newTracks: ArrayList<Track> = arrayListOf()) {
+    fun updateTracks(newTracks: List<Track> = listOf()) {
         val oldTracks = this.tracks
         val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun getOldListSize(): Int = oldTracks.size

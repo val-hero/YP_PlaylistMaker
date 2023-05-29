@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".SearchActivity">
+    tools:context=".ui.search.SearchActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/search_back_button"
+        android:id="@+id/search_navigation"
         style="@style/Toolbar"
         app:navigationIcon="@drawable/navigate_back"
         app:title="@string/search_title"
@@ -91,7 +91,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/search_history"
+        android:id="@+id/search_history_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"

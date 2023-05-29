@@ -1,12 +1,13 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.ui.main
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
-import com.google.gson.Gson
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.example.playlistmaker.R
+import com.example.playlistmaker.presentation.settings.SettingsActivity
+import com.example.playlistmaker.ui.library.LibraryActivity
+import com.example.playlistmaker.ui.search.SearchActivity
 
 class MainActivity : AppCompatActivity() {
 

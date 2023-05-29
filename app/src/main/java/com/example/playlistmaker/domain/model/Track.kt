@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.domain.model
 
 import com.google.gson.annotations.SerializedName
 import java.time.Instant
