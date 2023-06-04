@@ -1,49 +1,46 @@
 package com.example.playlistmaker.player.data.repository
 
+import android.media.MediaPlayer
 import com.example.playlistmaker.player.domain.model.PlayerState
-import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.player.domain.repository.MediaPlayerRepository
-import com.example.playlistmaker.search.domain.repository.TrackRepository
+import com.example.playlistmaker.search.domain.model.Track
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-class MediaPlayerRepositoryImpl(trackRepository: TrackRepository) : MediaPlayerRepository {
-    private val player = android.media.MediaPlayer()
-    private var stateCallback: ((PlayerState) -> Unit)? = null
-
-    init {
-        prepare(trackRepository.getTrack())
-    }
+class MediaPlayerRepositoryImpl : MediaPlayerRepository {
+    private var player: MediaPlayer? = null
+    private val _playerStateFlow = MutableStateFlow(PlayerState.DEFAULT)
+    private val playerStateFlow: StateFlow<PlayerState> = _playerStateFlow
 
     override fun prepare(track: Track) {
-        player.apply {
+        player = MediaPlayer()
+        player?.apply {
             setDataSource(track.previewUrl)
             prepareAsync()
-            setOnPreparedListener { stateCallback?.invoke(PlayerState.PREPARED) }
-            setOnCompletionListener { stateCallback?.invoke(PlayerState.COMPLETED) }
+            setOnPreparedListener { _playerStateFlow.value = PlayerState.PREPARED }
+            setOnCompletionListener { _playerStateFlow.value = PlayerState.COMPLETED }
         }
     }
 
     override fun play() {
-        player.start()
-        stateCallback?.invoke(PlayerState.PLAYING)
+        player?.start()
+        _playerStateFlow.value = PlayerState.PLAYING
     }
 
     override fun pause() {
-        player.pause()
-        stateCallback?.invoke(PlayerState.PAUSED)
+        player?.pause()
+        _playerStateFlow.value = PlayerState.PAUSED
     }
 
     override fun release() {
-        player.release()
-        stateCallback?.invoke(PlayerState.DEFAULT)
+        player?.release()
+        _playerStateFlow.value = PlayerState.DEFAULT
+        player = null
     }
 
-    override fun getCurrentPosition(): Long = player.currentPosition.toLong()
+    override fun getCurrentPosition(): Long? = player?.currentPosition?.toLong()
 
-    override fun setOnStateChangeListener(callback: (PlayerState) -> Unit) {
-        stateCallback = callback
-    }
-
-    override fun removeOnStateChangeListener() {
-        stateCallback = null
+    override fun getCurrentState(): StateFlow<PlayerState> {
+        return playerStateFlow
     }
 }
