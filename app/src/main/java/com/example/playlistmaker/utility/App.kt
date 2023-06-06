@@ -1,42 +1,39 @@
 package com.example.playlistmaker.utility
 
 import android.app.Application
-import android.content.SharedPreferences
-import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.edit
+import com.example.playlistmaker.di.playerModule
+import com.example.playlistmaker.di.searchModule
+import com.example.playlistmaker.di.settingsModule
+import com.example.playlistmaker.di.sharingModule
+import com.example.playlistmaker.settings.domain.usecase.GetCurrentDarkTheme
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 
 class App : Application() {
-    companion object {
-        const val SETTINGS_PREFS = "settings"
-        const val DARK_THEME_ENABLED = "dark_theme_enabled"
-    }
-
-    var systemThemeIsDark = false
-    private var appThemeIsDark = false
-    lateinit var sharedPrefs: SharedPreferences
+    private val getCurrentDarkTheme: GetCurrentDarkTheme by inject()
 
     override fun onCreate() {
         super.onCreate()
-        switchTheme(darkThemeOn())
+        startKoin {
+            androidLogger(Level.DEBUG)
+            androidContext(this@App)
+            modules(listOf(playerModule, searchModule, settingsModule, sharingModule))
+        }
+
+        switchTheme(getCurrentDarkTheme())
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
-        appThemeIsDark = darkThemeEnabled
         AppCompatDelegate.setDefaultNightMode(
             if (darkThemeEnabled)
                 AppCompatDelegate.MODE_NIGHT_YES
             else
                 AppCompatDelegate.MODE_NIGHT_NO
         )
-        sharedPrefs.edit { putBoolean(DARK_THEME_ENABLED, appThemeIsDark) }
     }
 
-    private fun darkThemeOn(): Boolean {
-        systemThemeIsDark =
-            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-        sharedPrefs = getSharedPreferences(SETTINGS_PREFS, MODE_PRIVATE)
-        appThemeIsDark = sharedPrefs.getBoolean(DARK_THEME_ENABLED, systemThemeIsDark)
-        return appThemeIsDark
-    }
 }
