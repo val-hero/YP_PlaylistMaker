@@ -11,7 +11,6 @@ val playerModule = module {
 
     viewModel {
         PlayerViewModel(
-            getCurrentPlaybackTimeUseCase = get(),
             getTrackUseCase = get(),
             prepareTrackUseCase = get(),
             playTrackUseCase = get(),
@@ -39,10 +38,6 @@ val playerModule = module {
 
     factory {
         ReleasePlayer(mediaPlayerRepository = get())
-    }
-
-    factory {
-        GetCurrentPlaybackTime(mediaPlayerRepository = get())
     }
 
     factory {
