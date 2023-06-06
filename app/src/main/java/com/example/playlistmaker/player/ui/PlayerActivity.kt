@@ -50,6 +50,11 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.resumeTrack()
+    }
+
     override fun onPause() {
         super.onPause()
         viewModel.pausePlayer()
@@ -57,7 +62,11 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.releasePlayer()
+
+        if (isFinishing)
+            viewModel.releasePlayer()
+        else
+            viewModel.pausePlayer()
     }
 
     private fun setupViews(track: Track) {
