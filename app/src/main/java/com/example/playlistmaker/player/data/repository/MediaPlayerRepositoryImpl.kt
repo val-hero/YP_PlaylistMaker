@@ -5,19 +5,21 @@ import com.example.playlistmaker.player.domain.model.PlayerState
 import com.example.playlistmaker.player.domain.repository.MediaPlayerRepository
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.utility.PLAYBACK_UPDATE_DELAY
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class MediaPlayerRepositoryImpl : MediaPlayerRepository {
     private var player: MediaPlayer? = null
     private val _playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Default)
     private val playerStateFlow: StateFlow<PlayerState> = _playerStateFlow
     private var currentPlaybackTimeJob: Job? = null
-    private var track: Track? = null
 
     override fun prepare(track: Track) {
-        this.track = track
         player = MediaPlayer()
         player?.apply {
             setDataSource(track.previewUrl)
@@ -43,16 +45,8 @@ class MediaPlayerRepositoryImpl : MediaPlayerRepository {
 
     override fun pause() {
         player?.pause()
-        _playerStateFlow.value = PlayerState.Paused
         currentPlaybackTimeJob?.cancel()
-
-    }
-
-    override fun resume() {
-        this.track?.let {
-            _playerStateFlow.value = PlayerState.Prepared(it)
-        }
-        play()
+        _playerStateFlow.value = PlayerState.Paused
     }
 
     override fun release() {
