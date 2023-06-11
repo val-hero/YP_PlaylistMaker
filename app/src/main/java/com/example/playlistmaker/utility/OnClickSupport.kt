@@ -8,7 +8,7 @@ class OnClickSupport private constructor(private val recyclerView: RecyclerView)
 
     private var onItemClickListener: OnItemClickListener? = null
 
-    private val attachListener =
+    private val attachListener: RecyclerView.OnChildAttachStateChangeListener =
         object : RecyclerView.OnChildAttachStateChangeListener {
             override fun onChildViewAttachedToWindow(view: View) {
                 if (onItemClickListener != null) {

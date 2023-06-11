@@ -13,6 +13,7 @@ val playerModule = module {
         PlayerViewModel(
             getTrackUseCase = get(),
             prepareTrackUseCase = get(),
+            resumeTrackUseCase = get(),
             playTrackUseCase = get(),
             pauseTrackUseCase = get(),
             getPlayerStateUseCase = get(),
@@ -41,6 +42,10 @@ val playerModule = module {
     }
 
     factory {
-        GetPlayerState(mediaPlayerRepository = get())
+        GetPlayerStateUseCase(mediaPlayerRepository = get())
+    }
+
+    factory {
+        ResumeTrack(repository = get())
     }
 }
