@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 class PlayerViewModel(
     val getTrackUseCase: GetTrack,
     val prepareTrackUseCase: PrepareTrack,
-    private val resumeTrackUseCase: ResumeTrack,
     private val getPlayerStateUseCase: GetPlayerStateUseCase,
     private val playTrackUseCase: PlayTrack,
     private val pauseTrackUseCase: PauseTrack,
@@ -43,10 +42,6 @@ class PlayerViewModel(
             is PlayerState.Paused, is PlayerState.Prepared, is PlayerState.Completed -> playTrackUseCase()
             else -> Unit
         }
-    }
-
-    fun resumeTrack() {
-        resumeTrackUseCase()
     }
 
     fun releasePlayer() {

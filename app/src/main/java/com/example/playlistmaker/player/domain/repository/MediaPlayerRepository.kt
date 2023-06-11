@@ -9,6 +9,5 @@ interface MediaPlayerRepository {
     fun play()
     fun pause()
     fun release()
-    fun resume()
     fun getCurrentState(): StateFlow<PlayerState>
 }

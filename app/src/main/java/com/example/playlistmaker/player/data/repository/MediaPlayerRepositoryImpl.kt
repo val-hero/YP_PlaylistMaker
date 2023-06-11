@@ -14,10 +14,8 @@ class MediaPlayerRepositoryImpl : MediaPlayerRepository {
     private val _playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Default)
     private val playerStateFlow: StateFlow<PlayerState> = _playerStateFlow
     private var currentPlaybackTimeJob: Job? = null
-    private var track: Track? = null
 
     override fun prepare(track: Track) {
-        this.track = track
         player = MediaPlayer()
         player?.apply {
             setDataSource(track.previewUrl)
@@ -48,18 +46,12 @@ class MediaPlayerRepositoryImpl : MediaPlayerRepository {
 
     }
 
-    override fun resume() {
-        this.track?.let {
-            _playerStateFlow.value = PlayerState.Prepared(it)
-        }
-        play()
-    }
-
     override fun release() {
         player?.release()
         _playerStateFlow.value = PlayerState.Default
         currentPlaybackTimeJob?.cancel()
         player = null
+
     }
 
     override fun getCurrentState(): StateFlow<PlayerState> {
