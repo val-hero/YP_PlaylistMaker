@@ -12,7 +12,7 @@ object RetrofitClient {
             .build()
     }
 
-    val api: ITunesApiService by lazy {
-        client.create(ITunesApiService::class.java)
+    val api: ITunesApi by lazy {
+        client.create(ITunesApi::class.java)
     }
 }

@@ -1,6 +1,7 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
@@ -10,14 +11,18 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.player.domain.model.PlayerState
 import com.example.playlistmaker.player.ui.viewmodel.PlayerViewModel
+import com.example.playlistmaker.player.ui.viewmodel.PlayerViewModelFactory
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.utility.DEFAULT_TIMER_VALUE
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
 
-    private val viewModel by viewModel<PlayerViewModel>()
+    private val viewModel: PlayerViewModel by viewModels(factoryProducer = {
+        PlayerViewModelFactory(
+            context = applicationContext
+        )
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

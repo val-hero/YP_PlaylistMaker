@@ -6,18 +6,19 @@ import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.player.domain.model.PlayerState
-import com.example.playlistmaker.player.domain.usecase.*
+import com.example.playlistmaker.player.domain.repository.MediaPlayerRepository
+import com.example.playlistmaker.player.domain.usecase.GetCurrentPlaybackTime
+import com.example.playlistmaker.player.domain.usecase.PauseTrack
+import com.example.playlistmaker.player.domain.usecase.PlayTrack
+import com.example.playlistmaker.player.domain.usecase.ReleasePlayer
 import com.example.playlistmaker.search.domain.usecase.GetTrack
 import com.example.playlistmaker.utility.MMSS_FORMAT_PATTERN
 import com.example.playlistmaker.utility.TIMER_UPDATE_DELAY
-import kotlinx.coroutines.launch
 
 class PlayerViewModel(
+    private val mediaPlayerRepository: MediaPlayerRepository,
     getTrackUseCase: GetTrack,
-    prepareTrackUseCase: PrepareTrack,
-    private val getPlayerStateUseCase: GetPlayerStateUseCase,
     private val playTrackUseCase: PlayTrack,
     private val pauseTrackUseCase: PauseTrack,
     private val releasePlayerUseCase: ReleasePlayer,
@@ -34,18 +35,15 @@ class PlayerViewModel(
     val currentTrack = getTrackUseCase()
 
     init {
-        prepareTrackUseCase(currentTrack)
-        viewModelScope.launch {
-            getPlayerStateUseCase().collect { state ->
-                _playerState.postValue(state)
-            }
+        mediaPlayerRepository.setOnStateChangeListener {
+            _playerState.value = it
         }
     }
 
     override fun onCleared() {
         super.onCleared()
+        mediaPlayerRepository.removeOnStateChangeListener()
         handler.removeCallbacksAndMessages(TIMER_UPDATE_TOKEN)
-        releasePlayer()
     }
 
     fun playbackControl() {
@@ -78,8 +76,7 @@ class PlayerViewModel(
     }
 
     fun pausePlayer() {
-        if(_playerState.value == PlayerState.PLAYING)
-            pauseTrackUseCase()
+        pauseTrackUseCase()
     }
 
     companion object {

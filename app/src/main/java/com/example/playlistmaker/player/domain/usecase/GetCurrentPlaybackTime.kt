@@ -4,5 +4,5 @@ import com.example.playlistmaker.player.domain.repository.MediaPlayerRepository
 
 class GetCurrentPlaybackTime(private val mediaPlayerRepository: MediaPlayerRepository) {
 
-    operator fun invoke(): Long? = mediaPlayerRepository.getCurrentPosition()
+    operator fun invoke(): Long = mediaPlayerRepository.getCurrentPosition()
 }

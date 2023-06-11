@@ -1,17 +1,19 @@
 package com.example.playlistmaker.settings.ui
-
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
 import com.example.playlistmaker.settings.ui.viewmodel.SettingsViewModel
+import com.example.playlistmaker.settings.ui.viewmodel.SettingsViewModelFactory
 import com.example.playlistmaker.sharing.domain.model.EmailData
 import com.example.playlistmaker.utility.App
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
-    private val viewModel by viewModel<SettingsViewModel>()
+    private val viewModel: SettingsViewModel by viewModels(factoryProducer = {
+        SettingsViewModelFactory(this)
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

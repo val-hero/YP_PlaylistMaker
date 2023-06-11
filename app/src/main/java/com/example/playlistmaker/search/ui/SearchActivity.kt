@@ -1,24 +1,32 @@
 package com.example.playlistmaker.search.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.example.playlistmaker.databinding.ActivitySearchBinding
-import com.example.playlistmaker.player.ui.PlayerActivity
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.search.ui.viewmodel.SearchViewModel
+import com.example.playlistmaker.search.ui.viewmodel.SearchViewModelFactory
+import com.example.playlistmaker.player.ui.PlayerActivity
 import com.example.playlistmaker.utility.OnClickSupport
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
 
     private val searchAdapter = TrackAdapter()
     private val historyAdapter = TrackAdapter()
+    private var trackIsClickable = true
 
-    private val viewModel by viewModel<SearchViewModel>()
+    private val viewModel: SearchViewModel by viewModels(factoryProducer = {
+        SearchViewModelFactory(
+            context = applicationContext
+        )
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,22 +50,15 @@ class SearchActivity : AppCompatActivity() {
 
         binding.searchField.addTextChangedListener(viewModel.setupTextWatcher())
 
-        binding.searchField.setOnFocusChangeListener { _, focused ->
-            viewModel.setSearchFieldFocus(focused)
-            viewModel.toggleHistoryVisibility()
-        }
-
-        viewModel.searchInput.observe(this) { expression ->
-            expression?.let {
-                viewModel.searchDebounce(it)
-                clearButtonVisibility(true)
-            } ?: clearButtonVisibility(false)
-            viewModel.toggleHistoryVisibility()
+        binding.searchField.setOnFocusChangeListener { _, _ ->
+            viewModel.onSearchFieldFocused()
         }
 
         binding.clearSearchField.setOnClickListener {
             viewModel.clearSearchField()
-            hideKeyboard()
+            val inputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+            inputMethodManager?.hideSoftInputFromWindow(binding.clearSearchField.windowToken, 0)
             binding.searchField.clearFocus()
             binding.searchField.text = null
         }
@@ -70,8 +71,20 @@ class SearchActivity : AppCompatActivity() {
             viewModel.clearSearchHistory()
         }
 
-        viewModel.screenState.observe(this) {
-            render(it)
+        viewModel.screenState.observe(this) { state ->
+            when(state) {
+                is SearchScreenState.Content -> showTracks(state.tracks)
+                is SearchScreenState.Error -> showError(state.code)
+                is SearchScreenState.History -> showHistory(state.tracks)
+                is SearchScreenState.Loading -> showLoading()
+                is SearchScreenState.EmptyInput -> {
+                    showEmpty()
+                }
+                is SearchScreenState.HasInput -> {
+                    viewModel.searchDebounce(state.input)
+                    showClearButton()
+                }
+            }
         }
     }
 
@@ -82,22 +95,13 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun openPlayer(track: Track) {
-        if (viewModel.trackIsClickable.value == false) return
+        if (!trackIsClickable) return
 
-        viewModel.saveTrack(track)
-        viewModel.trackClickDebounce()
+        trackIsClickable = false
         val intent = Intent(this, PlayerActivity::class.java)
+        viewModel.saveTrack(track)
         startActivity(intent)
-    }
-
-    private fun render(screenState: SearchScreenState) {
-        when (screenState) {
-            is SearchScreenState.Content -> showTracks(screenState.tracks)
-            is SearchScreenState.Error -> showError(screenState.code)
-            is SearchScreenState.History -> showHistory(screenState.tracks)
-            is SearchScreenState.Loading -> showLoading()
-            is SearchScreenState.Empty -> showEmpty()
-        }
+        //handler.postDelayed({ trackIsClickable = true }, TRACK_CLICK_DELAY)
     }
 
     private fun showTracks(tracks: ArrayList<Track>) {
@@ -113,10 +117,9 @@ class SearchActivity : AppCompatActivity() {
         hideErrors()
         binding.progressBar.isVisible = false
         binding.trackListRecycler.isVisible = false
-        binding.clearSearchField.isVisible = false
 
         historyAdapter.updateTracks(tracks)
-        if (tracks.isNotEmpty())
+        if(tracks.isNotEmpty())
             binding.searchHistoryView.isVisible = true
     }
 
@@ -133,14 +136,19 @@ class SearchActivity : AppCompatActivity() {
         binding.searchHistoryView.isVisible = false
         binding.trackListRecycler.isVisible = false
         binding.progressBar.isVisible = false
+        binding.clearSearchField.isVisible = false
     }
 
-    private fun showError(code: Int) {
+    private fun showClearButton() {
+        binding.clearSearchField.isVisible = true
+    }
+
+    private fun showError(errorCode: Int) {
         binding.trackListRecycler.isVisible = false
         binding.searchHistoryView.isVisible = false
         binding.progressBar.isVisible = false
 
-        if (code == 200)
+        if (errorCode == 200)
             binding.notFoundError.isVisible = true
         else
             binding.serverError.isVisible = true
@@ -149,15 +157,5 @@ class SearchActivity : AppCompatActivity() {
     private fun hideErrors() {
         binding.notFoundError.isVisible = false
         binding.serverError.isVisible = false
-    }
-
-    private fun hideKeyboard() {
-        val inputMethodManager =
-            getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
-        inputMethodManager?.hideSoftInputFromWindow(binding.clearSearchField.windowToken, 0)
-    }
-
-    private fun clearButtonVisibility(visible: Boolean) {
-        binding.clearSearchField.isVisible = visible
     }
 }
