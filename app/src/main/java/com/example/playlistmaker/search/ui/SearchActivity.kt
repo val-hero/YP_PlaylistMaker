@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.core.widget.doOnTextChanged
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.player.ui.PlayerActivity
 import com.example.playlistmaker.search.domain.model.Track
@@ -41,13 +40,19 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
-        binding.searchField.doOnTextChanged { text, _, _, _ ->
-            viewModel.onSearchTextChanged(text.toString())
-            clearButtonVisibility(text.toString())
-        }
+        binding.searchField.addTextChangedListener(viewModel.setupTextWatcher())
 
         binding.searchField.setOnFocusChangeListener { _, focused ->
-            viewModel.onSearchFieldFocusChanged(focused)
+            viewModel.setSearchFieldFocus(focused)
+            viewModel.toggleHistoryVisibility()
+        }
+
+        viewModel.searchInput.observe(this) { expression ->
+            expression?.let {
+                viewModel.searchDebounce(it)
+                clearButtonVisibility(true)
+            } ?: clearButtonVisibility(false)
+            viewModel.toggleHistoryVisibility()
         }
 
         binding.clearSearchField.setOnClickListener {
@@ -152,7 +157,7 @@ class SearchActivity : AppCompatActivity() {
         inputMethodManager?.hideSoftInputFromWindow(binding.clearSearchField.windowToken, 0)
     }
 
-    private fun clearButtonVisibility(text: String?) {
-        binding.clearSearchField.isVisible = !text.isNullOrBlank()
+    private fun clearButtonVisibility(visible: Boolean) {
+        binding.clearSearchField.isVisible = visible
     }
 }

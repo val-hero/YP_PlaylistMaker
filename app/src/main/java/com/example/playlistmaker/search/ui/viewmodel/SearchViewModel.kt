@@ -3,6 +3,8 @@ package com.example.playlistmaker.search.ui.viewmodel
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -24,7 +26,6 @@ class SearchViewModel(
     private val handler = Handler(Looper.getMainLooper())
 
     private val searchHistory = ArrayList<Track>()
-    private var searchInput: String? = null
 
     private val _screenState = MutableLiveData<SearchScreenState>()
     val screenState: LiveData<SearchScreenState> = _screenState
@@ -34,13 +35,16 @@ class SearchViewModel(
 
     private var latestSearchExpression: CharSequence = ""
 
+    private val _searchInput = MutableLiveData<CharSequence?>()
+    val searchInput: LiveData<CharSequence?> = _searchInput
+
     private var searchFieldIsFocused = false
 
     init {
         loadHistory()
     }
 
-    private fun searchDebounce(expression: CharSequence) {
+    fun searchDebounce(expression: CharSequence) {
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
 
         val searchRunnable = Runnable { search(expression) }
@@ -70,25 +74,38 @@ class SearchViewModel(
         searchDebounce(latestSearchExpression)
     }
 
-    fun onSearchTextChanged(newText: String?) {
-        searchInput = newText
-        toggleHistoryVisibility()
-        if (!newText.isNullOrBlank())
-            searchDebounce(newText)
-        else
-            handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+    fun setupTextWatcher(): TextWatcher {
+        return object : TextWatcher {
+            override fun beforeTextChanged(
+                text: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+            }
+
+            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+                if (!text.isNullOrBlank())
+                    _searchInput.value = text
+                else {
+                    handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+                    _searchInput.value = null
+                }
+            }
+
+            override fun afterTextChanged(text: Editable?) {}
+        }
     }
 
-    fun onSearchFieldFocusChanged(isFocused: Boolean) {
-        searchFieldIsFocused = isFocused
-        toggleHistoryVisibility()
-    }
-
-    private fun toggleHistoryVisibility() {
-        if (searchFieldIsFocused && searchInput.isNullOrBlank())
+    fun toggleHistoryVisibility() {
+        if (searchFieldIsFocused && _searchInput.value.isNullOrBlank())
             _screenState.value = SearchScreenState.History(searchHistory)
         else
             _screenState.value = SearchScreenState.Empty
+    }
+
+    fun setSearchFieldFocus(isFocused: Boolean) {
+        searchFieldIsFocused = isFocused
     }
 
     fun trackClickDebounce() {
@@ -98,7 +115,7 @@ class SearchViewModel(
 
     fun clearSearchField() {
         handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-        searchInput = ""
+        _searchInput.value = null
     }
 
     fun clearSearchHistory() {

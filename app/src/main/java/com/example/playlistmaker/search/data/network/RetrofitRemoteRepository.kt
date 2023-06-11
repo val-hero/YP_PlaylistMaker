@@ -7,10 +7,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import com.example.playlistmaker.utility.Result
 
-class RetrofitRemoteRepository(private val api: ITunesApiService) : TrackRepositoryRemote {
+class RetrofitRemoteRepository : TrackRepositoryRemote {
 
     override fun getTracks(expression: CharSequence, callback: (Result<ArrayList<Track>>) -> Unit) {
-        api.getTracks(expression)
+        RetrofitClient.api.getTracks(expression)
             .enqueue(object : Callback<SearchResponse> {
                 override fun onResponse(
                     call: Call<SearchResponse>,
