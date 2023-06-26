@@ -6,9 +6,8 @@ const val SELECTED_TRACK = "selected_track"
 const val TRACK_LIST = "track_list"
 
 //Player Screen related
-const val TIMER_UPDATE_DELAY = 500L
+const val PLAYBACK_UPDATE_DELAY = 500L
 const val DEFAULT_TIMER_VALUE = "00:00"
-const val MMSS_FORMAT_PATTERN = "%1\$tM:%1\$tS"
 
 // Retrofit
 const val ITUNES_API_BASE_URL = "https://itunes.apple.com"

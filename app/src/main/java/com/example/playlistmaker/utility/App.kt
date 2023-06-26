@@ -1,20 +1,30 @@
 package com.example.playlistmaker.utility
 
 import android.app.Application
-import android.content.Context
-import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.playlistmaker.di.playerModule
+import com.example.playlistmaker.di.searchModule
+import com.example.playlistmaker.di.settingsModule
+import com.example.playlistmaker.di.sharingModule
+import com.example.playlistmaker.settings.domain.usecase.GetCurrentDarkTheme
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 
 class App : Application() {
+    private val getCurrentDarkTheme: GetCurrentDarkTheme by inject()
 
     override fun onCreate() {
         super.onCreate()
-        val systemThemeIsDark =
-            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-        val appTheme = getSharedPreferences(SETTINGS_SHARED_PREFS, Context.MODE_PRIVATE)
-            .getBoolean(DARK_THEME_ENABLED, systemThemeIsDark)
+        startKoin {
+            androidLogger(Level.DEBUG)
+            androidContext(this@App)
+            modules(listOf(playerModule, searchModule, settingsModule, sharingModule))
+        }
 
-        switchTheme(appTheme)
+        switchTheme(getCurrentDarkTheme())
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {

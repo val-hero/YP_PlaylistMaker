@@ -1,16 +1,16 @@
 package com.example.playlistmaker.search.data.network
 
-import com.example.playlistmaker.search.domain.repository.SearchRepository
+import com.example.playlistmaker.search.domain.repository.TrackRepositoryRemote
 import com.example.playlistmaker.search.domain.model.Track
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import com.example.playlistmaker.utility.Result
 
-class RetrofitITunesRepository : SearchRepository {
+class RetrofitRemoteRepository(private val api: ITunesApiService) : TrackRepositoryRemote {
 
     override fun getTracks(expression: CharSequence, callback: (Result<ArrayList<Track>>) -> Unit) {
-        RetrofitClient.api.getTracks(expression)
+        api.getTracks(expression)
             .enqueue(object : Callback<SearchResponse> {
                 override fun onResponse(
                     call: Call<SearchResponse>,

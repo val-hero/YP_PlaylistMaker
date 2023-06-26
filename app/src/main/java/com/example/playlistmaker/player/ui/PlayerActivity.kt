@@ -1,7 +1,6 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
@@ -11,26 +10,20 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.player.domain.model.PlayerState
 import com.example.playlistmaker.player.ui.viewmodel.PlayerViewModel
-import com.example.playlistmaker.player.ui.viewmodel.PlayerViewModelFactory
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.utility.DEFAULT_TIMER_VALUE
+import com.example.playlistmaker.utility.asMinutesAndSeconds
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
 
-    private val viewModel: PlayerViewModel by viewModels(factoryProducer = {
-        PlayerViewModelFactory(
-            context = applicationContext
-        )
-    })
+    private val viewModel: PlayerViewModel by viewModel<PlayerViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        fillViews(viewModel.currentTrack)
-        setAlbumVisibility()
-        binding.playerTrackName.isSelected = true // to enable marquee effect
 
         binding.navigation.setNavigationOnClickListener {
             finish()
@@ -40,20 +33,19 @@ class PlayerActivity : AppCompatActivity() {
             viewModel.playbackControl()
         }
 
-        viewModel.playbackTime.observe(this) {
-            binding.playTimer.text = it
-        }
-
         viewModel.playerState.observe(this) { state ->
             setPlaybackButtonIcon(state)
             when (state) {
-                PlayerState.PLAYING -> viewModel.runPlaybackTimer()
-                PlayerState.PAUSED -> viewModel.pausePlaybackTimer()
-                PlayerState.COMPLETED -> {
-                    viewModel.pausePlaybackTimer()
+                is PlayerState.Prepared -> {
+                    setupViews(state.track)
+                }
+                is PlayerState.Default, PlayerState.Completed -> {
                     binding.playTimer.text = DEFAULT_TIMER_VALUE
                 }
-                else -> return@observe
+                is PlayerState.Playing -> {
+                    binding.playTimer.text = state.playbackTime.asMinutesAndSeconds()
+                }
+                else -> Unit
             }
         }
     }
@@ -68,33 +60,30 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.releasePlayer()
     }
 
-    private fun fillViews(track: Track) {
-        binding.playerTrackName.text = track.trackName
-        binding.playerArtistName.text = track.artistName
-        binding.durationValue.text = track.formattedDuration()
-        binding.albumValue.text = track.collectionName
-        binding.yearValue.text = track.releaseYear()
-        binding.genreValue.text = track.genre
-        binding.countryValue.text = track.country
-        binding.playTimer.text = DEFAULT_TIMER_VALUE
+    private fun setupViews(track: Track) {
+        with(binding) {
+            playerTrackName.text = track.trackName
+            playerArtistName.text = track.artistName
+            durationValue.text = track.formattedDuration()
+            albumValue.text = track.collectionName
+            yearValue.text = track.releaseYear()
+            genreValue.text = track.genre
+            countryValue.text = track.country
+            albumGroup.isVisible = albumValue.text.isNotEmpty()
+            playerTrackName.isSelected = true
 
-        Glide.with(this).load(track.resizedImage())
-            .placeholder(R.drawable.player_track_img_placeholder)
-            .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.player_track_image_corners)))
-            .into(binding.playerTrackImage)
-    }
-
-    private fun setAlbumVisibility() {
-        binding.albumGroup.isVisible = binding.album.text.isNotEmpty()
-    }
-
-    private fun setPlaybackButtonIcon(playerState: PlayerState) {
-        if (playerState == PlayerState.PLAYING) {
-            binding.playbackButton.foreground =
-                ResourcesCompat.getDrawable(resources, R.drawable.pause_button, null)
-        } else {
-            binding.playbackButton.foreground =
-                ResourcesCompat.getDrawable(resources, R.drawable.play_button, null)
+            Glide.with(this@PlayerActivity).load(track.resizedImage())
+                .placeholder(R.drawable.player_track_img_placeholder)
+                .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.player_track_image_corners)))
+                .into(playerTrackImage)
         }
+    }
+
+    private fun setPlaybackButtonIcon(state: PlayerState) {
+        binding.playbackButton.foreground =
+            if (state is PlayerState.Playing)
+                ResourcesCompat.getDrawable(resources, R.drawable.pause_button, null)
+            else
+                ResourcesCompat.getDrawable(resources, R.drawable.play_button, null)
     }
 }

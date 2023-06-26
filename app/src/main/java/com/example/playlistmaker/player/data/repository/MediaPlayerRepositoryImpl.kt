@@ -1,49 +1,62 @@
 package com.example.playlistmaker.player.data.repository
 
+import android.media.MediaPlayer
 import com.example.playlistmaker.player.domain.model.PlayerState
-import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.player.domain.repository.MediaPlayerRepository
-import com.example.playlistmaker.search.domain.repository.TrackRepository
+import com.example.playlistmaker.search.domain.model.Track
+import com.example.playlistmaker.utility.PLAYBACK_UPDATE_DELAY
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-class MediaPlayerRepositoryImpl(trackRepository: TrackRepository) : MediaPlayerRepository {
-    private val player = android.media.MediaPlayer()
-    private var stateCallback: ((PlayerState) -> Unit)? = null
-
-    init {
-        prepare(trackRepository.getTrack())
-    }
+class MediaPlayerRepositoryImpl : MediaPlayerRepository {
+    private var player: MediaPlayer? = null
+    private val _playerStateFlow = MutableStateFlow<PlayerState>(PlayerState.Default)
+    private val playerStateFlow: StateFlow<PlayerState> = _playerStateFlow
+    private var currentPlaybackTimeJob: Job? = null
 
     override fun prepare(track: Track) {
-        player.apply {
+        player = MediaPlayer()
+        player?.apply {
             setDataSource(track.previewUrl)
             prepareAsync()
-            setOnPreparedListener { stateCallback?.invoke(PlayerState.PREPARED) }
-            setOnCompletionListener { stateCallback?.invoke(PlayerState.COMPLETED) }
+            setOnPreparedListener { _playerStateFlow.value = PlayerState.Prepared(track) }
+            setOnCompletionListener {
+                _playerStateFlow.value = PlayerState.Completed
+                currentPlaybackTimeJob?.cancel()
+            }
         }
     }
 
     override fun play() {
-        player.start()
-        stateCallback?.invoke(PlayerState.PLAYING)
+        player?.start()
+        currentPlaybackTimeJob?.cancel()
+        currentPlaybackTimeJob = CoroutineScope(Dispatchers.Default).launch {
+            while (true) {
+                _playerStateFlow.value = PlayerState.Playing(getCurrentPosition())
+                delay(PLAYBACK_UPDATE_DELAY)
+            }
+        }
     }
 
     override fun pause() {
-        player.pause()
-        stateCallback?.invoke(PlayerState.PAUSED)
+        player?.pause()
+        _playerStateFlow.value = PlayerState.Paused
+        currentPlaybackTimeJob?.cancel()
+
     }
 
     override fun release() {
-        player.release()
-        stateCallback?.invoke(PlayerState.DEFAULT)
+        player?.release()
+        _playerStateFlow.value = PlayerState.Default
+        currentPlaybackTimeJob?.cancel()
+        player = null
+
     }
 
-    override fun getCurrentPosition(): Long = player.currentPosition.toLong()
-
-    override fun setOnStateChangeListener(callback: (PlayerState) -> Unit) {
-        stateCallback = callback
+    override fun getCurrentState(): StateFlow<PlayerState> {
+        return playerStateFlow
     }
 
-    override fun removeOnStateChangeListener() {
-        stateCallback = null
-    }
+    private fun getCurrentPosition(): Long? = player?.currentPosition?.toLong()
 }
