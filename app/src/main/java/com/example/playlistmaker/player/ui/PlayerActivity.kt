@@ -18,7 +18,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
 
-    private val viewModel: PlayerViewModel by viewModel()
+    private val viewModel: PlayerViewModel by viewModel<PlayerViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,11 +57,7 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-
-        if (isFinishing)
-            viewModel.releasePlayer()
-        else
-            viewModel.pausePlayer()
+        viewModel.releasePlayer()
     }
 
     private fun setupViews(track: Track) {

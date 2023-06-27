@@ -81,7 +81,8 @@ class SearchActivity : AppCompatActivity() {
 
         viewModel.saveTrack(track)
         viewModel.trackClickDebounce()
-        startActivity(Intent(this, PlayerActivity::class.java))
+        val intent = Intent(this, PlayerActivity::class.java)
+        startActivity(intent)
     }
 
     private fun render(screenState: SearchScreenState) {

@@ -5,13 +5,9 @@ import com.example.playlistmaker.player.domain.model.PlayerState
 import com.example.playlistmaker.player.domain.repository.MediaPlayerRepository
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.utility.PLAYBACK_UPDATE_DELAY
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class MediaPlayerRepositoryImpl : MediaPlayerRepository {
     private var player: MediaPlayer? = null
@@ -45,8 +41,9 @@ class MediaPlayerRepositoryImpl : MediaPlayerRepository {
 
     override fun pause() {
         player?.pause()
-        currentPlaybackTimeJob?.cancel()
         _playerStateFlow.value = PlayerState.Paused
+        currentPlaybackTimeJob?.cancel()
+
     }
 
     override fun release() {
@@ -54,6 +51,7 @@ class MediaPlayerRepositoryImpl : MediaPlayerRepository {
         _playerStateFlow.value = PlayerState.Default
         currentPlaybackTimeJob?.cancel()
         player = null
+
     }
 
     override fun getCurrentState(): StateFlow<PlayerState> {
