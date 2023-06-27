@@ -41,6 +41,6 @@ val playerModule = module {
     }
 
     factory {
-        GetPlayerStateUseCase(mediaPlayerRepository = get())
+        GetPlayerState(mediaPlayerRepository = get())
     }
 }

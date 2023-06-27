@@ -1,12 +1,19 @@
 package com.example.playlistmaker.library.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.playlistmaker.R
+import androidx.appcompat.app.AppCompatActivity
+import com.example.playlistmaker.databinding.ActivityLibraryBinding
 
 class LibraryActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityLibraryBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_library)
+        binding = ActivityLibraryBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.libraryToolbar.setNavigationOnClickListener {
+            finish()
+        }
     }
 }
