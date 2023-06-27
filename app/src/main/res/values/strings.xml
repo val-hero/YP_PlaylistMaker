@@ -23,4 +23,7 @@
     <string name="track_album">Альбом</string>
     <string name="track_release_year">Год</string>
     <string name="track_country">Страна</string>
+    <string name="favourite_tracks_not_found">Ваша медиатека пуста</string>
+    <string name="playlists_not_found">Вы не создали\nни одного плейлиста</string>
+    <string name="create_playlist">Новый плейлист</string>
 </resources>
