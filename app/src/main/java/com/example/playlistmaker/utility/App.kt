@@ -2,6 +2,7 @@ package com.example.playlistmaker.utility
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.playlistmaker.di.libraryModule
 import com.example.playlistmaker.di.playerModule
 import com.example.playlistmaker.di.searchModule
 import com.example.playlistmaker.di.settingsModule
@@ -21,7 +22,15 @@ class App : Application() {
         startKoin {
             androidLogger(Level.DEBUG)
             androidContext(this@App)
-            modules(listOf(playerModule, searchModule, settingsModule, sharingModule))
+            modules(
+                listOf(
+                    playerModule,
+                    searchModule,
+                    settingsModule,
+                    sharingModule,
+                    libraryModule
+                )
+            )
         }
 
         switchTheme(getCurrentDarkTheme())
