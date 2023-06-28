@@ -57,11 +57,7 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-
-        if (isFinishing)
-            viewModel.releasePlayer()
-        else
-            viewModel.pausePlayer()
+        viewModel.releasePlayer()
     }
 
     private fun setupViews(track: Track) {
