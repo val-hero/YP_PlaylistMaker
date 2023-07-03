@@ -3,6 +3,7 @@ package com.example.playlistmaker.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.playlistmaker.search.data.TrackStorage
+import com.example.playlistmaker.search.data.mapper.TrackDtoMapper
 import com.example.playlistmaker.search.data.network.ITunesApiService
 import com.example.playlistmaker.search.data.network.RetrofitRemoteRepository
 import com.example.playlistmaker.search.data.repository.TrackRepositoryImpl
@@ -50,7 +51,11 @@ val searchModule = module {
     }
 
     single<TrackRepositoryRemote> {
-        RetrofitRemoteRepository(api = get())
+        RetrofitRemoteRepository(api = get(), mapper = get())
+    }
+
+    single {
+        TrackDtoMapper()
     }
 
     single<ITunesApiService> {

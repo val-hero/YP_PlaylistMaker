@@ -1,10 +1,9 @@
 package com.example.playlistmaker.search.domain.model
 
-import com.google.gson.annotations.SerializedName
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Locale
 
 data class Track(
     val trackName: String,
@@ -14,9 +13,9 @@ data class Track(
     val releaseDate: String,
     val country: String,
     val previewUrl: String,
-    @SerializedName("primaryGenreName") val genre: String,
-    @SerializedName("trackTimeMillis") val duration: Long,
-    @SerializedName("artworkUrl100") val imageUrl: String
+    val genre: String,
+    val duration: Long,
+    val imageUrl: String
 ) {
     fun resizedImage() = imageUrl.replaceAfterLast("/", "512x512bb.jpg")
 
