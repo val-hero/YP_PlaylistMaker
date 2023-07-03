@@ -1,6 +1,7 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
@@ -44,6 +45,9 @@ class PlayerActivity : AppCompatActivity() {
                 }
                 is PlayerState.Playing -> {
                     binding.playTimer.text = state.playbackTime.asMinutesAndSeconds()
+                }
+                is PlayerState.Error -> {
+                    Toast.makeText(this, state.message, Toast.LENGTH_SHORT).show()
                 }
                 else -> Unit
             }

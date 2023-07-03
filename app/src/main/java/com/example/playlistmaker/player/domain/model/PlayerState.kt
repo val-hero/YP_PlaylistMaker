@@ -8,4 +8,5 @@ sealed class PlayerState {
     data class Playing(val playbackTime: Long?) : PlayerState()
     object Paused : PlayerState()
     object Completed : PlayerState()
+    data class Error(val message: String) : PlayerState()
 }

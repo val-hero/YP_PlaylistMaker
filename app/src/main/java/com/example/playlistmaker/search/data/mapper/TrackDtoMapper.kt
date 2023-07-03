@@ -29,7 +29,7 @@ class TrackDtoMapper: DomainMapper<TrackDto, Track> {
             collectionName = domainModel.collectionName,
             releaseDate = domainModel.releaseDate,
             country = domainModel.country,
-            previewUrl = domainModel.previewUrl,
+            previewUrl = domainModel.previewUrl ?: "",
             primaryGenreName = domainModel.genre,
             trackTimeMillis = domainModel.duration,
             artworkUrl100 = domainModel.imageUrl

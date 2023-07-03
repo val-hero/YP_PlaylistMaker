@@ -21,11 +21,11 @@ class RetrofitRemoteRepository(
                     call: Call<SearchResponse>,
                     response: Response<SearchResponse>
                 ) {
-                    val result = response.body()?.results
+                    val result = response.body()?.tracks
                     if (result.isNullOrEmpty())
                         callback(Result.Error(response.code()))
                     else
-                        callback(Result.Success(result.map { mapper.mapToDomainModel(it)} as ArrayList))
+                        callback(Result.Success(result.map { mapper.mapToDomainModel(it) } as ArrayList))
                 }
 
                 override fun onFailure(call: Call<SearchResponse>, t: Throwable) {

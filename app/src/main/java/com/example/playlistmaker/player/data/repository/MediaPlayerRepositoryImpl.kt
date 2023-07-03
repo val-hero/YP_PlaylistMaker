@@ -5,9 +5,14 @@ import com.example.playlistmaker.player.domain.model.PlayerState
 import com.example.playlistmaker.player.domain.repository.MediaPlayerRepository
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.utility.PLAYBACK_UPDATE_DELAY
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class MediaPlayerRepositoryImpl : MediaPlayerRepository {
     private var player: MediaPlayer? = null
@@ -17,15 +22,18 @@ class MediaPlayerRepositoryImpl : MediaPlayerRepository {
 
     override fun prepare(track: Track) {
         player = MediaPlayer()
-        player?.apply {
-            setDataSource(track.previewUrl)
-            prepareAsync()
-            setOnPreparedListener { _playerStateFlow.value = PlayerState.Prepared(track) }
-            setOnCompletionListener {
-                _playerStateFlow.value = PlayerState.Completed
-                currentPlaybackTimeJob?.cancel()
+        track.previewUrl?.let {
+            player?.apply {
+                setDataSource(track.previewUrl)
+                prepareAsync()
+                setOnPreparedListener { _playerStateFlow.value = PlayerState.Prepared(track) }
+                setOnCompletionListener {
+                    _playerStateFlow.value = PlayerState.Completed
+                    currentPlaybackTimeJob?.cancel()
+                }
             }
-        }
+        } ?: _playerStateFlow.update { PlayerState.Error("This track can't be played") }
+
     }
 
     override fun play() {
