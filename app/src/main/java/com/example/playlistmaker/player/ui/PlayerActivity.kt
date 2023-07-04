@@ -1,6 +1,7 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
@@ -11,7 +12,7 @@ import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.player.domain.model.PlayerState
 import com.example.playlistmaker.player.ui.viewmodel.PlayerViewModel
 import com.example.playlistmaker.search.domain.model.Track
-import com.example.playlistmaker.utility.DEFAULT_TIMER_VALUE
+import com.example.playlistmaker.utility.ErrorType
 import com.example.playlistmaker.utility.asMinutesAndSeconds
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -39,12 +40,19 @@ class PlayerActivity : AppCompatActivity() {
                 is PlayerState.Prepared -> {
                     setupViews(state.track)
                 }
+
                 is PlayerState.Default, PlayerState.Completed -> {
                     binding.playTimer.text = DEFAULT_TIMER_VALUE
                 }
+
                 is PlayerState.Playing -> {
                     binding.playTimer.text = state.playbackTime.asMinutesAndSeconds()
                 }
+
+                is PlayerState.Error -> {
+                    Toast.makeText(this, getErrorMessage(state.errorType), Toast.LENGTH_SHORT).show()
+                }
+
                 else -> Unit
             }
         }
@@ -85,5 +93,15 @@ class PlayerActivity : AppCompatActivity() {
                 ResourcesCompat.getDrawable(resources, R.drawable.pause_button, null)
             else
                 ResourcesCompat.getDrawable(resources, R.drawable.play_button, null)
+    }
+
+    private fun getErrorMessage(errorType: ErrorType): String = when (errorType) {
+        ErrorType.FAILED_TO_LOAD -> getString(R.string.track_prepare_fail_error)
+        ErrorType.ACTION_CANT_BE_PERFORMED -> getString(R.string.cant_be_played_error)
+        else -> getString(R.string.unknown_error)
+    }
+
+    companion object {
+        const val DEFAULT_TIMER_VALUE = "00:00"
     }
 }

@@ -1,13 +1,19 @@
 package com.example.playlistmaker.search.data.network
 
-import com.example.playlistmaker.search.domain.repository.TrackRepositoryRemote
+import com.example.playlistmaker.search.data.mapper.TrackDtoMapper
+import com.example.playlistmaker.search.data.model.SearchResponse
 import com.example.playlistmaker.search.domain.model.Track
+import com.example.playlistmaker.search.domain.repository.TrackRepositoryRemote
+import com.example.playlistmaker.utility.ErrorType
+import com.example.playlistmaker.utility.Result
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import com.example.playlistmaker.utility.Result
 
-class RetrofitRemoteRepository(private val api: ITunesApiService) : TrackRepositoryRemote {
+class RetrofitRemoteRepository(
+    private val api: ITunesApiService,
+    private val mapper: TrackDtoMapper
+) : TrackRepositoryRemote {
 
     override fun getTracks(expression: CharSequence, callback: (Result<ArrayList<Track>>) -> Unit) {
         api.getTracks(expression)
@@ -18,13 +24,13 @@ class RetrofitRemoteRepository(private val api: ITunesApiService) : TrackReposit
                 ) {
                     val result = response.body()?.results
                     if (result.isNullOrEmpty())
-                        callback(Result.Error(response.code()))
+                        callback(Result.Error(ErrorType.NOT_FOUND))
                     else
-                        callback(Result.Success(result))
+                        callback(Result.Success(result.map { mapper.mapToDomainModel(it) } as ArrayList))
                 }
 
                 override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                    callback(Result.Error(resultCode = -1))
+                    callback(Result.Error(ErrorType.NO_NETWORK_CONNECTION))
                 }
             }
             )

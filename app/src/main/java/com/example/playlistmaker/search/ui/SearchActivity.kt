@@ -10,6 +10,7 @@ import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.player.ui.PlayerActivity
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.search.ui.viewmodel.SearchViewModel
+import com.example.playlistmaker.utility.ErrorType
 import com.example.playlistmaker.utility.OnClickSupport
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -88,7 +89,7 @@ class SearchActivity : AppCompatActivity() {
     private fun render(screenState: SearchScreenState) {
         when (screenState) {
             is SearchScreenState.Content -> showTracks(screenState.tracks)
-            is SearchScreenState.Error -> showError(screenState.code)
+            is SearchScreenState.Error -> showError(screenState.type)
             is SearchScreenState.History -> showHistory(screenState.tracks)
             is SearchScreenState.Loading -> showLoading()
             is SearchScreenState.Empty -> showEmpty()
@@ -130,15 +131,17 @@ class SearchActivity : AppCompatActivity() {
         binding.progressBar.isVisible = false
     }
 
-    private fun showError(code: Int) {
+    private fun showError(type: ErrorType) {
         binding.trackListRecycler.isVisible = false
         binding.searchHistoryView.isVisible = false
         binding.progressBar.isVisible = false
 
-        if (code == 200)
-            binding.notFoundError.isVisible = true
-        else
-            binding.serverError.isVisible = true
+        when (type) {
+            ErrorType.NOT_FOUND -> binding.notFoundError.isVisible = true
+            ErrorType.NO_NETWORK_CONNECTION -> binding.serverError.isVisible = true
+            else -> Unit
+        }
+
     }
 
     private fun hideErrors() {

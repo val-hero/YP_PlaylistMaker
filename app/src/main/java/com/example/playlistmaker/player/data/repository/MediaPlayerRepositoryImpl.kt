@@ -4,10 +4,14 @@ import android.media.MediaPlayer
 import com.example.playlistmaker.player.domain.model.PlayerState
 import com.example.playlistmaker.player.domain.repository.MediaPlayerRepository
 import com.example.playlistmaker.search.domain.model.Track
-import com.example.playlistmaker.utility.PLAYBACK_UPDATE_DELAY
-import kotlinx.coroutines.*
+import com.example.playlistmaker.utility.ErrorType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class MediaPlayerRepositoryImpl : MediaPlayerRepository {
     private var player: MediaPlayer? = null
@@ -17,13 +21,22 @@ class MediaPlayerRepositoryImpl : MediaPlayerRepository {
 
     override fun prepare(track: Track) {
         player = MediaPlayer()
-        player?.apply {
-            setDataSource(track.previewUrl)
-            prepareAsync()
-            setOnPreparedListener { _playerStateFlow.value = PlayerState.Prepared(track) }
-            setOnCompletionListener {
-                _playerStateFlow.value = PlayerState.Completed
-                currentPlaybackTimeJob?.cancel()
+
+        if (track.previewUrl.isBlank()) {
+            _playerStateFlow.value = PlayerState.Error(ErrorType.ACTION_CANT_BE_PERFORMED)
+        } else {
+            player?.apply {
+                setDataSource(track.previewUrl)
+                prepareAsync()
+                setOnErrorListener { _, _, _ ->
+                    _playerStateFlow.value = PlayerState.Error(ErrorType.FAILED_TO_LOAD)
+                    true
+                }
+                setOnPreparedListener { _playerStateFlow.value = PlayerState.Prepared(track) }
+                setOnCompletionListener {
+                    _playerStateFlow.value = PlayerState.Completed
+                    currentPlaybackTimeJob?.cancel()
+                }
             }
         }
     }
@@ -59,4 +72,8 @@ class MediaPlayerRepositoryImpl : MediaPlayerRepository {
     }
 
     private fun getCurrentPosition(): Long? = player?.currentPosition?.toLong()
+
+    companion object {
+        const val PLAYBACK_UPDATE_DELAY = 500L
+    }
 }
