@@ -4,6 +4,7 @@ import android.media.MediaPlayer
 import com.example.playlistmaker.player.domain.model.PlayerState
 import com.example.playlistmaker.player.domain.repository.MediaPlayerRepository
 import com.example.playlistmaker.search.domain.model.Track
+import com.example.playlistmaker.utility.ErrorType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,13 +23,13 @@ class MediaPlayerRepositoryImpl : MediaPlayerRepository {
         player = MediaPlayer()
 
         if (track.previewUrl.isBlank()) {
-            _playerStateFlow.value = PlayerState.Error("This track can't be played")
+            _playerStateFlow.value = PlayerState.Error(ErrorType.ACTION_CANT_BE_PERFORMED)
         } else {
             player?.apply {
                 setDataSource(track.previewUrl)
                 prepareAsync()
                 setOnErrorListener { _, _, _ ->
-                    _playerStateFlow.value = PlayerState.Error("Failed to load the track")
+                    _playerStateFlow.value = PlayerState.Error(ErrorType.FAILED_TO_LOAD)
                     true
                 }
                 setOnPreparedListener { _playerStateFlow.value = PlayerState.Prepared(track) }
@@ -38,7 +39,6 @@ class MediaPlayerRepositoryImpl : MediaPlayerRepository {
                 }
             }
         }
-
     }
 
     override fun play() {

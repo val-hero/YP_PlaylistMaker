@@ -30,4 +30,5 @@
     <string name="playlists">Плейлисты</string>
     <string name="track_prepare_fail_error">Не удается загрузить трек</string>
     <string name="cant_be_played_error">Этот трек недоступен для прослушивания</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
 </resources>
