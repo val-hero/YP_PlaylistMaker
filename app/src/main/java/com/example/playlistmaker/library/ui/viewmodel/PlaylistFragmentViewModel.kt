@@ -2,5 +2,4 @@ package com.example.playlistmaker.library.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 
-class PlaylistFragmentViewModel: ViewModel() {
-}
+class PlaylistFragmentViewModel: ViewModel()

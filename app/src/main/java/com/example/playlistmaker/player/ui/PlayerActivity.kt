@@ -12,7 +12,6 @@ import com.example.playlistmaker.databinding.ActivityPlayerBinding
 import com.example.playlistmaker.player.domain.model.PlayerState
 import com.example.playlistmaker.player.ui.viewmodel.PlayerViewModel
 import com.example.playlistmaker.search.domain.model.Track
-import com.example.playlistmaker.utility.DEFAULT_TIMER_VALUE
 import com.example.playlistmaker.utility.asMinutesAndSeconds
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -89,5 +88,9 @@ class PlayerActivity : AppCompatActivity() {
                 ResourcesCompat.getDrawable(resources, R.drawable.pause_button, null)
             else
                 ResourcesCompat.getDrawable(resources, R.drawable.play_button, null)
+    }
+
+    companion object {
+        const val DEFAULT_TIMER_VALUE = "00:00"
     }
 }

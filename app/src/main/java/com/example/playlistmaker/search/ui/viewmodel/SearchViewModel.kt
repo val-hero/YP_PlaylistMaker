@@ -7,11 +7,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.search.domain.model.Track
-import com.example.playlistmaker.search.domain.usecase.*
+import com.example.playlistmaker.search.domain.usecase.ClearSearchHistory
+import com.example.playlistmaker.search.domain.usecase.GetTrackList
+import com.example.playlistmaker.search.domain.usecase.SaveToHistory
+import com.example.playlistmaker.search.domain.usecase.SaveTrack
+import com.example.playlistmaker.search.domain.usecase.SaveTrackList
+import com.example.playlistmaker.search.domain.usecase.Search
 import com.example.playlistmaker.search.ui.SearchScreenState
 import com.example.playlistmaker.utility.Result
-import com.example.playlistmaker.utility.SEARCH_DEBOUNCE_DELAY
-import com.example.playlistmaker.utility.TRACK_CLICK_DELAY
 
 class SearchViewModel(
     private val searchUseCase: Search,
@@ -129,5 +132,7 @@ class SearchViewModel(
 
     companion object {
         val SEARCH_REQUEST_TOKEN = Any()
+        const val SEARCH_DEBOUNCE_DELAY = 2000L
+        const val TRACK_CLICK_DELAY = 100L
     }
 }

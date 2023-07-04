@@ -2,7 +2,6 @@ package com.example.playlistmaker.search.domain.usecase
 
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.search.domain.repository.TrackRepository
-import com.example.playlistmaker.utility.HISTORY_CAPACITY
 
 class SaveToHistory(private val trackRepository: TrackRepository) {
 
@@ -19,5 +18,9 @@ class SaveToHistory(private val trackRepository: TrackRepository) {
         }
         history.add(0, track)
         trackRepository.saveTrackList(history)
+    }
+
+    companion object {
+        const val HISTORY_CAPACITY = 10
     }
 }

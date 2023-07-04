@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.content.res.Configuration
 import androidx.core.content.edit
 import com.example.playlistmaker.settings.domain.SettingsRepository
-import com.example.playlistmaker.utility.DARK_THEME_ENABLED
 
 class SettingsRepositoryImpl(
     private val context: Context,
@@ -24,5 +23,9 @@ class SettingsRepositoryImpl(
             context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
         appThemeIsDark = sharedPreferences.getBoolean(DARK_THEME_ENABLED, systemThemeIsDark)
         return appThemeIsDark
+    }
+
+    companion object {
+        const val DARK_THEME_ENABLED = "dark_theme_enabled"
     }
 }

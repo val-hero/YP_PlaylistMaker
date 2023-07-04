@@ -21,7 +21,7 @@ class RetrofitRemoteRepository(
                     call: Call<SearchResponse>,
                     response: Response<SearchResponse>
                 ) {
-                    val result = response.body()?.tracks
+                    val result = response.body()?.results
                     if (result.isNullOrEmpty())
                         callback(Result.Error(response.code()))
                     else

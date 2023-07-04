@@ -5,8 +5,6 @@ import androidx.core.content.edit
 import com.example.playlistmaker.search.data.TrackStorage
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.utility.JsonConverter
-import com.example.playlistmaker.utility.SELECTED_TRACK
-import com.example.playlistmaker.utility.TRACK_LIST
 
 class SharedPrefsTrackStorage(private val sharedPreferences: SharedPreferences) : TrackStorage {
 
@@ -35,5 +33,10 @@ class SharedPrefsTrackStorage(private val sharedPreferences: SharedPreferences) 
 
     override fun delete() {
         sharedPreferences.edit { remove(SELECTED_TRACK)}
+    }
+
+    companion object {
+        const val SELECTED_TRACK = "selected_track"
+        const val TRACK_LIST = "track_list"
     }
 }

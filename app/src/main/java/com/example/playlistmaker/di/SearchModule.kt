@@ -18,7 +18,6 @@ import com.example.playlistmaker.search.domain.usecase.SaveTrack
 import com.example.playlistmaker.search.domain.usecase.SaveTrackList
 import com.example.playlistmaker.search.domain.usecase.Search
 import com.example.playlistmaker.search.ui.viewmodel.SearchViewModel
-import com.example.playlistmaker.utility.ITUNES_API_BASE_URL
 import com.example.playlistmaker.utility.TRACKS_SHARED_PREFS
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -60,7 +59,7 @@ val searchModule = module {
 
     single<ITunesApiService> {
         Retrofit.Builder()
-            .baseUrl(ITUNES_API_BASE_URL)
+            .baseUrl(ITunesApiService.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ITunesApiService::class.java)

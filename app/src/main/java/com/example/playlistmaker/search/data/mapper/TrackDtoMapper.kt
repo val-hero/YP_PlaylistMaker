@@ -6,18 +6,18 @@ import com.example.playlistmaker.search.domain.model.Track
 
 class TrackDtoMapper: DomainMapper<TrackDto, Track> {
 
-    override fun mapToDomainModel(dto: TrackDto): Track {
+    override fun mapToDomainModel(model: TrackDto): Track {
         return Track(
-            trackName = dto.trackName,
-            artistName =  dto.artistName,
-            trackId = dto.trackId,
-            collectionName = dto.collectionName,
-            releaseDate = dto.releaseDate,
-            country = dto.country,
-            previewUrl = dto.previewUrl,
-            genre = dto.primaryGenreName,
-            duration = dto.trackTimeMillis,
-            imageUrl = dto.artworkUrl100
+            trackName = model.trackName ?: "",
+            artistName =  model.artistName ?: "",
+            trackId = model.trackId ?: -1,
+            collectionName = model.collectionName ?: "",
+            releaseDate = model.releaseDate ?: "",
+            country = model.country ?: "",
+            previewUrl = if(!model.previewUrl.isNullOrBlank()) model.previewUrl else "",
+            genre = model.primaryGenreName ?: "",
+            duration = model.trackTimeMillis ?: -1,
+            imageUrl = model.artworkUrl100 ?: ""
         )
     }
 
@@ -29,7 +29,7 @@ class TrackDtoMapper: DomainMapper<TrackDto, Track> {
             collectionName = domainModel.collectionName,
             releaseDate = domainModel.releaseDate,
             country = domainModel.country,
-            previewUrl = domainModel.previewUrl ?: "",
+            previewUrl = domainModel.previewUrl,
             primaryGenreName = domainModel.genre,
             trackTimeMillis = domainModel.duration,
             artworkUrl100 = domainModel.imageUrl
