@@ -17,7 +17,7 @@ class FavouriteTracksFragment: Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentFavouriteTracksBinding.inflate(inflater, container, false)
         return binding.root
     }

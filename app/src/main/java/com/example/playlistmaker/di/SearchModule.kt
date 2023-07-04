@@ -3,6 +3,7 @@ package com.example.playlistmaker.di
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.playlistmaker.search.data.TrackStorage
+import com.example.playlistmaker.search.data.mapper.TrackDtoMapper
 import com.example.playlistmaker.search.data.network.ITunesApiService
 import com.example.playlistmaker.search.data.network.RetrofitRemoteRepository
 import com.example.playlistmaker.search.data.repository.TrackRepositoryImpl
@@ -17,7 +18,6 @@ import com.example.playlistmaker.search.domain.usecase.SaveTrack
 import com.example.playlistmaker.search.domain.usecase.SaveTrackList
 import com.example.playlistmaker.search.domain.usecase.Search
 import com.example.playlistmaker.search.ui.viewmodel.SearchViewModel
-import com.example.playlistmaker.utility.ITUNES_API_BASE_URL
 import com.example.playlistmaker.utility.TRACKS_SHARED_PREFS
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -50,12 +50,16 @@ val searchModule = module {
     }
 
     single<TrackRepositoryRemote> {
-        RetrofitRemoteRepository(api = get())
+        RetrofitRemoteRepository(api = get(), mapper = get())
+    }
+
+    single {
+        TrackDtoMapper()
     }
 
     single<ITunesApiService> {
         Retrofit.Builder()
-            .baseUrl(ITUNES_API_BASE_URL)
+            .baseUrl(ITunesApiService.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(ITunesApiService::class.java)
