@@ -2,10 +2,10 @@ package com.example.playlistmaker.search.ui.viewmodel
 
 import android.os.Handler
 import android.os.Looper
-import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.search.domain.usecase.ClearSearchHistory
 import com.example.playlistmaker.search.domain.usecase.GetTrackList
@@ -15,6 +15,9 @@ import com.example.playlistmaker.search.domain.usecase.SaveTrackList
 import com.example.playlistmaker.search.domain.usecase.Search
 import com.example.playlistmaker.search.ui.SearchScreenState
 import com.example.playlistmaker.utility.Result
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val searchUseCase: Search,
@@ -39,47 +42,42 @@ class SearchViewModel(
 
     private var searchFieldIsFocused = false
 
+    private var searchJob: Job? = null
+
     init {
         loadHistory()
-    }
-
-    private fun searchDebounce(expression: CharSequence) {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-
-        val searchRunnable = Runnable { search(expression) }
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(searchRunnable, SEARCH_REQUEST_TOKEN, postTime)
     }
 
     private fun search(expression: CharSequence) {
         _screenState.value = SearchScreenState.Loading
         latestSearchExpression = expression
 
-        searchUseCase(
-            expression = expression,
-            callback = { result ->
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            searchUseCase(expression).collect { result ->
                 when (result) {
-                    is Result.Success -> {
-                        _screenState.value = SearchScreenState.Content(result.data)
-                    }
-                    is Result.Error -> {
-                        _screenState.value = SearchScreenState.Error(result.type)
-                    }
+                    is Result.Error -> _screenState.value =
+                        SearchScreenState.Error(result.errorType)
+
+                    is Result.Success -> _screenState.value =
+                        SearchScreenState.Content(result.data as ArrayList)
                 }
-            })
+            }
+        }
     }
 
     fun runLatestSearch() {
-        searchDebounce(latestSearchExpression)
+        search(latestSearchExpression)
     }
 
     fun onSearchTextChanged(newText: String?) {
         searchInput = newText
         toggleHistoryVisibility()
         if (!newText.isNullOrBlank())
-            searchDebounce(newText)
+            search(newText)
         else
-            handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+            searchJob?.cancel()
     }
 
     fun onSearchFieldFocusChanged(isFocused: Boolean) {
@@ -96,12 +94,10 @@ class SearchViewModel(
 
     fun trackClickDebounce() {
         _trackIsClickable.value = false
-        handler.postDelayed({ _trackIsClickable.value = true }, TRACK_CLICK_DELAY)
-    }
-
-    fun clearSearchField() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-        searchInput = ""
+        viewModelScope.launch {
+            delay(TRACK_CLICK_DELAY)
+            _trackIsClickable.value = true
+        }
     }
 
     fun clearSearchHistory() {
@@ -132,7 +128,7 @@ class SearchViewModel(
 
     companion object {
         val SEARCH_REQUEST_TOKEN = Any()
-        const val SEARCH_DEBOUNCE_DELAY = 2000L
+        const val SEARCH_DEBOUNCE_DELAY = 1000L
         const val TRACK_CLICK_DELAY = 100L
     }
 }

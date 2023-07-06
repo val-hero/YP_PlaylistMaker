@@ -1,11 +1,11 @@
 package com.example.playlistmaker.search.domain.repository
 
-import com.example.playlistmaker.utility.Result
 import com.example.playlistmaker.search.domain.model.Track
+import com.example.playlistmaker.utility.Result
+import kotlinx.coroutines.flow.Flow
+
 
 interface TrackRepositoryRemote {
-    fun getTracks(
-        expression: CharSequence,
-        callback: (Result<ArrayList<Track>>) -> Unit
-    )
+
+    suspend fun getTracks(expression: CharSequence): Flow<Result<List<Track>>>
 }

@@ -52,7 +52,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         binding.clearSearchField.setOnClickListener {
-            viewModel.clearSearchField()
+            viewModel.onSearchTextChanged(null)
             hideKeyboard()
             binding.searchField.clearFocus()
             binding.searchField.text = null
