@@ -21,7 +21,7 @@
             android:name=".library.ui.LibraryActivity"
             android:exported="false" />
         <activity
-            android:name=".search.ui.SearchActivity"
+            android:name=".search.ui.SearchFragment"
             android:exported="false" />
         <activity
             android:name=".settings.ui.SettingsActivity"
