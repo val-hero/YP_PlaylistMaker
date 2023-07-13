@@ -7,12 +7,16 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.TrackItemBinding
 import com.example.playlistmaker.search.domain.model.Track
 
-class TrackViewHolder(private val binding: TrackItemBinding) : RecyclerView.ViewHolder(binding.root) {
+class TrackViewHolder(
+    private val binding: TrackItemBinding,
+    private val onClick: (Track) -> Unit
+) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(model: Track) {
         binding.trackName.text = model.trackName
         binding.artistName.text = model.artistName
         binding.trackDuration.text = model.formattedDuration()
+        binding.root.setOnClickListener { onClick(model) }
 
         Glide.with(itemView)
             .load(model.imageUrl)

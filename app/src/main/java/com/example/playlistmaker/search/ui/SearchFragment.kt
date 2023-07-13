@@ -10,18 +10,23 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.search.ui.viewmodel.SearchViewModel
 import com.example.playlistmaker.utility.ErrorType
-import com.example.playlistmaker.utility.OnClickSupport
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
     private lateinit var binding: FragmentSearchBinding
 
-    private val searchAdapter = TrackAdapter()
-    private val historyAdapter = TrackAdapter()
+    private val searchAdapter = TrackAdapter { track ->
+        //openPlayer(track)
+        findNavController().navigate(R.id.action_searchFragment_to_settingsFragment)
+    }
+    private val historyAdapter = TrackAdapter { track ->
+        //openPlayer(track)
+    }
 
     private val viewModel by viewModel<SearchViewModel>()
 
@@ -39,15 +44,6 @@ class SearchFragment : Fragment() {
 
         binding.trackListRecycler.adapter = searchAdapter
         binding.searchHistoryRecycler.adapter = historyAdapter
-
-        OnClickSupport.addTo(binding.trackListRecycler).onItemClick { _, position, _ ->
-            viewModel.saveToHistory(searchAdapter.tracks[position])
-            openPlayer(searchAdapter.tracks[position])
-        }
-
-        OnClickSupport.addTo(binding.searchHistoryRecycler).onItemClick { _, position, _ ->
-            openPlayer(historyAdapter.tracks[position])
-        }
 
         binding.searchNavigation.setNavigationOnClickListener {
             findNavController().popBackStack()
@@ -80,12 +76,6 @@ class SearchFragment : Fragment() {
         viewModel.screenState.observe(viewLifecycleOwner) {
             render(it)
         }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        OnClickSupport.removeFrom(binding.trackListRecycler)
-        OnClickSupport.removeFrom(binding.searchHistoryRecycler)
     }
 
     private fun openPlayer(track: Track) {
