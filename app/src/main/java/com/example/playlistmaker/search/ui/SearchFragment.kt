@@ -19,16 +19,16 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
     private lateinit var binding: FragmentSearchBinding
+    private val viewModel by viewModel<SearchViewModel>()
 
     private val searchAdapter = TrackAdapter { track ->
-        //openPlayer(track)
-        findNavController().navigate(R.id.action_searchFragment_to_settingsFragment)
+        saveTrack(track)
+        findNavController().navigate(R.id.action_searchFragment_to_playerFragment)
     }
     private val historyAdapter = TrackAdapter { track ->
-        //openPlayer(track)
+        viewModel.saveToHistory(track)
+        findNavController().navigate(R.id.action_searchFragment_to_playerFragment)
     }
-
-    private val viewModel by viewModel<SearchViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -78,12 +78,11 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun openPlayer(track: Track) {
+    private fun saveTrack(track: Track) {
         if (viewModel.trackIsClickable.value == false) return
 
         viewModel.saveTrack(track)
         viewModel.trackClickDebounce()
-        //findNavController().navigate()
     }
 
     private fun render(screenState: SearchScreenState) {
@@ -150,8 +149,8 @@ class SearchFragment : Fragment() {
     }
 
     private fun hideKeyboard() {
-        val inputMethodManager = requireActivity().
-            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
+        val inputMethodManager =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         inputMethodManager?.hideSoftInputFromWindow(binding.clearSearchField.windowToken, 0)
     }
 

@@ -62,6 +62,7 @@ class SearchViewModel(
                     is Result.Success -> {
                         _screenState.value = SearchScreenState.Content(result.data)
                     }
+
                     is Result.Error -> {
                         _screenState.value = SearchScreenState.Error(result.type)
                     }
