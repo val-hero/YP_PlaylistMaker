@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
@@ -37,6 +38,10 @@ class PlayerFragment : Fragment() {
 
         binding.playbackButton.setOnClickListener {
             viewModel.playbackControl()
+        }
+
+        binding.navigation.setNavigationOnClickListener {
+            findNavController().popBackStack()
         }
 
         viewModel.playerState.observe(viewLifecycleOwner) { state ->

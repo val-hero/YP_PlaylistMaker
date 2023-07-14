@@ -142,4 +142,9 @@
     <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>
     </style>
+    
+    <style name="BottomNavTextAppearance" >
+        <item name="fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>
