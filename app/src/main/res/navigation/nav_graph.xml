@@ -18,4 +18,18 @@
         android:id="@+id/playerFragment"
         android:name="com.example.playlistmaker.player.ui.PlayerFragment"
         android:label="PlayerFragment" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.playlistmaker.settings.ui.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
+    <activity
+        android:id="@+id/libraryActivity"
+        android:name="com.example.playlistmaker.library.ui.LibraryActivity"
+        android:label="activity_library"
+        tools:layout="@layout/activity_library" />
+    <activity
+        android:id="@+id/hostActivity"
+        android:name="com.example.playlistmaker.core.HostActivity"
+        android:label="HostActivity" />
 </navigation>

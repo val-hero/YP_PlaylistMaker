@@ -10,7 +10,6 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/settings_back_button"
         style="@style/Toolbar"
-        app:navigationIcon="@drawable/navigate_back"
         app:title="@string/settings_title" />
 
     <LinearLayout
