@@ -3,6 +3,7 @@ package com.example.playlistmaker.search.ui.viewmodel
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -112,17 +113,27 @@ class SearchViewModel(
     }
 
     fun saveToHistory(track: Track) {
+        if(searchHistory.isNotEmpty()) {
+            Log.e("VM onSave", searchHistory[0].trackName)
+        }
         saveToHistoryUseCase(track, searchHistory)
         loadHistory()
+        if(searchHistory.isNotEmpty()) {
+            Log.e("VM saved", searchHistory[0].trackName)
+        }
     }
 
     fun saveTrack(track: Track) {
         saveTrackUseCase(track)
+        saveToHistory(track)
     }
 
-    private fun loadHistory() {
+    fun loadHistory() {
         searchHistory.clear()
         searchHistory.addAll(getTrackListUseCase())
+        if(searchHistory.isNotEmpty()) {
+            Log.e("VM load", searchHistory[0].trackName)
+        }
     }
 
     override fun onCleared() {

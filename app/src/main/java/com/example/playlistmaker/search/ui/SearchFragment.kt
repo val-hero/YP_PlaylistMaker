@@ -21,12 +21,12 @@ class SearchFragment : Fragment() {
     private lateinit var binding: FragmentSearchBinding
     private val viewModel by viewModel<SearchViewModel>()
 
-    private val searchAdapter = TrackAdapter { track ->
-        saveTrack(track)
+    private val searchAdapter = TrackAdapter {
+        saveTrack(it)
         findNavController().navigate(R.id.action_searchFragment_to_playerFragment)
     }
-    private val historyAdapter = TrackAdapter { track ->
-        viewModel.saveToHistory(track)
+    private val historyAdapter = TrackAdapter {
+        saveTrack(it)
         findNavController().navigate(R.id.action_searchFragment_to_playerFragment)
     }
 
@@ -41,6 +41,7 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.loadHistory()
 
         binding.trackListRecycler.adapter = searchAdapter
         binding.searchHistoryRecycler.adapter = historyAdapter
