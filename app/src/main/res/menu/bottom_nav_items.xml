@@ -6,7 +6,7 @@
         android:title="@string/search_title" />
 
     <item
-        android:id="@+id/libraryActivity"
+        android:id="@+id/libraryFragment"
         android:icon="@drawable/library"
         android:title="@string/library_title" />
 

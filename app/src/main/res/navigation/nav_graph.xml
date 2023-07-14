@@ -23,13 +23,9 @@
         android:name="com.example.playlistmaker.settings.ui.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" />
-    <activity
-        android:id="@+id/libraryActivity"
-        android:name="com.example.playlistmaker.library.ui.LibraryActivity"
-        android:label="activity_library"
-        tools:layout="@layout/activity_library" />
-    <activity
-        android:id="@+id/hostActivity"
-        android:name="com.example.playlistmaker.core.HostActivity"
-        android:label="HostActivity" />
+    <fragment
+        android:id="@+id/libraryFragment"
+        android:name="com.example.playlistmaker.library.ui.LibraryFragment"
+        android:label="fragment_library"
+        tools:layout="@layout/fragment_library" />
 </navigation>
