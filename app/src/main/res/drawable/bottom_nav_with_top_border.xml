@@ -2,7 +2,7 @@
     <item android:gravity="top">
         <shape android:shape="rectangle">
             <size android:height="0.5dp" />
-            <solid android:color="?attr/colorSecondary" />
+            <solid android:color="@color/yp_light_gray" />
         </shape>
     </item>
 </layer-list>

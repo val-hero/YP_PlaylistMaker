@@ -125,7 +125,6 @@ class SearchViewModel(
 
     fun saveTrack(track: Track) {
         saveTrackUseCase(track)
-        saveToHistory(track)
     }
 
     fun loadHistory() {

@@ -34,8 +34,8 @@ class LibraryFragment : Fragment() {
         tabMediator.attach()
     }
 
-    override fun onDetach() {
-        super.onDetach()
+    override fun onStop() {
+        super.onStop()
         tabMediator.detach()
     }
 }

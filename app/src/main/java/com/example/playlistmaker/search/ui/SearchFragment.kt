@@ -19,15 +19,15 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
     private lateinit var binding: FragmentSearchBinding
+
     private val viewModel by viewModel<SearchViewModel>()
 
     private val searchAdapter = TrackAdapter {
-        saveTrack(it)
-        findNavController().navigate(R.id.action_searchFragment_to_playerFragment)
+        openTrack(it)
+        viewModel.saveToHistory(it)
     }
     private val historyAdapter = TrackAdapter {
-        saveTrack(it)
-        findNavController().navigate(R.id.action_searchFragment_to_playerFragment)
+        openTrack(it)
     }
 
     override fun onCreateView(
@@ -79,11 +79,12 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun saveTrack(track: Track) {
+    private fun openTrack(track: Track) {
         if (viewModel.trackIsClickable.value == false) return
 
         viewModel.saveTrack(track)
         viewModel.trackClickDebounce()
+        findNavController().navigate(R.id.action_searchFragment_to_playerFragment)
     }
 
     private fun render(screenState: SearchScreenState) {
