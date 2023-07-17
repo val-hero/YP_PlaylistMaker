@@ -5,12 +5,11 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context=".library.ui.LibraryActivity">
+    tools:context=".library.ui.LibraryFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/library_toolbar"
         style="@style/Toolbar"
-        app:navigationIcon="@drawable/navigate_back"
         app:title="@string/library_title" />
     
     <com.google.android.material.tabs.TabLayout
