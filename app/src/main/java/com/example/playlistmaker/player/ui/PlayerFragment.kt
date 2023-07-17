@@ -1,14 +1,18 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivityPlayerBinding
+import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.player.domain.model.PlayerState
 import com.example.playlistmaker.player.ui.viewmodel.PlayerViewModel
 import com.example.playlistmaker.search.domain.model.Track
@@ -16,25 +20,31 @@ import com.example.playlistmaker.utility.ErrorType
 import com.example.playlistmaker.utility.asMinutesAndSeconds
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PlayerActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityPlayerBinding
-
+class PlayerFragment : Fragment() {
+    private lateinit var binding: FragmentPlayerBinding
     private val viewModel: PlayerViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentPlayerBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        binding.navigation.setNavigationOnClickListener {
-            finish()
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.playbackButton.setOnClickListener {
             viewModel.playbackControl()
         }
 
-        viewModel.playerState.observe(this) { state ->
+        binding.navigation.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+
+        viewModel.playerState.observe(viewLifecycleOwner) { state ->
             setPlaybackButtonIcon(state)
             when (state) {
                 is PlayerState.Prepared -> {
@@ -50,7 +60,11 @@ class PlayerActivity : AppCompatActivity() {
                 }
 
                 is PlayerState.Error -> {
-                    Toast.makeText(this, getErrorMessage(state.errorType), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        getErrorMessage(state.errorType),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 else -> Unit
@@ -63,8 +77,8 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.pausePlayer()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDetach() {
+        super.onDetach()
         viewModel.releasePlayer()
     }
 
@@ -80,7 +94,7 @@ class PlayerActivity : AppCompatActivity() {
             albumGroup.isVisible = albumValue.text.isNotEmpty()
             playerTrackName.isSelected = true
 
-            Glide.with(this@PlayerActivity).load(track.resizedImage())
+            Glide.with(this@PlayerFragment).load(track.resizedImage())
                 .placeholder(R.drawable.player_track_img_placeholder)
                 .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.player_track_image_corners)))
                 .into(playerTrackImage)

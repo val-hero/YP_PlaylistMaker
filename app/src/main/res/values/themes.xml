@@ -15,9 +15,6 @@
         <item name="colorAccent">@color/yp_blue</item>
         <item name="colorSurface">@color/white</item>
         <item name="colorOnSurface">@color/yp_black</item>
-    </style>
-
-    <style name="MainScreen" parent="Theme.PlaylistMaker">
-        <item name="android:background">?attr/colorAccent</item>
+        <item name="android:windowBackground">?attr/colorPrimary</item>
     </style>
 </resources>

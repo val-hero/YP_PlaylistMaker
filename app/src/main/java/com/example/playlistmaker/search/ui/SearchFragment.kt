@@ -1,45 +1,53 @@
 package com.example.playlistmaker.search.ui
 
-import android.content.Intent
+import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
-import com.example.playlistmaker.databinding.ActivitySearchBinding
-import com.example.playlistmaker.player.ui.PlayerActivity
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.example.playlistmaker.R
+import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.search.ui.viewmodel.SearchViewModel
 import com.example.playlistmaker.utility.ErrorType
-import com.example.playlistmaker.utility.OnClickSupport
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
-    private lateinit var binding: ActivitySearchBinding
-
-    private val searchAdapter = TrackAdapter()
-    private val historyAdapter = TrackAdapter()
+class SearchFragment : Fragment() {
+    private lateinit var binding: FragmentSearchBinding
 
     private val viewModel by viewModel<SearchViewModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    private val searchAdapter = TrackAdapter {
+        openTrack(it)
+        viewModel.saveToHistory(it)
+    }
+    private val historyAdapter = TrackAdapter {
+        openTrack(it)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.loadHistory()
+
         binding.trackListRecycler.adapter = searchAdapter
         binding.searchHistoryRecycler.adapter = historyAdapter
 
-        OnClickSupport.addTo(binding.trackListRecycler).onItemClick { _, position, _ ->
-            viewModel.saveToHistory(searchAdapter.tracks[position])
-            openPlayer(searchAdapter.tracks[position])
-        }
-
-        OnClickSupport.addTo(binding.searchHistoryRecycler).onItemClick { _, position, _ ->
-            openPlayer(historyAdapter.tracks[position])
-        }
-
         binding.searchNavigation.setNavigationOnClickListener {
-            finish()
+            findNavController().popBackStack()
         }
 
         binding.searchField.doOnTextChanged { text, _, _, _ ->
@@ -66,24 +74,17 @@ class SearchActivity : AppCompatActivity() {
             viewModel.clearSearchHistory()
         }
 
-        viewModel.screenState.observe(this) {
+        viewModel.screenState.observe(viewLifecycleOwner) {
             render(it)
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        OnClickSupport.removeFrom(binding.trackListRecycler)
-        OnClickSupport.removeFrom(binding.searchHistoryRecycler)
-    }
-
-    private fun openPlayer(track: Track) {
+    private fun openTrack(track: Track) {
         if (viewModel.trackIsClickable.value == false) return
 
         viewModel.saveTrack(track)
         viewModel.trackClickDebounce()
-        val intent = Intent(this, PlayerActivity::class.java)
-        startActivity(intent)
+        findNavController().navigate(R.id.action_searchFragment_to_playerFragment)
     }
 
     private fun render(screenState: SearchScreenState) {
@@ -151,7 +152,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun hideKeyboard() {
         val inputMethodManager =
-            getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager?
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
         inputMethodManager?.hideSoftInputFromWindow(binding.clearSearchField.windowToken, 0)
     }
 
