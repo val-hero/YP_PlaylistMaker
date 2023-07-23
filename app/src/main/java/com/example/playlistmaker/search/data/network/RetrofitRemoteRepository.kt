@@ -1,38 +1,34 @@
 package com.example.playlistmaker.search.data.network
 
 import com.example.playlistmaker.search.data.mapper.TrackDtoMapper
-import com.example.playlistmaker.search.data.model.SearchResponse
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.search.domain.repository.TrackRepositoryRemote
 import com.example.playlistmaker.utility.ErrorType
 import com.example.playlistmaker.utility.Result
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import retrofit2.HttpException
+import java.io.IOException
 
 class RetrofitRemoteRepository(
     private val api: ITunesApiService,
     private val mapper: TrackDtoMapper
 ) : TrackRepositoryRemote {
 
-    override fun getTracks(expression: CharSequence, callback: (Result<ArrayList<Track>>) -> Unit) {
-        api.getTracks(expression)
-            .enqueue(object : Callback<SearchResponse> {
-                override fun onResponse(
-                    call: Call<SearchResponse>,
-                    response: Response<SearchResponse>
-                ) {
-                    val result = response.body()?.results
-                    if (result.isNullOrEmpty())
-                        callback(Result.Error(ErrorType.NOT_FOUND))
-                    else
-                        callback(Result.Success(result.map { mapper.mapToDomainModel(it) } as ArrayList))
-                }
-
-                override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                    callback(Result.Error(ErrorType.NO_NETWORK_CONNECTION))
-                }
+    override suspend fun getTracks(expression: CharSequence): Flow<Result<List<Track>>> = flow {
+        try {
+            val tracks = api.getTracks(expression).results
+            if (tracks.isEmpty()) {
+                emit(Result.Error(ErrorType.NOT_FOUND))
+            } else {
+                emit(Result.Success(tracks.map { mapper.mapToDomainModel(it) }))
             }
-            )
+
+        } catch (e: Exception) {
+            when (e) {
+                is HttpException, is IOException -> emit(Result.Error(ErrorType.NO_NETWORK_CONNECTION))
+                else -> emit(Result.Error(ErrorType.UNEXPECTED_ERROR))
+            }
+        }
     }
 }
