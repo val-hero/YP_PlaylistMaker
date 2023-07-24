@@ -1,12 +1,9 @@
 package com.example.playlistmaker.search.ui.viewmodel
 
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.search.domain.usecase.ClearSearchHistory
 import com.example.playlistmaker.search.domain.usecase.GetTrackList
@@ -16,6 +13,8 @@ import com.example.playlistmaker.search.domain.usecase.SaveTrackList
 import com.example.playlistmaker.search.domain.usecase.Search
 import com.example.playlistmaker.search.ui.SearchScreenState
 import com.example.playlistmaker.utility.Result
+import com.example.playlistmaker.utility.debounce
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val searchUseCase: Search,
@@ -25,63 +24,72 @@ class SearchViewModel(
     private val saveToHistoryUseCase: SaveToHistory,
     private val clearSearchHistoryUseCase: ClearSearchHistory
 ) : ViewModel() {
-    private val handler = Handler(Looper.getMainLooper())
 
     private val searchHistory = ArrayList<Track>()
-    private var searchInput: String? = null
 
     private val _screenState = MutableLiveData<SearchScreenState>()
     val screenState: LiveData<SearchScreenState> = _screenState
 
-    private val _trackIsClickable = MutableLiveData(true)
-    var trackIsClickable: LiveData<Boolean> = _trackIsClickable
+    var trackIsClickable = true
+        private set
 
-    private var latestSearchExpression: CharSequence = ""
+    private var latestSearchExpression: CharSequence? = null
+    private var latestSearchResult: ArrayList<Track> = arrayListOf()
 
     private var searchFieldIsFocused = false
+
+    private val trackSearchDebounce =
+        debounce<CharSequence>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { expression ->
+            search(expression)
+        }
+
+    private val trackClickDebounce =
+        debounce<Boolean>(CLICK_DEBOUNCE_DELAY, viewModelScope, false) {
+            trackIsClickable = it
+        }
 
     init {
         loadHistory()
     }
 
-    private fun searchDebounce(expression: CharSequence) {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-
-        val searchRunnable = Runnable { search(expression) }
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(searchRunnable, SEARCH_REQUEST_TOKEN, postTime)
-    }
-
     private fun search(expression: CharSequence) {
-        _screenState.value = SearchScreenState.Loading
         latestSearchExpression = expression
+        if (expression.isBlank()) return
 
-        searchUseCase(
-            expression = expression,
-            callback = { result ->
+        _screenState.value = SearchScreenState.Loading
+
+        viewModelScope.launch {
+            searchUseCase(expression).collect { result ->
                 when (result) {
                     is Result.Success -> {
-                        _screenState.value = SearchScreenState.Content(result.data)
+                        _screenState.value = SearchScreenState.Content(result.data as ArrayList)
+                        latestSearchResult = result.data
                     }
 
                     is Result.Error -> {
-                        _screenState.value = SearchScreenState.Error(result.type)
+                        _screenState.value = SearchScreenState.Error(result.errorType)
                     }
                 }
-            })
+            }
+        }
+    }
+
+    fun onTrackClick() {
+        trackIsClickable = false
+        trackClickDebounce(true)
     }
 
     fun runLatestSearch() {
-        searchDebounce(latestSearchExpression)
+        trackSearchDebounce(latestSearchExpression ?: "")
     }
 
-    fun onSearchTextChanged(newText: String?) {
-        searchInput = newText
+    fun onSearchExpressionChange(newExpression: String?) {
         toggleHistoryVisibility()
-        if (!newText.isNullOrBlank())
-            searchDebounce(newText)
+
+        if (latestSearchExpression == newExpression && latestSearchResult.isNotEmpty())
+            _screenState.value = SearchScreenState.Content(latestSearchResult)
         else
-            handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
+            trackSearchDebounce(newExpression ?: "")
     }
 
     fun onSearchFieldFocusChanged(isFocused: Boolean) {
@@ -90,20 +98,10 @@ class SearchViewModel(
     }
 
     private fun toggleHistoryVisibility() {
-        if (searchFieldIsFocused && searchInput.isNullOrBlank())
+        if (searchFieldIsFocused && latestSearchExpression.isNullOrBlank())
             _screenState.value = SearchScreenState.History(searchHistory)
         else
             _screenState.value = SearchScreenState.Empty
-    }
-
-    fun trackClickDebounce() {
-        _trackIsClickable.value = false
-        handler.postDelayed({ _trackIsClickable.value = true }, TRACK_CLICK_DELAY)
-    }
-
-    fun clearSearchField() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
-        searchInput = ""
     }
 
     fun clearSearchHistory() {
@@ -113,14 +111,8 @@ class SearchViewModel(
     }
 
     fun saveToHistory(track: Track) {
-        if(searchHistory.isNotEmpty()) {
-            Log.e("VM onSave", searchHistory[0].trackName)
-        }
         saveToHistoryUseCase(track, searchHistory)
         loadHistory()
-        if(searchHistory.isNotEmpty()) {
-            Log.e("VM saved", searchHistory[0].trackName)
-        }
     }
 
     fun saveTrack(track: Track) {
@@ -130,20 +122,15 @@ class SearchViewModel(
     fun loadHistory() {
         searchHistory.clear()
         searchHistory.addAll(getTrackListUseCase())
-        if(searchHistory.isNotEmpty()) {
-            Log.e("VM load", searchHistory[0].trackName)
-        }
     }
 
     override fun onCleared() {
         super.onCleared()
         saveTrackListUseCase(searchHistory)
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
     }
 
     companion object {
-        val SEARCH_REQUEST_TOKEN = Any()
         const val SEARCH_DEBOUNCE_DELAY = 2000L
-        const val TRACK_CLICK_DELAY = 100L
+        const val CLICK_DEBOUNCE_DELAY = 300L
     }
 }

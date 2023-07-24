@@ -51,7 +51,7 @@ class SearchFragment : Fragment() {
         }
 
         binding.searchField.doOnTextChanged { text, _, _, _ ->
-            viewModel.onSearchTextChanged(text.toString())
+            viewModel.onSearchExpressionChange(text.toString())
             clearButtonVisibility(text.toString())
         }
 
@@ -60,7 +60,7 @@ class SearchFragment : Fragment() {
         }
 
         binding.clearSearchField.setOnClickListener {
-            viewModel.clearSearchField()
+            viewModel.onSearchExpressionChange(null)
             hideKeyboard()
             binding.searchField.clearFocus()
             binding.searchField.text = null
@@ -80,10 +80,10 @@ class SearchFragment : Fragment() {
     }
 
     private fun openTrack(track: Track) {
-        if (viewModel.trackIsClickable.value == false) return
+        if (!viewModel.trackIsClickable) return
 
         viewModel.saveTrack(track)
-        viewModel.trackClickDebounce()
+        viewModel.onTrackClick()
         findNavController().navigate(R.id.action_searchFragment_to_playerFragment)
     }
 
@@ -142,7 +142,6 @@ class SearchFragment : Fragment() {
             ErrorType.NO_NETWORK_CONNECTION -> binding.serverError.isVisible = true
             else -> Unit
         }
-
     }
 
     private fun hideErrors() {
