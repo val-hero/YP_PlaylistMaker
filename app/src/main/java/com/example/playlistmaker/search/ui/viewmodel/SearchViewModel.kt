@@ -34,6 +34,8 @@ class SearchViewModel(
         private set
 
     private var latestSearchExpression: CharSequence? = null
+    private var latestSearchResult: ArrayList<Track> = arrayListOf()
+
     private var searchFieldIsFocused = false
 
     private val trackSearchDebounce =
@@ -52,19 +54,21 @@ class SearchViewModel(
 
     private fun search(expression: CharSequence) {
         latestSearchExpression = expression
-        if (expression.isBlank())
-            return
+        if (expression.isBlank()) return
 
         _screenState.value = SearchScreenState.Loading
 
         viewModelScope.launch {
             searchUseCase(expression).collect { result ->
                 when (result) {
-                    is Result.Success -> _screenState.value =
-                        SearchScreenState.Content(result.data as ArrayList)
+                    is Result.Success -> {
+                        _screenState.value = SearchScreenState.Content(result.data as ArrayList)
+                        latestSearchResult = result.data
+                    }
 
-                    is Result.Error -> _screenState.value =
-                        SearchScreenState.Error(result.errorType)
+                    is Result.Error -> {
+                        _screenState.value = SearchScreenState.Error(result.errorType)
+                    }
                 }
             }
         }
@@ -81,7 +85,11 @@ class SearchViewModel(
 
     fun onSearchExpressionChange(newExpression: String?) {
         toggleHistoryVisibility()
-        trackSearchDebounce(newExpression ?: "")
+
+        if (latestSearchExpression == newExpression && latestSearchResult.isNotEmpty())
+            _screenState.value = SearchScreenState.Content(latestSearchResult)
+        else
+            trackSearchDebounce(newExpression ?: "")
     }
 
     fun onSearchFieldFocusChanged(isFocused: Boolean) {
