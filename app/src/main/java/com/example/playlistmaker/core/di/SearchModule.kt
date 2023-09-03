@@ -2,23 +2,18 @@ package com.example.playlistmaker.core.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.playlistmaker.search.data.TrackStorage
-import com.example.playlistmaker.search.data.mapper.TrackDtoMapper
-import com.example.playlistmaker.search.data.network.ITunesApiService
-import com.example.playlistmaker.search.data.network.RetrofitRemoteRepository
-import com.example.playlistmaker.search.data.repository.TrackRepositoryImpl
-import com.example.playlistmaker.search.data.storage.SharedPrefsTrackStorage
-import com.example.playlistmaker.search.domain.repository.TrackRepository
-import com.example.playlistmaker.search.domain.repository.TrackRepositoryRemote
-import com.example.playlistmaker.search.domain.usecase.ClearSearchHistory
-import com.example.playlistmaker.search.domain.usecase.GetTrack
-import com.example.playlistmaker.search.domain.usecase.GetTrackList
-import com.example.playlistmaker.search.domain.usecase.SaveToHistory
-import com.example.playlistmaker.search.domain.usecase.SaveTrack
-import com.example.playlistmaker.search.domain.usecase.SaveTrackList
-import com.example.playlistmaker.search.domain.usecase.Search
+import com.example.playlistmaker.core.data.network.ApiService
+import com.example.playlistmaker.core.data.repository.TrackRepositoryImpl
+import com.example.playlistmaker.core.domain.repository.TrackRepository
+import com.example.playlistmaker.core.domain.usecase.ClearSearchHistory
+import com.example.playlistmaker.core.domain.usecase.GetTrack
+import com.example.playlistmaker.core.domain.usecase.GetTrackList
+import com.example.playlistmaker.core.domain.usecase.SaveToHistory
+import com.example.playlistmaker.core.domain.usecase.SaveTrack
+import com.example.playlistmaker.core.domain.usecase.SaveTrackList
+import com.example.playlistmaker.core.domain.usecase.Search
+import com.example.playlistmaker.core.utility.TRACKS_SHARED_PREFS
 import com.example.playlistmaker.search.ui.viewmodel.SearchViewModel
-import com.example.playlistmaker.utility.TRACKS_SHARED_PREFS
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -39,30 +34,22 @@ val searchModule = module {
         )
     }
 
-    single<TrackStorage> {
-        SharedPrefsTrackStorage(
-            sharedPreferences = get(qualifier = named(TRACKS_SHARED_PREFS))
-        )
-    }
+//    single<TrackStorage> {
+//        SharedPrefsTrackStorage(
+//            sharedPreferences = get(qualifier = named(TRACKS_SHARED_PREFS))
+//        )
+//    }
 
     single<TrackRepository> {
-        TrackRepositoryImpl(trackStorage = get())
+        TrackRepositoryImpl(api = get())
     }
 
-    single<TrackRepositoryRemote> {
-        RetrofitRemoteRepository(api = get(), mapper = get())
-    }
-
-    single {
-        TrackDtoMapper()
-    }
-
-    single<ITunesApiService> {
+    single<ApiService> {
         Retrofit.Builder()
-            .baseUrl(ITunesApiService.BASE_URL)
+            .baseUrl(ApiService.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ITunesApiService::class.java)
+            .create(ApiService::class.java)
     }
 
     single<SharedPreferences>(qualifier = named(TRACKS_SHARED_PREFS)) {

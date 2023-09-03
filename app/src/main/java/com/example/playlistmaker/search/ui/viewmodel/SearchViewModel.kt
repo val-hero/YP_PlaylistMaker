@@ -4,16 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playlistmaker.search.domain.model.Track
-import com.example.playlistmaker.search.domain.usecase.ClearSearchHistory
-import com.example.playlistmaker.search.domain.usecase.GetTrackList
-import com.example.playlistmaker.search.domain.usecase.SaveToHistory
-import com.example.playlistmaker.search.domain.usecase.SaveTrack
-import com.example.playlistmaker.search.domain.usecase.SaveTrackList
-import com.example.playlistmaker.search.domain.usecase.Search
+import com.example.playlistmaker.core.domain.model.Track
+import com.example.playlistmaker.core.domain.usecase.ClearSearchHistory
+import com.example.playlistmaker.core.domain.usecase.GetTrackList
+import com.example.playlistmaker.core.domain.usecase.SaveToHistory
+import com.example.playlistmaker.core.domain.usecase.SaveTrack
+import com.example.playlistmaker.core.domain.usecase.SaveTrackList
+import com.example.playlistmaker.core.domain.usecase.Search
+import com.example.playlistmaker.core.utility.Resource
+import com.example.playlistmaker.core.utility.debounce
 import com.example.playlistmaker.search.ui.SearchScreenState
-import com.example.playlistmaker.utility.Result
-import com.example.playlistmaker.utility.debounce
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -59,16 +59,18 @@ class SearchViewModel(
         _screenState.value = SearchScreenState.Loading
 
         viewModelScope.launch {
-            searchUseCase(expression).collect { result ->
+            searchUseCase(expression.toString()).collect { result ->
                 when (result) {
-                    is Result.Success -> {
+                    is Resource.Success -> {
                         _screenState.value = SearchScreenState.Content(result.data as ArrayList)
                         latestSearchResult = result.data
                     }
 
-                    is Result.Error -> {
+                    is Resource.Error -> {
                         _screenState.value = SearchScreenState.Error(result.errorType)
                     }
+
+                    else -> { /* add loading */ }
                 }
             }
         }
@@ -121,7 +123,7 @@ class SearchViewModel(
 
     fun loadHistory() {
         searchHistory.clear()
-        searchHistory.addAll(getTrackListUseCase())
+       // searchHistory.addAll(getTrackListUseCase())
     }
 
     override fun onCleared() {

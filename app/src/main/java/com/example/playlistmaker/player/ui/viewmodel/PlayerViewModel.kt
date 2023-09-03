@@ -4,9 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.core.domain.usecase.GetTrack
 import com.example.playlistmaker.player.domain.model.PlayerState
-import com.example.playlistmaker.player.domain.usecase.*
-import com.example.playlistmaker.search.domain.usecase.GetTrack
+import com.example.playlistmaker.player.domain.usecase.GetPlayerState
+import com.example.playlistmaker.player.domain.usecase.PauseTrack
+import com.example.playlistmaker.player.domain.usecase.PlayTrack
+import com.example.playlistmaker.player.domain.usecase.PrepareTrack
+import com.example.playlistmaker.player.domain.usecase.ReleasePlayer
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
@@ -22,7 +26,7 @@ class PlayerViewModel(
     val playerState: LiveData<PlayerState> = _playerState
 
     init {
-        prepareTrackUseCase(getTrackUseCase())
+        //prepareTrackUseCase(getTrackUseCase())
 
         viewModelScope.launch {
             getPlayerStateUseCase().collect { state ->

@@ -12,12 +12,12 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.core.domain.model.Track
+import com.example.playlistmaker.core.utility.ErrorType
+import com.example.playlistmaker.core.utility.asMinutesAndSeconds
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.player.domain.model.PlayerState
 import com.example.playlistmaker.player.ui.viewmodel.PlayerViewModel
-import com.example.playlistmaker.search.domain.model.Track
-import com.example.playlistmaker.utility.ErrorType
-import com.example.playlistmaker.utility.asMinutesAndSeconds
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerFragment : Fragment() {
