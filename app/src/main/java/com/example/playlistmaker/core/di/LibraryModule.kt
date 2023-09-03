@@ -1,4 +1,4 @@
-package com.example.playlistmaker.di
+package com.example.playlistmaker.core.di
 
 import com.example.playlistmaker.library.ui.viewmodel.FavouriteTracksFragmentViewModel
 import com.example.playlistmaker.library.ui.viewmodel.PlaylistFragmentViewModel
