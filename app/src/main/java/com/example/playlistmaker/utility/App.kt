@@ -2,11 +2,11 @@ package com.example.playlistmaker.utility
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.playlistmaker.di.libraryModule
-import com.example.playlistmaker.di.playerModule
-import com.example.playlistmaker.di.searchModule
-import com.example.playlistmaker.di.settingsModule
-import com.example.playlistmaker.di.sharingModule
+import com.example.playlistmaker.core.di.libraryModule
+import com.example.playlistmaker.core.di.playerModule
+import com.example.playlistmaker.core.di.searchModule
+import com.example.playlistmaker.core.di.settingsModule
+import com.example.playlistmaker.core.di.sharingModule
 import com.example.playlistmaker.settings.domain.usecase.GetCurrentDarkTheme
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext

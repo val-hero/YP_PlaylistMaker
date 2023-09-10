@@ -1,4 +1,4 @@
-package com.example.playlistmaker.di
+package com.example.playlistmaker.core.di
 
 import com.example.playlistmaker.sharing.data.ExternalNavigator
 import com.example.playlistmaker.sharing.data.SharingRepositoryImpl

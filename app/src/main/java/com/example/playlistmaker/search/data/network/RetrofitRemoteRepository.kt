@@ -1,6 +1,6 @@
 package com.example.playlistmaker.search.data.network
 
-import com.example.playlistmaker.search.data.mapper.TrackDtoMapper
+import com.example.playlistmaker.search.data.model.mapToDomain
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.search.domain.repository.TrackRepositoryRemote
 import com.example.playlistmaker.utility.ErrorType
@@ -12,7 +12,6 @@ import java.io.IOException
 
 class RetrofitRemoteRepository(
     private val api: ITunesApiService,
-    private val mapper: TrackDtoMapper
 ) : TrackRepositoryRemote {
 
     override suspend fun getTracks(expression: CharSequence): Flow<Result<List<Track>>> = flow {
@@ -21,7 +20,7 @@ class RetrofitRemoteRepository(
             if (tracks.isEmpty()) {
                 emit(Result.Error(ErrorType.NOT_FOUND))
             } else {
-                emit(Result.Success(tracks.map { mapper.mapToDomainModel(it) }))
+                emit(Result.Success(tracks.map { it.mapToDomain() }))
             }
 
         } catch (e: Exception) {
