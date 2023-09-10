@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.core.utils.Result
+import com.example.playlistmaker.core.utils.debounce
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.search.domain.usecase.ClearSearchHistory
 import com.example.playlistmaker.search.domain.usecase.GetTrackList
@@ -12,8 +14,6 @@ import com.example.playlistmaker.search.domain.usecase.SaveTrack
 import com.example.playlistmaker.search.domain.usecase.SaveTrackList
 import com.example.playlistmaker.search.domain.usecase.Search
 import com.example.playlistmaker.search.ui.SearchScreenState
-import com.example.playlistmaker.utility.Result
-import com.example.playlistmaker.utility.debounce
 import kotlinx.coroutines.launch
 
 class SearchViewModel(

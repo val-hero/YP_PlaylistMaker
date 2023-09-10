@@ -1,3 +1,3 @@
-package com.example.playlistmaker.utility
+package com.example.playlistmaker.core.utils
 
 fun Long?.asMinutesAndSeconds(): String = String.format("%1\$tM:%1\$tS", this)

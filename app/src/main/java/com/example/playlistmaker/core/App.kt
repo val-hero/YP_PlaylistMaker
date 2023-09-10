@@ -1,7 +1,8 @@
-package com.example.playlistmaker.utility
+package com.example.playlistmaker.core
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.playlistmaker.core.di.appModule
 import com.example.playlistmaker.core.di.libraryModule
 import com.example.playlistmaker.core.di.playerModule
 import com.example.playlistmaker.core.di.searchModule
@@ -24,6 +25,7 @@ class App : Application() {
             androidContext(this@App)
             modules(
                 listOf(
+                    appModule,
                     playerModule,
                     searchModule,
                     settingsModule,

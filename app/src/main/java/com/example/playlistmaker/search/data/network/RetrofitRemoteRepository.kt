@@ -1,10 +1,10 @@
 package com.example.playlistmaker.search.data.network
 
+import com.example.playlistmaker.core.utils.ErrorType
+import com.example.playlistmaker.core.utils.Result
 import com.example.playlistmaker.search.data.model.mapToDomain
 import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.search.domain.repository.TrackRepositoryRemote
-import com.example.playlistmaker.utility.ErrorType
-import com.example.playlistmaker.utility.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException

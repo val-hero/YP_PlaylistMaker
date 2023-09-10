@@ -1,11 +1,11 @@
 package com.example.playlistmaker.player.data.repository
 
 import android.media.MediaPlayer
+import com.example.playlistmaker.core.utils.ErrorType
+import com.example.playlistmaker.core.utils.loopWithDelay
 import com.example.playlistmaker.player.domain.model.PlayerState
 import com.example.playlistmaker.player.domain.repository.MediaPlayerRepository
 import com.example.playlistmaker.search.domain.model.Track
-import com.example.playlistmaker.utility.ErrorType
-import com.example.playlistmaker.utility.loopWithDelay
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

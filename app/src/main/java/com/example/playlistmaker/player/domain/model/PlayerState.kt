@@ -1,7 +1,7 @@
 package com.example.playlistmaker.player.domain.model
 
+import com.example.playlistmaker.core.utils.ErrorType
 import com.example.playlistmaker.search.domain.model.Track
-import com.example.playlistmaker.utility.ErrorType
 
 sealed class PlayerState {
     object Default : PlayerState()

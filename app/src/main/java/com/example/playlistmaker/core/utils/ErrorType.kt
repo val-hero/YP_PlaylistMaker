@@ -1,4 +1,4 @@
-package com.example.playlistmaker.utility
+package com.example.playlistmaker.core.utils
 
 enum class ErrorType {
     NO_NETWORK_CONNECTION,

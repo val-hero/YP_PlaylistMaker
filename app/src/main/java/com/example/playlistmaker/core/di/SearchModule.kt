@@ -2,6 +2,7 @@ package com.example.playlistmaker.core.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.playlistmaker.core.utils.TRACKS_SHARED_PREFS
 import com.example.playlistmaker.search.data.TrackStorage
 import com.example.playlistmaker.search.data.network.ITunesApiService
 import com.example.playlistmaker.search.data.network.RetrofitRemoteRepository
@@ -17,7 +18,6 @@ import com.example.playlistmaker.search.domain.usecase.SaveTrack
 import com.example.playlistmaker.search.domain.usecase.SaveTrackList
 import com.example.playlistmaker.search.domain.usecase.Search
 import com.example.playlistmaker.search.ui.viewmodel.SearchViewModel
-import com.example.playlistmaker.utility.TRACKS_SHARED_PREFS
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named

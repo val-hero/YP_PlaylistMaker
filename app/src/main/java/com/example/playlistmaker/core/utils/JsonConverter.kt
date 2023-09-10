@@ -1,4 +1,4 @@
-package com.example.playlistmaker.utility
+package com.example.playlistmaker.core.utils
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

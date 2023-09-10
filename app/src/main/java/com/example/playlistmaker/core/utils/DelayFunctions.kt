@@ -1,4 +1,4 @@
-package com.example.playlistmaker.utility
+package com.example.playlistmaker.core.utils
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

@@ -1,7 +1,7 @@
 package com.example.playlistmaker.search.domain.repository
 
+import com.example.playlistmaker.core.utils.Result
 import com.example.playlistmaker.search.domain.model.Track
-import com.example.playlistmaker.utility.Result
 import kotlinx.coroutines.flow.Flow
 
 interface TrackRepositoryRemote {
