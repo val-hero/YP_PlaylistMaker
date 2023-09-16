@@ -2,9 +2,9 @@ package com.example.playlistmaker.search.data.storage
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.example.playlistmaker.core.model.Track
 import com.example.playlistmaker.core.utils.JsonConverter
 import com.example.playlistmaker.search.data.TrackStorage
-import com.example.playlistmaker.search.domain.model.Track
 
 class SharedPrefsTrackStorage(private val sharedPreferences: SharedPreferences) : TrackStorage {
 

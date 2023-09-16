@@ -1,7 +1,7 @@
 package com.example.playlistmaker.search.data.repository
 
+import com.example.playlistmaker.core.model.Track
 import com.example.playlistmaker.search.data.TrackStorage
-import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.search.domain.repository.TrackRepository
 
 class TrackRepositoryImpl(private val trackStorage: TrackStorage) : TrackRepository {

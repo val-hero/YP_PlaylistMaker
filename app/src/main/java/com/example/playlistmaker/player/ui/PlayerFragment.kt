@@ -12,12 +12,13 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.core.model.Track
 import com.example.playlistmaker.core.utils.ErrorType
 import com.example.playlistmaker.core.utils.asMinutesAndSeconds
+import com.example.playlistmaker.core.utils.asYear
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.player.domain.model.PlayerState
 import com.example.playlistmaker.player.ui.viewmodel.PlayerViewModel
-import com.example.playlistmaker.search.domain.model.Track
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerFragment : Fragment() {
@@ -42,6 +43,10 @@ class PlayerFragment : Fragment() {
 
         binding.navigation.setNavigationOnClickListener {
             findNavController().popBackStack()
+        }
+
+        binding.addToFavouritesFab.setOnClickListener {
+            viewModel.saveOrDeleteFromFavourites()
         }
 
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
@@ -86,15 +91,16 @@ class PlayerFragment : Fragment() {
         with(binding) {
             playerTrackName.text = track.trackName
             playerArtistName.text = track.artistName
-            durationValue.text = track.formattedDuration()
+            durationValue.text = track.duration.asMinutesAndSeconds()
             albumValue.text = track.collectionName
-            yearValue.text = track.releaseYear()
+            yearValue.text = track.releaseDate.asYear()
             genreValue.text = track.genre
             countryValue.text = track.country
             albumGroup.isVisible = albumValue.text.isNotEmpty()
             playerTrackName.isSelected = true
 
-            Glide.with(this@PlayerFragment).load(track.resizedImage())
+            Glide.with(this@PlayerFragment)
+                .load(track.imageUrl.replaceAfterLast("/", "512x512bb.jpg"))
                 .placeholder(R.drawable.player_track_img_placeholder)
                 .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.player_track_image_corners)))
                 .into(playerTrackImage)

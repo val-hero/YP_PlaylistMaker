@@ -1,7 +1,7 @@
 package com.example.playlistmaker.search.ui
 
+import com.example.playlistmaker.core.model.Track
 import com.example.playlistmaker.core.utils.ErrorType
-import com.example.playlistmaker.search.domain.model.Track
 
 sealed class SearchScreenState {
     object Loading : SearchScreenState()

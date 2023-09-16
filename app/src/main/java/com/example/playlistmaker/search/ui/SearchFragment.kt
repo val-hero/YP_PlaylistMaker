@@ -11,9 +11,9 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
+import com.example.playlistmaker.core.model.Track
 import com.example.playlistmaker.core.utils.ErrorType
 import com.example.playlistmaker.databinding.FragmentSearchBinding
-import com.example.playlistmaker.search.domain.model.Track
 import com.example.playlistmaker.search.ui.viewmodel.SearchViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
