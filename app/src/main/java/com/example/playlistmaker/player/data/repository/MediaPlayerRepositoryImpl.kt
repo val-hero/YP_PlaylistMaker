@@ -1,7 +1,7 @@
 package com.example.playlistmaker.player.data.repository
 
 import android.media.MediaPlayer
-import com.example.playlistmaker.core.model.Track
+import com.example.playlistmaker.core.domain.model.Track
 import com.example.playlistmaker.core.utils.ErrorType
 import com.example.playlistmaker.core.utils.loopWithDelay
 import com.example.playlistmaker.player.domain.model.PlayerState

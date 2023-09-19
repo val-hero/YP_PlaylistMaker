@@ -1,11 +1,11 @@
-package com.example.playlistmaker.library.favourite.data.entity
+package com.example.playlistmaker.search.data.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.playlistmaker.core.domain.model.Track
 
-@Entity(tableName = "fav_tracks")
-data class FavouriteTrackEntity(
+@Entity(tableName = "search_history")
+data class SearchHistoryTrackEntity(
     @PrimaryKey val trackId: Long,
     val trackName: String,
     val artistName: String,
@@ -19,7 +19,7 @@ data class FavouriteTrackEntity(
     val insertedAt: Long?
 )
 
-fun FavouriteTrackEntity.mapToDomain(): Track {
+fun SearchHistoryTrackEntity.mapToDomain(): Track {
     return Track(
         trackId = this.trackId,
         trackName = this.trackName,
@@ -34,8 +34,8 @@ fun FavouriteTrackEntity.mapToDomain(): Track {
     )
 }
 
-fun Track.mapToFavouriteEntity(): FavouriteTrackEntity {
-    return FavouriteTrackEntity(
+fun Track.toSearchHistoryTrackEntity(): SearchHistoryTrackEntity {
+    return SearchHistoryTrackEntity(
         trackId = this.trackId,
         trackName = this.trackName,
         artistName = this.artistName,

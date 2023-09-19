@@ -11,7 +11,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
-import com.example.playlistmaker.core.model.Track
+import com.example.playlistmaker.core.domain.model.Track
 import com.example.playlistmaker.core.utils.ErrorType
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.search.ui.viewmodel.SearchViewModel
@@ -41,7 +41,6 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.loadHistory()
 
         binding.trackListRecycler.adapter = searchAdapter
         binding.searchHistoryRecycler.adapter = historyAdapter
@@ -51,7 +50,7 @@ class SearchFragment : Fragment() {
         }
 
         binding.searchField.doOnTextChanged { text, _, _, _ ->
-            viewModel.onSearchExpressionChange(text.toString())
+            viewModel.onSearchQueryChanged(text.toString())
             clearButtonVisibility(text.toString())
         }
 
@@ -60,7 +59,7 @@ class SearchFragment : Fragment() {
         }
 
         binding.clearSearchField.setOnClickListener {
-            viewModel.onSearchExpressionChange(null)
+            viewModel.onSearchQueryChanged(null)
             hideKeyboard()
             binding.searchField.clearFocus()
             binding.searchField.text = null

@@ -1,4 +1,4 @@
-package com.example.playlistmaker.core.model
+package com.example.playlistmaker.core.domain.model
 
 data class Track(
     val trackName: String,
@@ -13,3 +13,4 @@ data class Track(
     val imageUrl: String,
     val isFavourite: Boolean = false
 )
+

@@ -1,6 +1,6 @@
 package com.example.playlistmaker.player.domain.repository
 
-import com.example.playlistmaker.core.model.Track
+import com.example.playlistmaker.core.domain.model.Track
 import com.example.playlistmaker.player.domain.model.PlayerState
 import kotlinx.coroutines.flow.StateFlow
 

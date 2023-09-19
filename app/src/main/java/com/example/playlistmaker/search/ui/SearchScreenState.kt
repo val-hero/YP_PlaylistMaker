@@ -1,6 +1,6 @@
 package com.example.playlistmaker.search.ui
 
-import com.example.playlistmaker.core.model.Track
+import com.example.playlistmaker.core.domain.model.Track
 import com.example.playlistmaker.core.utils.ErrorType
 
 sealed class SearchScreenState {

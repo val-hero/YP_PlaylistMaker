@@ -21,7 +21,6 @@ val playerModule = module {
             pauseTrackUseCase = get(),
             getPlayerStateUseCase = get(),
             releasePlayerUseCase = get(),
-            getFavouriteTracksUseCase = get(),
             saveToFavouritesUseCase = get(),
             checkFavouriteStatusUseCase = get(),
             deleteFromFavouritesUseCase = get()

@@ -14,7 +14,7 @@ import org.koin.dsl.module
 val libraryModule = module {
 
     viewModel<FavouriteTracksFragmentViewModel> {
-        FavouriteTracksFragmentViewModel()
+        FavouriteTracksFragmentViewModel(getFavouriteTracksUseCase = get())
     }
 
     viewModel<PlaylistFragmentViewModel> {

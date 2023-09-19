@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.core.model.Track
+import com.example.playlistmaker.core.domain.model.Track
 import com.example.playlistmaker.core.utils.ErrorType
 import com.example.playlistmaker.core.utils.asMinutesAndSeconds
 import com.example.playlistmaker.core.utils.asYear

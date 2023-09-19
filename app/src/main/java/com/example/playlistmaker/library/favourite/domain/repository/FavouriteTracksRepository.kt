@@ -1,6 +1,6 @@
 package com.example.playlistmaker.library.favourite.domain.repository
 
-import com.example.playlistmaker.core.model.Track
+import com.example.playlistmaker.core.domain.model.Track
 import kotlinx.coroutines.flow.Flow
 
 interface FavouriteTracksRepository {

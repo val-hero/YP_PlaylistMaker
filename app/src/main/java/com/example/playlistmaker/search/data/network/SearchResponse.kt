@@ -1,3 +1,3 @@
-package com.example.playlistmaker.search.data.model
+package com.example.playlistmaker.search.data.network
 
 data class SearchResponse(val results: ArrayList<TrackDto>)

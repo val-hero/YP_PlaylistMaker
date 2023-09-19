@@ -1,6 +1,6 @@
-package com.example.playlistmaker.search.data.model
+package com.example.playlistmaker.search.data.network
 
-import com.example.playlistmaker.core.model.Track
+import com.example.playlistmaker.core.domain.model.Track
 
 data class TrackDto(
     val trackId: Long,
