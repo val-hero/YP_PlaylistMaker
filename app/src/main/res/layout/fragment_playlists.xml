@@ -5,6 +5,7 @@
     android:orientation="vertical">
 
     <Button
+        android:id="@+id/add_playlist_button"
         style="@style/ActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

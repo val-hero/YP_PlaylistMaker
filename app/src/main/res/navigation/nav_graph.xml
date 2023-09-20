@@ -17,11 +17,7 @@
     <fragment
         android:id="@+id/playerFragment"
         android:name="com.example.playlistmaker.player.ui.PlayerFragment"
-        android:label="PlayerFragment" >
-        <action
-            android:id="@+id/action_playerFragment_to_createPlaylistFragment"
-            app:destination="@id/createPlaylistFragment" />
-    </fragment>
+        android:label="PlayerFragment" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.playlistmaker.settings.ui.SettingsFragment"
@@ -35,6 +31,9 @@
         <action
             android:id="@+id/action_libraryFragment_to_playerFragment"
             app:destination="@id/playerFragment" />
+        <action
+            android:id="@+id/action_libraryFragment_to_createPlaylistFragment"
+            app:destination="@id/createPlaylistFragment" />
     </fragment>
     <fragment
         android:id="@+id/createPlaylistFragment"

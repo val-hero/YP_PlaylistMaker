@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="MainScreenButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0dp</item>
@@ -155,10 +156,11 @@
         <item name="fontFamily">@font/ys_display_medium</item>
         <item name="textAllCaps">false</item>
     </style>
-    
+
     <style name="OutlinedInputField" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="android:backgroundTint">?attr/colorSecondary</item>
         <item name="android:textColorHint">?attr/colorOnPrimary</item>
-        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="boxStrokeColor">@color/playlist_text_input_color</item>
+        <item name="hintTextColor">@color/yp_blue</item>
+
     </style>
 </resources>
