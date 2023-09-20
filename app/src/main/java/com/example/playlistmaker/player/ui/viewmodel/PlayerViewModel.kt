@@ -4,8 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playlistmaker.core.domain.model.Track
-import com.example.playlistmaker.core.domain.usecase.GetTrack
+import com.example.playlistmaker.core.domain.usecase.GetSelectedTrack
 import com.example.playlistmaker.library.favourite.domain.usecase.CheckFavouriteStatus
 import com.example.playlistmaker.library.favourite.domain.usecase.DeleteFromFavourites
 import com.example.playlistmaker.library.favourite.domain.usecase.SaveToFavourites
@@ -15,10 +14,11 @@ import com.example.playlistmaker.player.domain.usecase.PauseTrack
 import com.example.playlistmaker.player.domain.usecase.PlayTrack
 import com.example.playlistmaker.player.domain.usecase.PrepareTrack
 import com.example.playlistmaker.player.domain.usecase.ReleasePlayer
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(
-    val getTrackUseCase: GetTrack,
+    val getSelectedTrackUseCase: GetSelectedTrack,
     val prepareTrackUseCase: PrepareTrack,
     private val getPlayerStateUseCase: GetPlayerState,
     private val playTrackUseCase: PlayTrack,
@@ -28,8 +28,7 @@ class PlayerViewModel(
     private val checkFavouriteStatusUseCase: CheckFavouriteStatus,
     private val deleteFromFavouritesUseCase: DeleteFromFavourites
 ) : ViewModel() {
-    private val _currentTrack = MutableLiveData<Track>()
-    val currentTrack: LiveData<Track> = _currentTrack
+    private val currentTrack = getSelectedTrackUseCase()
 
     private val _playerState = MutableLiveData<PlayerState>()
     val playerState: LiveData<PlayerState> = _playerState
@@ -38,13 +37,10 @@ class PlayerViewModel(
     val isFavourite: LiveData<Boolean> = _isFavourite
 
     init {
-        _currentTrack.value = getTrackUseCase()
-        _currentTrack.value?.let { prepareTrackUseCase(it) }
+        prepareTrackUseCase(currentTrack)
 
         viewModelScope.launch {
-            checkFavouriteStatusUseCase(getTrackUseCase().trackId).collect {
-                _isFavourite.postValue(it)
-            }
+            _isFavourite.postValue(checkFavouriteStatusUseCase(currentTrack.id).first())
 
             getPlayerStateUseCase().collect { state ->
                 _playerState.postValue(state)
@@ -57,7 +53,7 @@ class PlayerViewModel(
         releasePlayer()
     }
 
-    fun playbackControl() {
+    fun togglePlayback() {
         when (_playerState.value) {
             is PlayerState.Playing -> pauseTrackUseCase()
             is PlayerState.Paused, is PlayerState.Prepared, is PlayerState.Completed -> playTrackUseCase()
@@ -75,15 +71,14 @@ class PlayerViewModel(
     }
 
     fun saveOrDeleteFromFavourites() = viewModelScope.launch {
-        _currentTrack.value?.let {
-            checkFavouriteStatusUseCase(it.trackId).collect { isFavourite ->
-                if (isFavourite) {
-                    deleteFromFavouritesUseCase(it.trackId)
-                } else {
-                    saveToFavouritesUseCase(it)
-                }
-                _isFavourite.postValue(isFavourite)
+        checkFavouriteStatusUseCase(currentTrack.id).collect { isFavourite ->
+            if (isFavourite) {
+                deleteFromFavouritesUseCase(currentTrack.id)
+            } else {
+                saveToFavouritesUseCase(currentTrack)
             }
+            val updatedFavouriteStatus = checkFavouriteStatusUseCase(currentTrack.id).first()
+            _isFavourite.postValue(updatedFavouriteStatus)
         }
     }
 }

@@ -21,7 +21,7 @@ data class FavouriteTrackEntity(
 
 fun FavouriteTrackEntity.mapToDomain(): Track {
     return Track(
-        trackId = this.trackId,
+        id = this.trackId,
         trackName = this.trackName,
         artistName = this.artistName,
         collectionName = this.collectionName,
@@ -36,7 +36,7 @@ fun FavouriteTrackEntity.mapToDomain(): Track {
 
 fun Track.mapToFavouriteEntity(): FavouriteTrackEntity {
     return FavouriteTrackEntity(
-        trackId = this.trackId,
+        trackId = this.id,
         trackName = this.trackName,
         artistName = this.artistName,
         collectionName = this.collectionName,

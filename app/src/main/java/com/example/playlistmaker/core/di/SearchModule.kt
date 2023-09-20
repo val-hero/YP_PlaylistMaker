@@ -2,7 +2,7 @@ package com.example.playlistmaker.core.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.playlistmaker.core.domain.usecase.GetTrack
+import com.example.playlistmaker.core.domain.usecase.GetSelectedTrack
 import com.example.playlistmaker.core.domain.usecase.SaveTrack
 import com.example.playlistmaker.core.utils.TRACKS_SHARED_PREFS
 import com.example.playlistmaker.search.data.network.ITunesApiService
@@ -53,7 +53,7 @@ val searchModule = module {
     }
 
     factory {
-        GetTrack(trackRepository = get())
+        GetSelectedTrack(trackRepository = get())
     }
 
     factory {

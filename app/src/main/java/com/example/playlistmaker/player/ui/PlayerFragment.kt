@@ -1,6 +1,7 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,7 +39,7 @@ class PlayerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.playbackButton.setOnClickListener {
-            viewModel.playbackControl()
+            viewModel.togglePlayback()
         }
 
         binding.navigation.setNavigationOnClickListener {
@@ -74,6 +75,10 @@ class PlayerFragment : Fragment() {
 
                 else -> Unit
             }
+
+            viewModel.isFavourite.observe(viewLifecycleOwner) {
+                setFavouriteButtonIcon(it)
+            }
         }
     }
 
@@ -108,11 +113,21 @@ class PlayerFragment : Fragment() {
     }
 
     private fun setPlaybackButtonIcon(state: PlayerState) {
+
         binding.playbackButton.foreground =
             if (state is PlayerState.Playing)
                 ResourcesCompat.getDrawable(resources, R.drawable.pause_button, null)
             else
                 ResourcesCompat.getDrawable(resources, R.drawable.play_button, null)
+    }
+
+    private fun setFavouriteButtonIcon(isFavourite: Boolean) {
+        Log.d("FR", isFavourite.toString())
+        binding.addToFavouritesFab.foreground =
+            if (isFavourite)
+                ResourcesCompat.getDrawable(resources, R.drawable.added_to_favourites, null)
+            else
+                ResourcesCompat.getDrawable(resources, R.drawable.add_to_favourites, null)
     }
 
     private fun getErrorMessage(errorType: ErrorType): String = when (errorType) {

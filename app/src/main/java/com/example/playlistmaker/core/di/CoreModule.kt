@@ -4,7 +4,7 @@ import androidx.room.Room
 import com.example.playlistmaker.core.data.database.AppDatabase
 import com.example.playlistmaker.core.data.repository.TrackRepositoryImpl
 import com.example.playlistmaker.core.domain.repository.TrackRepository
-import com.example.playlistmaker.core.domain.usecase.GetTrack
+import com.example.playlistmaker.core.domain.usecase.GetSelectedTrack
 import com.example.playlistmaker.core.domain.usecase.SaveTrack
 import com.example.playlistmaker.core.utils.TRACKS_SHARED_PREFS
 import org.koin.android.ext.koin.androidContext
@@ -22,7 +22,7 @@ val coreModule = module {
     }
 
     factory {
-        GetTrack(trackRepository = get())
+        GetSelectedTrack(trackRepository = get())
     }
 
     factory {

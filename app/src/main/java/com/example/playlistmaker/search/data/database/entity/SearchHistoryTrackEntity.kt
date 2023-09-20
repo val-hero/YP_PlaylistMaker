@@ -21,7 +21,7 @@ data class SearchHistoryTrackEntity(
 
 fun SearchHistoryTrackEntity.mapToDomain(): Track {
     return Track(
-        trackId = this.trackId,
+        id = this.trackId,
         trackName = this.trackName,
         artistName = this.artistName,
         collectionName = this.collectionName,
@@ -36,7 +36,7 @@ fun SearchHistoryTrackEntity.mapToDomain(): Track {
 
 fun Track.toSearchHistoryTrackEntity(): SearchHistoryTrackEntity {
     return SearchHistoryTrackEntity(
-        trackId = this.trackId,
+        trackId = this.id,
         trackName = this.trackName,
         artistName = this.artistName,
         collectionName = this.collectionName,

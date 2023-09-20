@@ -4,17 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.example.playlistmaker.R
+import com.example.playlistmaker.core.domain.model.Track
 import com.example.playlistmaker.databinding.FragmentFavouriteTracksBinding
 import com.example.playlistmaker.search.ui.TrackAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class FavouriteTracksFragment: Fragment() {
+class FavouriteTracksFragment : Fragment() {
     private lateinit var binding: FragmentFavouriteTracksBinding
     private val viewModel by viewModel<FavouriteTracksFragmentViewModel>()
 
     private val adapter = TrackAdapter {
-        //findNavController().navigate(R.id.action_libraryFragment_to_playerFragment)
+        openTrack(it)
     }
 
     override fun onCreateView(
@@ -30,14 +34,42 @@ class FavouriteTracksFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.favTracksRecycler.adapter = adapter
 
-        viewModel.favouriteTracks.observe(viewLifecycleOwner) { tracks ->
-            adapter.updateTracks(tracks)
+        viewModel.uiState.observe(viewLifecycleOwner) { state ->
+            render(state)
         }
     }
 
     override fun onResume() {
         super.onResume()
         viewModel.getFavouriteTracks()
+    }
+
+    private fun openTrack(track: Track) {
+        viewModel.saveSelectedTrack(track)
+        findNavController().navigate(R.id.action_libraryFragment_to_playerFragment)
+    }
+
+    private fun render(uiState: FavouriteTracksUiState) {
+        when (uiState) {
+            is FavouriteTracksUiState.Empty -> {
+                showEmptyPlaceholder()
+            }
+
+            is FavouriteTracksUiState.Content -> {
+                showTracks(uiState.data)
+            }
+        }
+    }
+
+    private fun showEmptyPlaceholder() {
+        binding.favTracksRecycler.isVisible = false
+        binding.emptyFavouritesPlaceholder.isVisible = true
+    }
+
+    private fun showTracks(tracks: List<Track>) {
+        adapter.updateTracks(tracks)
+        binding.favTracksRecycler.isVisible = true
+        binding.emptyFavouritesPlaceholder.isVisible = false
     }
 
 

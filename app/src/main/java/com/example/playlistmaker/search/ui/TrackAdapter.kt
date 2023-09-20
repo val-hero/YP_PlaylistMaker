@@ -29,7 +29,7 @@ class TrackAdapter(private val onClick: (Track) -> Unit) : RecyclerView.Adapter<
             override fun getNewListSize(): Int = newTracks.size
 
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                oldTracks[oldItemPosition].trackId == newTracks[newItemPosition].trackId
+                oldTracks[oldItemPosition].id == newTracks[newItemPosition].id
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
                 oldTracks[oldItemPosition].trackName == newTracks[newItemPosition].trackName

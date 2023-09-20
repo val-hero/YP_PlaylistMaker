@@ -15,7 +15,7 @@ val playerModule = module {
 
     viewModel {
         PlayerViewModel(
-            getTrackUseCase = get(),
+            getSelectedTrackUseCase = get(),
             prepareTrackUseCase = get(),
             playTrackUseCase = get(),
             pauseTrackUseCase = get(),

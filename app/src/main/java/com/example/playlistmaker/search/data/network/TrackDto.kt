@@ -17,7 +17,7 @@ data class TrackDto(
 
 fun TrackDto.mapToDomain(): Track {
     return Track(
-        trackId = this.trackId,
+        id = this.trackId,
         trackName = this.trackName ?: "",
         artistName = this.artistName ?: "",
         collectionName = this.collectionName ?: "",

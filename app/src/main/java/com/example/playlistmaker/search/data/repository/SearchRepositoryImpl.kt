@@ -41,10 +41,11 @@ class SearchRepositoryImpl(
     }
 
     override suspend fun saveToHistory(track: Track) {
-        if (dao.getCount() >= HISTORY_CAPACITY) {
+        dao.insert(track.toSearchHistoryTrackEntity().copy(insertedAt = Instant.now().epochSecond))
+
+        if (dao.getCount() > HISTORY_CAPACITY) {
             dao.deleteOldest()
         }
-        dao.insert(track.toSearchHistoryTrackEntity().copy(insertedAt = Instant.now().epochSecond))
     }
 
     override suspend fun getHistory(): Flow<List<Track>> = flow {
