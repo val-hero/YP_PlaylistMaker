@@ -7,7 +7,7 @@ import com.example.playlistmaker.library.favourite.domain.usecase.DeleteFromFavo
 import com.example.playlistmaker.library.favourite.domain.usecase.GetFavouriteTracks
 import com.example.playlistmaker.library.favourite.domain.usecase.SaveToFavourites
 import com.example.playlistmaker.library.favourite.ui.FavouriteTracksFragmentViewModel
-import com.example.playlistmaker.library.ui.PlaylistFragmentViewModel
+import com.example.playlistmaker.library.ui.PlaylistsFragmentViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -20,8 +20,8 @@ val libraryModule = module {
         )
     }
 
-    viewModel<PlaylistFragmentViewModel> {
-        PlaylistFragmentViewModel()
+    viewModel<PlaylistsFragmentViewModel> {
+        PlaylistsFragmentViewModel()
     }
 
     single<FavouriteTracksRepository> {

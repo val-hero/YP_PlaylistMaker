@@ -49,6 +49,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.7.2'
     implementation 'androidx.navigation:navigation-fragment:2.7.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.7.2'
+    implementation 'com.markodevcic:peko:3.0.2'
 
     //Room
     def room_version = "2.5.2"
