@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <stroke
-        android:color="@color/yp_gray"
-        android:width="2dp"
-        android:dashWidth="32dp"
-        android:dashGap="32dp"/>
-</shape>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <stroke
+                android:width="2dp"
+                android:color="@color/yp_gray"
+                android:dashWidth="32dp"
+                android:dashGap="32dp" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+    <item
+        android:width="100dp"
+        android:height="100dp"
+        android:drawable="@drawable/select_playlist_image"
+        android:gravity="center">
+    </item>
+</layer-list>

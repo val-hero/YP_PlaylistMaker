@@ -37,6 +37,6 @@
     </fragment>
     <fragment
         android:id="@+id/createPlaylistFragment"
-        android:name="com.example.playlistmaker.create_playlist.CreatePlaylistFragment"
+        android:name="com.example.playlistmaker.library.create_playlist.ui.CreatePlaylistFragment"
         android:label="CreatePlaylistFragment" />
 </navigation>

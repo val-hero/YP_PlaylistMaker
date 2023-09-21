@@ -28,14 +28,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/create_playlist_toolbar">
 
-
         <ImageView
             android:id="@+id/select_image_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/select_playlist_image_background"
-            android:scaleType="center"
-            android:src="@drawable/select_playlist_image" />
+            android:scaleType="centerCrop" />
     </androidx.cardview.widget.CardView>
 
     <Button
@@ -45,6 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
         android:layout_marginBottom="32dp"
+        android:enabled="false"
         android:text="@string/create"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

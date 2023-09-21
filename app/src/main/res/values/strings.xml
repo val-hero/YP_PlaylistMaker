@@ -34,4 +34,8 @@
     <string name="create">Создать</string>
     <string name="playlist_name_input">Название*</string>
     <string name="playlist_description_input">Описание</string>
+    <string name="unsaved_exit_title">Завершить создание плейлиста?</string>
+    <string name="decline">Отмена</string>
+    <string name="unsaved_data_loss_message">Все несохраненные данные будут потеряны</string>
+    <string name="finish">Завершить</string>
 </resources>
