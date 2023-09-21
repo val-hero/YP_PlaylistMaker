@@ -1,13 +1,13 @@
 package com.example.playlistmaker.search.domain.usecase
 
-import com.example.playlistmaker.search.domain.model.Track
-import com.example.playlistmaker.search.domain.repository.TrackRepositoryRemote
-import com.example.playlistmaker.utility.Result
+import com.example.playlistmaker.core.domain.model.Track
+import com.example.playlistmaker.core.utils.Result
+import com.example.playlistmaker.search.domain.repository.SearchRepository
 import kotlinx.coroutines.flow.Flow
 
-class Search(private val trackRepositoryRemote: TrackRepositoryRemote) {
+class Search(private val searchRepository: SearchRepository) {
 
-    suspend operator fun invoke(expression: CharSequence): Flow<Result<List<Track>>> {
-        return trackRepositoryRemote.getTracks(expression)
+    suspend operator fun invoke(query: String): Flow<Result<List<Track>>> {
+        return searchRepository.search(query)
     }
 }

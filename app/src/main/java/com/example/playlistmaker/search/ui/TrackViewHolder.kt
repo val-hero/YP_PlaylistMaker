@@ -4,8 +4,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.core.domain.model.Track
+import com.example.playlistmaker.core.utils.asMinutesAndSeconds
 import com.example.playlistmaker.databinding.TrackItemBinding
-import com.example.playlistmaker.search.domain.model.Track
 
 class TrackViewHolder(
     private val binding: TrackItemBinding,
@@ -15,7 +16,7 @@ class TrackViewHolder(
     fun bind(model: Track) {
         binding.trackName.text = model.trackName
         binding.artistName.text = model.artistName
-        binding.trackDuration.text = model.formattedDuration()
+        binding.trackDuration.text = model.duration.asMinutesAndSeconds()
         binding.root.setOnClickListener { onClick(model) }
 
         Glide.with(itemView)

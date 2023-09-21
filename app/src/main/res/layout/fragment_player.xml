@@ -185,7 +185,6 @@
             android:id="@+id/add_to_favourites_fab"
             style="@style/PlayerSecondaryFAB"
             android:layout_marginEnd="@dimen/player_content_horizontal_margin"
-            android:foreground="@drawable/add_to_favourites"
             app:layout_constraintBottom_toBottomOf="@id/playback_button"
             app:layout_constraintEnd_toStartOf="@id/end_guideline"
             app:layout_constraintStart_toEndOf="@id/playback_button"
