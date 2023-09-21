@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.playlistmaker.core.domain.model.Track
 import com.example.playlistmaker.databinding.TrackItemBinding
-import com.example.playlistmaker.search.domain.model.Track
 
 class TrackAdapter(private val onClick: (Track) -> Unit) : RecyclerView.Adapter<TrackViewHolder>() {
     val tracks = ArrayList<Track>()
@@ -29,7 +29,7 @@ class TrackAdapter(private val onClick: (Track) -> Unit) : RecyclerView.Adapter<
             override fun getNewListSize(): Int = newTracks.size
 
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                oldTracks[oldItemPosition].trackId == newTracks[newItemPosition].trackId
+                oldTracks[oldItemPosition].id == newTracks[newItemPosition].id
 
             override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
                 oldTracks[oldItemPosition].trackName == newTracks[newItemPosition].trackName

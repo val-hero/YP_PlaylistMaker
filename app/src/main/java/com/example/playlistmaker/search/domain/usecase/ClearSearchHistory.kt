@@ -1,10 +1,10 @@
 package com.example.playlistmaker.search.domain.usecase
 
-import com.example.playlistmaker.search.domain.repository.TrackRepository
+import com.example.playlistmaker.search.domain.repository.SearchRepository
 
-class ClearSearchHistory(private val trackRepository: TrackRepository) {
+class ClearSearchHistory(private val searchRepository: SearchRepository) {
 
     operator fun invoke() {
-        trackRepository.clear()
+        searchRepository.clearHistory()
     }
 }

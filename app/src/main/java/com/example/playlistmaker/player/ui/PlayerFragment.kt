@@ -1,6 +1,7 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,12 +13,13 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
+import com.example.playlistmaker.core.domain.model.Track
+import com.example.playlistmaker.core.utils.ErrorType
+import com.example.playlistmaker.core.utils.asMinutesAndSeconds
+import com.example.playlistmaker.core.utils.asYear
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.player.domain.model.PlayerState
 import com.example.playlistmaker.player.ui.viewmodel.PlayerViewModel
-import com.example.playlistmaker.search.domain.model.Track
-import com.example.playlistmaker.utility.ErrorType
-import com.example.playlistmaker.utility.asMinutesAndSeconds
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlayerFragment : Fragment() {
@@ -37,11 +39,15 @@ class PlayerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.playbackButton.setOnClickListener {
-            viewModel.playbackControl()
+            viewModel.togglePlayback()
         }
 
         binding.navigation.setNavigationOnClickListener {
             findNavController().popBackStack()
+        }
+
+        binding.addToFavouritesFab.setOnClickListener {
+            viewModel.saveOrDeleteFromFavourites()
         }
 
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
@@ -69,6 +75,10 @@ class PlayerFragment : Fragment() {
 
                 else -> Unit
             }
+
+            viewModel.isFavourite.observe(viewLifecycleOwner) {
+                setFavouriteButtonIcon(it)
+            }
         }
     }
 
@@ -86,15 +96,16 @@ class PlayerFragment : Fragment() {
         with(binding) {
             playerTrackName.text = track.trackName
             playerArtistName.text = track.artistName
-            durationValue.text = track.formattedDuration()
+            durationValue.text = track.duration.asMinutesAndSeconds()
             albumValue.text = track.collectionName
-            yearValue.text = track.releaseYear()
+            yearValue.text = track.releaseDate.asYear()
             genreValue.text = track.genre
             countryValue.text = track.country
             albumGroup.isVisible = albumValue.text.isNotEmpty()
             playerTrackName.isSelected = true
 
-            Glide.with(this@PlayerFragment).load(track.resizedImage())
+            Glide.with(this@PlayerFragment)
+                .load(track.imageUrl.replaceAfterLast("/", "512x512bb.jpg"))
                 .placeholder(R.drawable.player_track_img_placeholder)
                 .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.player_track_image_corners)))
                 .into(playerTrackImage)
@@ -102,11 +113,21 @@ class PlayerFragment : Fragment() {
     }
 
     private fun setPlaybackButtonIcon(state: PlayerState) {
+
         binding.playbackButton.foreground =
             if (state is PlayerState.Playing)
                 ResourcesCompat.getDrawable(resources, R.drawable.pause_button, null)
             else
                 ResourcesCompat.getDrawable(resources, R.drawable.play_button, null)
+    }
+
+    private fun setFavouriteButtonIcon(isFavourite: Boolean) {
+        Log.d("FR", isFavourite.toString())
+        binding.addToFavouritesFab.foreground =
+            if (isFavourite)
+                ResourcesCompat.getDrawable(resources, R.drawable.added_to_favourites, null)
+            else
+                ResourcesCompat.getDrawable(resources, R.drawable.add_to_favourites, null)
     }
 
     private fun getErrorMessage(errorType: ErrorType): String = when (errorType) {
