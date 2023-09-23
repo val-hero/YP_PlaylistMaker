@@ -161,6 +161,18 @@
         <item name="android:textColorHint">?attr/colorOnPrimary</item>
         <item name="boxStrokeColor">@color/playlist_text_input_color</item>
         <item name="hintTextColor">@color/yp_blue</item>
+    </style>
 
+    <style name="CustomAlertDialog" parent="MaterialAlertDialog.Material3">
+        <item name="colorSurface">@color/white</item>
+        <item name="buttonBarPositiveButtonStyle">@style/CustomAlertDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/CustomAlertDialogButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/CustomAlertDialogButton</item>
+    </style>
+
+    <style name="CustomAlertDialogButton" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/yp_blue</item>
+        <item name="android:textSize">14sp</item>
+        <item name="textAllCaps">true</item>
     </style>
 </resources>

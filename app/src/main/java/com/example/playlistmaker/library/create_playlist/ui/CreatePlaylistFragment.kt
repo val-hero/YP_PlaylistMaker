@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -61,10 +62,13 @@ class CreatePlaylistFragment : Fragment() {
                 name = binding.playlistNameInputText.text.toString(),
                 description = binding.playlistDescriptionText.text.toString(),
                 image = imageUri.toString()
-            )
+            ) {
+                findNavController().navigateUp()
+                makeSuccessToast(binding.playlistNameInputText.text.toString())
+            }
         }
 
-        onUnsavedExitDialog = MaterialAlertDialogBuilder(requireContext()).apply {
+        onUnsavedExitDialog = MaterialAlertDialogBuilder(requireContext(), R.style.CustomAlertDialog).apply {
             setTitle(getString(R.string.unsaved_exit_title))
             setMessage(getString(R.string.unsaved_data_loss_message))
             setPositiveButton(getString(R.string.finish)) { _, _ ->
@@ -87,5 +91,13 @@ class CreatePlaylistFragment : Fragment() {
             return false
         }
         return true
+    }
+
+    private fun makeSuccessToast(playlistName: String) {
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.playlist_created_message, playlistName),
+            Toast.LENGTH_LONG
+        ).show()
     }
 }

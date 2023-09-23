@@ -1,10 +1,11 @@
-package com.example.playlistmaker.library.playlists.repository
+package com.example.playlistmaker.library.playlists.data.repository
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
+import androidx.core.net.toUri
 import com.example.playlistmaker.core.data.database.AppDatabase
 import com.example.playlistmaker.core.utils.PLAYLIST_IMAGES_FOLDER
 import com.example.playlistmaker.core.utils.PLAYLIST_IMAGE_QUALITY
@@ -24,8 +25,11 @@ class PlaylistRepositoryImpl(
 ) : PlaylistRepository {
 
     override suspend fun save(playlist: Playlist) {
-        database.playlistDao()
-            .insert(playlist.mapToPlaylistEntity())
+        var imageFile: String? = null
+        if (playlist.image != null) {
+            imageFile = saveImageToFile(playlist.image.toUri())
+        }
+        database.playlistDao().insert(playlist.mapToPlaylistEntity().copy(image = imageFile))
     }
 
     override fun getDetails(id: Long): Playlist {
@@ -37,23 +41,26 @@ class PlaylistRepositoryImpl(
         emit(playlists.map { it.mapToDomain() })
     }
 
-    private fun saveImageToFile(uri: Uri): String {
+    private fun saveImageToFile(uri: Uri): String? {
         val imageFileName = Calendar.getInstance().timeInMillis.toString() + ".jpg"
         val filePath = File(
             context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
             PLAYLIST_IMAGES_FOLDER
         )
-
-        if (!filePath.exists()) {
-            filePath.mkdirs()
+        return try {
+            if (!filePath.exists()) {
+                filePath.mkdirs()
+            }
+            BitmapFactory
+                .decodeStream(context.contentResolver.openInputStream(uri))
+                .compress(
+                    Bitmap.CompressFormat.JPEG,
+                    PLAYLIST_IMAGE_QUALITY,
+                    FileOutputStream(File(filePath, imageFileName))
+                )
+            imageFileName
+        } catch (e: Exception) {
+            null
         }
-        BitmapFactory
-            .decodeStream(context.contentResolver.openInputStream(uri))
-            .compress(
-                Bitmap.CompressFormat.JPEG,
-                PLAYLIST_IMAGE_QUALITY,
-                FileOutputStream(File(filePath, imageFileName))
-            )
-        return imageFileName
     }
 }

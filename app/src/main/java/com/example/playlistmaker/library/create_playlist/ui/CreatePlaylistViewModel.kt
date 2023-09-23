@@ -10,11 +10,12 @@ class CreatePlaylistViewModel(
     private val savePlaylistUseCase: SavePlaylist
 ) : ViewModel() {
 
-    fun createPlaylist(name: String, description: String, image: String) {
+    fun createPlaylist(name: String, description: String, image: String, onFinish: () -> Unit) {
         viewModelScope.launch {
             savePlaylistUseCase(
                 Playlist(name = name, description = description, image = image)
             )
+            onFinish()
         }
     }
 }

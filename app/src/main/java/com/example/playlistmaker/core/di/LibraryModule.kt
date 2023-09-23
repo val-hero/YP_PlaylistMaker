@@ -9,9 +9,9 @@ import com.example.playlistmaker.library.favourite.domain.usecase.DeleteFromFavo
 import com.example.playlistmaker.library.favourite.domain.usecase.GetFavouriteTracks
 import com.example.playlistmaker.library.favourite.domain.usecase.SaveToFavourites
 import com.example.playlistmaker.library.favourite.ui.FavouriteTracksFragmentViewModel
+import com.example.playlistmaker.library.playlists.data.repository.PlaylistRepositoryImpl
 import com.example.playlistmaker.library.playlists.domain.repository.PlaylistRepository
 import com.example.playlistmaker.library.playlists.domain.usecase.GetPlaylists
-import com.example.playlistmaker.library.playlists.repository.PlaylistRepositoryImpl
 import com.example.playlistmaker.library.playlists.ui.PlaylistsFragmentViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
