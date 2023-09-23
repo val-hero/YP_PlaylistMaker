@@ -1,15 +1,15 @@
-package com.example.playlistmaker.library.create_playlist.data.database.entity
+package com.example.playlistmaker.library.playlists.data.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.playlistmaker.library.create_playlist.domain.model.Playlist
+import com.example.playlistmaker.library.playlists.domain.model.Playlist
 
 @Entity(tableName = "playlists")
 data class PlaylistEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val name: String,
     val description: String,
-    val imageUri: String,
+    val imageUri: String?,
     val insertedAt: Long?
 )
 
@@ -18,7 +18,7 @@ fun PlaylistEntity.mapToDomain(): Playlist {
         id = this.id,
         name = this.name,
         description = this.description,
-        imageUri = this.imageUri
+        image = this.imageUri ?: "",
     )
 }
 
@@ -27,7 +27,7 @@ fun Playlist.mapToPlaylistEntity(): PlaylistEntity {
         id = this.id,
         name = this.name,
         description = this.description,
-        imageUri = this.imageUri,
+        imageUri = this.image,
         insertedAt = null
     )
 }

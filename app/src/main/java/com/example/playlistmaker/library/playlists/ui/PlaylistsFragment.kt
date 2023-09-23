@@ -1,4 +1,4 @@
-package com.example.playlistmaker.library.ui
+package com.example.playlistmaker.library.playlists.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +13,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class PlaylistsFragment : Fragment() {
     private lateinit var binding: FragmentPlaylistsBinding
     private val viewModel by viewModel<PlaylistsFragmentViewModel>()
+    private val adapter = PlaylistAdapter { }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,6 +30,19 @@ class PlaylistsFragment : Fragment() {
         binding.addPlaylistButton.setOnClickListener {
             findNavController().navigate(R.id.action_libraryFragment_to_createPlaylistFragment)
         }
+
+        binding.playlistsRecycler.adapter = adapter
+
+        viewModel.playlists.observe(viewLifecycleOwner) { playlists ->
+            playlists?.let {
+                adapter.updatePlaylists(it)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.fetchPlaylists()
     }
 
 

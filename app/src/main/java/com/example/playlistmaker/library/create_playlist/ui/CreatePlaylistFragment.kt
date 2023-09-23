@@ -2,7 +2,6 @@ package com.example.playlistmaker.library.create_playlist.ui
 
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,9 +14,11 @@ import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentCreatePlaylistBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CreatePlaylistFragment : Fragment() {
     private lateinit var binding: FragmentCreatePlaylistBinding
+    private val viewModel by viewModel<CreatePlaylistViewModel>()
     private lateinit var onUnsavedExitDialog: MaterialAlertDialogBuilder
     private var imageUri: Uri? = null
 
@@ -32,15 +33,14 @@ class CreatePlaylistFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.createPlaylistToolbar.setNavigationOnClickListener {
-            Log.d("FR", checkFilledViews().toString())
-            if(checkFilledViews()) {
+            if (checkFilledViews()) {
                 onUnsavedExitDialog.show()
             } else {
                 findNavController().navigateUp()
             }
         }
 
-        binding.playlistNameInputText.doOnTextChanged { text, start, _, _ ->
+        binding.playlistNameInputText.doOnTextChanged { text, _, _, _ ->
             binding.createPlaylistButton.isEnabled = !text.isNullOrBlank()
         }
 
@@ -56,6 +56,14 @@ class CreatePlaylistFragment : Fragment() {
             selectMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
+        binding.createPlaylistButton.setOnClickListener {
+            viewModel.createPlaylist(
+                name = binding.playlistNameInputText.text.toString(),
+                description = binding.playlistDescriptionText.text.toString(),
+                image = imageUri.toString()
+            )
+        }
+
         onUnsavedExitDialog = MaterialAlertDialogBuilder(requireContext()).apply {
             setTitle(getString(R.string.unsaved_exit_title))
             setMessage(getString(R.string.unsaved_data_loss_message))
@@ -66,7 +74,7 @@ class CreatePlaylistFragment : Fragment() {
         }
 
         activity?.onBackPressedDispatcher?.addCallback(this) {
-            if(checkFilledViews()) {
+            if (checkFilledViews()) {
                 onUnsavedExitDialog.create().show()
             } else {
                 findNavController().navigateUp()
@@ -75,7 +83,7 @@ class CreatePlaylistFragment : Fragment() {
     }
 
     private fun checkFilledViews(): Boolean {
-        if(imageUri == null && binding.playlistNameInputText.text.isNullOrBlank() && binding.playlistDescriptionText.text.isNullOrBlank()) {
+        if (imageUri == null && binding.playlistNameInputText.text.isNullOrBlank() && binding.playlistDescriptionText.text.isNullOrBlank()) {
             return false
         }
         return true
