@@ -11,6 +11,8 @@ import com.example.playlistmaker.library.playlist_creation.ui.CreatePlaylistView
 import com.example.playlistmaker.library.playlist_details.ui.PlaylistDetailsViewModel
 import com.example.playlistmaker.library.playlists.data.repository.PlaylistRepositoryImpl
 import com.example.playlistmaker.library.playlists.domain.repository.PlaylistRepository
+import com.example.playlistmaker.library.playlists.domain.usecase.DeletePlaylist
+import com.example.playlistmaker.library.playlists.domain.usecase.DeleteTrack
 import com.example.playlistmaker.library.playlists.domain.usecase.GetPlaylistDetails
 import com.example.playlistmaker.library.playlists.domain.usecase.GetPlaylists
 import com.example.playlistmaker.library.playlists.domain.usecase.GetTracksInPlaylist
@@ -42,7 +44,8 @@ val libraryModule = module {
         PlaylistDetailsViewModel(
             getPlaylistDetailsUseCase = get(),
             getTracksInPlaylistUseCase = get(),
-            saveTrackUseCase = get()
+            saveTrackUseCase = get(),
+            deleteTrackUseCase = get()
         )
     }
 
@@ -55,6 +58,14 @@ val libraryModule = module {
 
     single<FavouriteTracksRepository> {
         FavouriteTracksRepositoryImpl(appDatabase = get())
+    }
+
+    factory {
+        DeleteTrack(playlistRepository = get())
+    }
+
+    factory {
+        DeletePlaylist(playlistRepository = get())
     }
 
     factory {

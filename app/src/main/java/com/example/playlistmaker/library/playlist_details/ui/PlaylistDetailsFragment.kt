@@ -22,6 +22,7 @@ class PlaylistDetailsFragment : Fragment() {
     private val viewModel by viewModel<PlaylistDetailsViewModel>()
     private var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>? = null
     private var alertDialogBuilder: MaterialAlertDialogBuilder? = null
+    private var selectedTrackId: Long? = null
 
     private val adapter = TrackAdapter(
         onClick = {
@@ -29,6 +30,7 @@ class PlaylistDetailsFragment : Fragment() {
             findNavController().navigate(R.id.action_playlistDetailsFragment_to_playerFragment)
         },
         onLongClick = {
+            selectedTrackId = it.id
             alertDialogBuilder?.show()
             true
         }
@@ -58,11 +60,9 @@ class PlaylistDetailsFragment : Fragment() {
             MaterialAlertDialogBuilder(requireContext(), R.style.CustomAlertDialog).apply {
                 setTitle(R.string.delete_track_title)
                 setPositiveButton(R.string.yes) { _, _ ->
-
+                    selectedTrackId?.let { viewModel.deleteFromPlaylist(it) }
                 }
-                setNegativeButton(R.string.no) { _, _ ->
-
-                }
+                setNegativeButton(R.string.no) { _, _ -> }
             }
 
         toggleDim()
@@ -95,11 +95,11 @@ class PlaylistDetailsFragment : Fragment() {
             this.playlistName.text = playlist?.name
             this.playlistDescription.text = playlist?.description
             this.playlistDescription.isVisible = !playlist?.description.isNullOrBlank()
+            this.playlistTracksCount.text = playlist?.tracksCount.toString()
             Glide.with(requireContext())
                 .load(playlist?.image)
                 .placeholder(R.drawable.image_placeholder_512x512)
                 .into(this.playlistImage)
-            this.playlistTracksCount.text = playlist?.tracksCount.toString()
         }
     }
 

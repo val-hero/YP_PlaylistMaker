@@ -49,10 +49,7 @@ class PlaylistRepositoryImpl(
     }
 
     override suspend fun getById(id: Long): Playlist {
-        val playlist = database.playlistDao().get(id).mapToDomain()
-        return playlist.copy(image = playlist.image?.let {
-            File(getImageFilePath(), it).absolutePath
-        })
+        return database.playlistDao().get(id).mapToDomain()
     }
 
     override fun getAll(): Flow<List<Playlist>> = flow {
@@ -65,8 +62,26 @@ class PlaylistRepositoryImpl(
         emit(tracks.map { it.mapToDomain() })
     }
 
+    override suspend fun delete(playlistId: Long) {
+        database.playlistDao().delete(playlistId)
+    }
+
+    override suspend fun deleteTrack(playlist: Playlist, trackId: Long) {
+        val updatedPlaylist = playlist.apply {
+            this.tracksIds?.remove(trackId)
+            this.tracksCount--
+        }
+        update(updatedPlaylist)
+
+        database.playlistTracksDao().delete(trackId)
+    }
+
+    override suspend fun update(playlist: Playlist) {
+        database.playlistDao().update(playlist.mapToPlaylistEntity())
+    }
+
     private fun saveImageToFile(uri: Uri): String? {
-        val imageFileName = Calendar.getInstance().timeInMillis.toString() + ".jpg"
+        var imageFileName = Calendar.getInstance().timeInMillis.toString() + ".jpg"
         val imageFilePath = getImageFilePath()
 
         return try {
@@ -80,6 +95,7 @@ class PlaylistRepositoryImpl(
                     PLAYLIST_IMAGE_QUALITY,
                     FileOutputStream(File(imageFilePath, imageFileName))
                 )
+            imageFileName = File(imageFilePath, imageFileName).path
             imageFileName
         } catch (e: Exception) {
             null
