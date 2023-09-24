@@ -12,7 +12,7 @@ data class TrackDto(
     val previewUrl: String?,
     val primaryGenreName: String?,
     val trackTimeMillis: Long?,
-    val artworkUrl100: String?
+    val artworkUrl60: String?
 )
 
 fun TrackDto.mapToDomain(): Track {
@@ -26,6 +26,6 @@ fun TrackDto.mapToDomain(): Track {
         previewUrl = this.previewUrl ?: "",
         genre = this.primaryGenreName ?: "",
         duration = this.trackTimeMillis ?: 0L,
-        imageUrl = this.artworkUrl100 ?: ""
+        imageUrl = this.artworkUrl60 ?: ""
     )
 }

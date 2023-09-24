@@ -14,7 +14,9 @@ import org.koin.dsl.module
 val coreModule = module {
 
     single<AppDatabase> {
-        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database_vh.db").build()
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database_vh.db")
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     single<TrackRepository> {

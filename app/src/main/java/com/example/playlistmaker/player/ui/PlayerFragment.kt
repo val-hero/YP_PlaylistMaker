@@ -50,6 +50,10 @@ class PlayerFragment : Fragment() {
             viewModel.saveOrDeleteFromFavourites()
         }
 
+        binding.addToPlaylistFab.setOnClickListener {
+            BottomSheetFragment().show(childFragmentManager, BottomSheetFragment.TAG)
+        }
+
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
             setPlaybackButtonIcon(state)
             when (state) {

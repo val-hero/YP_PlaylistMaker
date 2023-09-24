@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="8dp">
+
+    <ImageView
+        android:id="@+id/linear_playlist_image"
+        android:layout_width="@dimen/track_image_xy"
+        android:layout_height="@dimen/track_image_xy"
+        android:layout_weight="0"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/player_track_img_placeholder" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/linear_playlist_name"
+            style="@style/RegularText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnPrimary"
+            tools:text="Here Comes The Sun" />
+
+        <TextView
+            android:id="@+id/linear_playlist_tracks_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="11sp"
+            tools:text="1 track" />
+    </LinearLayout>
+</LinearLayout>
