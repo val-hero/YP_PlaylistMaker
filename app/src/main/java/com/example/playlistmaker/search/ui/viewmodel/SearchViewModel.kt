@@ -33,7 +33,7 @@ class SearchViewModel(
         private set
 
     private var latestSearchQuery: String? = null
-    //private var latestSearchResult: ArrayList<Track> = arrayListOf()
+    private var latestSearchResult: ArrayList<Track> = arrayListOf()
 
     private var searchFieldIsFocused = false
 
@@ -50,6 +50,11 @@ class SearchViewModel(
     private fun search(query: String) {
         if (query.isBlank()) return
 
+        if (latestSearchQuery == query) {
+            _screenState.value = SearchScreenState.Content(latestSearchResult)
+            return
+        }
+        latestSearchQuery = query
         _screenState.value = SearchScreenState.Loading
 
         viewModelScope.launch {
@@ -57,6 +62,7 @@ class SearchViewModel(
                 when (result) {
                     is Result.Success -> {
                         _screenState.value = SearchScreenState.Content(result.data as ArrayList)
+                        latestSearchResult = result.data
                     }
 
                     is Result.Error -> {
@@ -77,8 +83,6 @@ class SearchViewModel(
     }
 
     fun onSearchQueryChanged(newQuery: String?) {
-        latestSearchQuery = newQuery
-
         if (latestSearchQuery.isNullOrEmpty() && searchFieldIsFocused) {
             fetchSearchHistory()
         } else {
