@@ -51,7 +51,7 @@ class PlayerFragment : Fragment() {
         }
 
         binding.addToPlaylistFab.setOnClickListener {
-            BottomSheetFragment().show(childFragmentManager, BottomSheetFragment.TAG)
+            PlayerBottomSheetFragment().show(childFragmentManager, PlayerBottomSheetFragment.TAG)
         }
 
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
@@ -110,7 +110,7 @@ class PlayerFragment : Fragment() {
 
             Glide.with(this@PlayerFragment)
                 .load(track.imageUrl.replaceAfterLast("/", "512x512bb.jpg"))
-                .placeholder(R.drawable.player_track_img_placeholder)
+                .placeholder(R.drawable.image_placeholder_512x512)
                 .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.player_track_image_corners)))
                 .into(playerTrackImage)
         }

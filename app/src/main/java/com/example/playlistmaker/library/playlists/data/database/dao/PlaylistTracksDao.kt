@@ -9,9 +9,9 @@ import com.example.playlistmaker.library.playlists.data.database.entity.Playlist
 @Dao
 interface PlaylistTracksDao {
 
-    @Insert(entity = PlaylistTrackEntity::class, onConflict = OnConflictStrategy.IGNORE)
+    @Insert(entity = PlaylistTrackEntity::class, onConflict = OnConflictStrategy.ABORT)
     fun insert(trackEntity: PlaylistTrackEntity)
 
-    @Query("SELECT * FROM playlist_tracks WHERE trackId IN (SELECT trackIds FROM playlists WHERE id = :playlistId)")
-    fun getByPlaylistId(playlistId: Long): List<PlaylistTrackEntity>
+    @Query("SELECT * FROM playlist_tracks WHERE trackId IN (:trackIds)")
+    fun getByIds(trackIds: List<Long>): List<PlaylistTrackEntity>
 }

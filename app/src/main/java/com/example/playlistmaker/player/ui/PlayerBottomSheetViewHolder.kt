@@ -9,7 +9,7 @@ import com.example.playlistmaker.databinding.PlaylistItemLinearBinding
 import com.example.playlistmaker.library.playlists.domain.model.Playlist
 import java.io.File
 
-class BottomSheetViewHolder(
+class PlayerBottomSheetViewHolder(
     private val binding: PlaylistItemLinearBinding,
     private val onClick: (Playlist) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {

@@ -7,14 +7,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.databinding.PlaylistItemLinearBinding
 import com.example.playlistmaker.library.playlists.domain.model.Playlist
 
-class BottomSheetAdapter(
+class PlayerBottomSheetAdapter(
     private val onClick: (Playlist) -> Unit,
-) : RecyclerView.Adapter<BottomSheetViewHolder>() {
+) : RecyclerView.Adapter<PlayerBottomSheetViewHolder>() {
     private val playlists = arrayListOf<Playlist>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BottomSheetViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlayerBottomSheetViewHolder {
         val layoutInspector = LayoutInflater.from(parent.context)
-        return BottomSheetViewHolder(
+        return PlayerBottomSheetViewHolder(
             PlaylistItemLinearBinding.inflate(layoutInspector, parent, false),
             onClick
         )
@@ -22,7 +22,7 @@ class BottomSheetAdapter(
 
     override fun getItemCount(): Int = playlists.size
 
-    override fun onBindViewHolder(holder: BottomSheetViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PlayerBottomSheetViewHolder, position: Int) {
         holder.bind(playlists[position])
     }
 

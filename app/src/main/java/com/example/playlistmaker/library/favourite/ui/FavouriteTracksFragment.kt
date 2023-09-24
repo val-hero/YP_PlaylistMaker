@@ -17,9 +17,10 @@ class FavouriteTracksFragment : Fragment() {
     private lateinit var binding: FragmentFavouriteTracksBinding
     private val viewModel by viewModel<FavouriteTracksFragmentViewModel>()
 
-    private val adapter = TrackAdapter {
-        openTrack(it)
-    }
+    private val adapter = TrackAdapter(
+        onClick = { openTrack(it) },
+        onLongClick = { true }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,

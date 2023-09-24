@@ -7,12 +7,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.core.domain.model.Track
 import com.example.playlistmaker.databinding.TrackItemBinding
 
-class TrackAdapter(private val onClick: (Track) -> Unit) : RecyclerView.Adapter<TrackViewHolder>() {
+class TrackAdapter(
+    private val onClick: (Track) -> Unit,
+    private val onLongClick: (Track) -> Boolean
+) : RecyclerView.Adapter<TrackViewHolder>() {
     val tracks = ArrayList<Track>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
-        val layoutInspector = LayoutInflater.from(parent.context)
-        return TrackViewHolder(TrackItemBinding.inflate(layoutInspector, parent, false), onClick)
+        val layoutInflater = LayoutInflater.from(parent.context)
+        return TrackViewHolder(
+            TrackItemBinding.inflate(layoutInflater, parent, false),
+            onClick,
+            onLongClick
+        )
     }
 
     override fun getItemCount(): Int = tracks.size

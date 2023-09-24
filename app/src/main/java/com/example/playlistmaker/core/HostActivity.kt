@@ -23,8 +23,7 @@ class HostActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.bottomNavigation.isVisible = when (destination.id) {
-                R.id.playerFragment,
-                R.id.createPlaylistFragment -> false
+                R.id.playerFragment, R.id.createPlaylistFragment, R.id.playlistDetailsFragment -> false
                 else -> true
             }
         }

@@ -1,4 +1,4 @@
-package com.example.playlistmaker.library.create_playlist.ui
+package com.example.playlistmaker.library.playlist_creation.ui
 
 import android.net.Uri
 import android.os.Bundle

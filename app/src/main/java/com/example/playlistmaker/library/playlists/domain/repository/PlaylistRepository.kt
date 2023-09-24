@@ -12,5 +12,7 @@ interface PlaylistRepository {
 
     suspend fun getById(id: Long): Playlist
 
+    suspend fun getAllTracks(trackIds: List<Long>): Flow<List<Track>>
+
     fun getAll(): Flow<List<Playlist>>
 }

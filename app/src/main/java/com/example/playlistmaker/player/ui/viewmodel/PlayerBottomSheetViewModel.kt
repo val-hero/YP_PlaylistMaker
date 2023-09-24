@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class BottomSheetViewModel(
+class PlayerBottomSheetViewModel(
     private val getPlaylistsUseCase: GetPlaylists,
     private val saveToPlaylistUseCase: SaveToPlaylist,
     private val getSelectedTrackUseCase: GetSelectedTrack

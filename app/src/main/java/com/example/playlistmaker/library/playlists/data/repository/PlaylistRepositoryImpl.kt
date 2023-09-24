@@ -49,7 +49,10 @@ class PlaylistRepositoryImpl(
     }
 
     override suspend fun getById(id: Long): Playlist {
-        return database.playlistDao().get(id).mapToDomain()
+        val playlist = database.playlistDao().get(id).mapToDomain()
+        return playlist.copy(image = playlist.image?.let {
+            File(getImageFilePath(), it).absolutePath
+        })
     }
 
     override fun getAll(): Flow<List<Playlist>> = flow {
@@ -57,26 +60,36 @@ class PlaylistRepositoryImpl(
         emit(playlists.map { it.mapToDomain() })
     }
 
+    override suspend fun getAllTracks(trackIds: List<Long>): Flow<List<Track>> = flow {
+        val tracks = database.playlistTracksDao().getByIds(trackIds)
+        emit(tracks.map { it.mapToDomain() })
+    }
+
     private fun saveImageToFile(uri: Uri): String? {
         val imageFileName = Calendar.getInstance().timeInMillis.toString() + ".jpg"
-        val filePath = File(
-            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-            PLAYLIST_IMAGES_FOLDER
-        )
+        val imageFilePath = getImageFilePath()
+
         return try {
-            if (!filePath.exists()) {
-                filePath.mkdirs()
+            if (!imageFilePath.exists()) {
+                imageFilePath.mkdirs()
             }
             BitmapFactory
                 .decodeStream(context.contentResolver.openInputStream(uri))
                 .compress(
                     Bitmap.CompressFormat.JPEG,
                     PLAYLIST_IMAGE_QUALITY,
-                    FileOutputStream(File(filePath, imageFileName))
+                    FileOutputStream(File(imageFilePath, imageFileName))
                 )
             imageFileName
         } catch (e: Exception) {
             null
         }
+    }
+
+    private fun getImageFilePath(): File {
+        return File(
+            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+            PLAYLIST_IMAGES_FOLDER
+        )
     }
 }

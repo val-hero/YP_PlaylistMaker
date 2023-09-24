@@ -1,9 +1,9 @@
-package com.example.playlistmaker.library.create_playlist.ui
+package com.example.playlistmaker.library.playlist_creation.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playlistmaker.library.create_playlist.domain.usecase.SavePlaylist
 import com.example.playlistmaker.library.playlists.domain.model.Playlist
+import com.example.playlistmaker.library.playlists.domain.usecase.SavePlaylist
 import kotlinx.coroutines.launch
 
 class CreatePlaylistViewModel(

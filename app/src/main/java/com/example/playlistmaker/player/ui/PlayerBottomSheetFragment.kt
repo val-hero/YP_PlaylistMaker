@@ -8,15 +8,15 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentAddToPlaylistBottomsheetBinding
-import com.example.playlistmaker.player.ui.viewmodel.BottomSheetViewModel
+import com.example.playlistmaker.player.ui.viewmodel.PlayerBottomSheetViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class BottomSheetFragment : BottomSheetDialogFragment() {
+class PlayerBottomSheetFragment : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentAddToPlaylistBottomsheetBinding
-    private val viewModel by viewModel<BottomSheetViewModel>()
+    private val viewModel by viewModel<PlayerBottomSheetViewModel>()
 
-    private val adapter = BottomSheetAdapter {
+    private val adapter = PlayerBottomSheetAdapter {
         viewModel.saveToPlaylist(it) { isSaved ->
             makeToast(isSaved, it.name)
             if(isSaved)
