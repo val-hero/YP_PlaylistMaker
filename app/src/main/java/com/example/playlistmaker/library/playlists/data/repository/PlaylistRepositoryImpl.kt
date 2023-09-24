@@ -7,10 +7,12 @@ import android.net.Uri
 import android.os.Environment
 import androidx.core.net.toUri
 import com.example.playlistmaker.core.data.database.AppDatabase
+import com.example.playlistmaker.core.domain.model.Track
 import com.example.playlistmaker.core.utils.PLAYLIST_IMAGES_FOLDER
 import com.example.playlistmaker.core.utils.PLAYLIST_IMAGE_QUALITY
 import com.example.playlistmaker.library.playlists.data.database.entity.mapToDomain
 import com.example.playlistmaker.library.playlists.data.database.entity.mapToPlaylistEntity
+import com.example.playlistmaker.library.playlists.data.database.entity.mapToPlaylistTrackEntity
 import com.example.playlistmaker.library.playlists.domain.model.Playlist
 import com.example.playlistmaker.library.playlists.domain.repository.PlaylistRepository
 import kotlinx.coroutines.flow.Flow
@@ -32,8 +34,18 @@ class PlaylistRepositoryImpl(
         database.playlistDao().insert(playlist.mapToPlaylistEntity().copy(image = imageFile))
     }
 
-    override fun getDetails(id: Long): Playlist {
-        TODO("Not yet implemented")
+    override suspend fun saveToPlaylist(playlist: Playlist, track: Track) {
+        database.playlistTracksDao().insert(track.mapToPlaylistTrackEntity())
+
+        val updatedPlaylist = playlist.apply {
+            tracksIds?.add(track.id)
+            tracksCount++
+        }
+        database.playlistDao().update(updatedPlaylist.mapToPlaylistEntity())
+    }
+
+    override suspend fun getById(id: Long): Playlist {
+        return database.playlistDao().get(id).mapToDomain()
     }
 
     override fun getAll(): Flow<List<Playlist>> = flow {

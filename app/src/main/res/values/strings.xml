@@ -39,4 +39,5 @@
     <string name="unsaved_data_loss_message">Все несохраненные данные будут потеряны</string>
     <string name="finish">Завершить</string>
     <string name="playlist_created_message">Плейлист %1$s создан</string>
+    <string name="add_to_playlist">Добавить в плейлист</string>
 </resources>

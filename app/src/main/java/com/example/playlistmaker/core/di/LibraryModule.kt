@@ -13,6 +13,7 @@ import com.example.playlistmaker.library.playlists.data.repository.PlaylistRepos
 import com.example.playlistmaker.library.playlists.domain.repository.PlaylistRepository
 import com.example.playlistmaker.library.playlists.domain.usecase.GetPlaylists
 import com.example.playlistmaker.library.playlists.ui.PlaylistsFragmentViewModel
+import com.example.playlistmaker.player.domain.usecase.SaveToPlaylist
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -43,6 +44,10 @@ val libraryModule = module {
 
     single<FavouriteTracksRepository> {
         FavouriteTracksRepositoryImpl(appDatabase = get())
+    }
+
+    factory {
+        SaveToPlaylist(playlistRepository = get())
     }
 
     factory {

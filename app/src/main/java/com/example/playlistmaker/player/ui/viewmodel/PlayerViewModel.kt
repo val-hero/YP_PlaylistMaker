@@ -26,7 +26,7 @@ class PlayerViewModel(
     private val releasePlayerUseCase: ReleasePlayer,
     private val saveToFavouritesUseCase: SaveToFavourites,
     private val checkFavouriteStatusUseCase: CheckFavouriteStatus,
-    private val deleteFromFavouritesUseCase: DeleteFromFavourites
+    private val deleteFromFavouritesUseCase: DeleteFromFavourites,
 ) : ViewModel() {
     private val currentTrack = getSelectedTrackUseCase()
 

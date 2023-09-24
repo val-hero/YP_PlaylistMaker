@@ -1,28 +1,28 @@
-package com.example.playlistmaker.library.playlists.ui
+package com.example.playlistmaker.player.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.databinding.PlaylistItemBinding
+import com.example.playlistmaker.databinding.PlaylistItemLinearBinding
 import com.example.playlistmaker.library.playlists.domain.model.Playlist
 
-class PlaylistAdapter(
+class BottomSheetAdapter(
     private val onClick: (Playlist) -> Unit,
-) : RecyclerView.Adapter<PlaylistViewHolder>() {
+) : RecyclerView.Adapter<BottomSheetViewHolder>() {
     private val playlists = arrayListOf<Playlist>()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BottomSheetViewHolder {
         val layoutInspector = LayoutInflater.from(parent.context)
-        return PlaylistViewHolder(
-            PlaylistItemBinding.inflate(layoutInspector, parent, false),
+        return BottomSheetViewHolder(
+            PlaylistItemLinearBinding.inflate(layoutInspector, parent, false),
             onClick
         )
     }
 
     override fun getItemCount(): Int = playlists.size
 
-    override fun onBindViewHolder(holder: PlaylistViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: BottomSheetViewHolder, position: Int) {
         holder.bind(playlists[position])
     }
 

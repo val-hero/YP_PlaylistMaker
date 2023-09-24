@@ -10,7 +10,9 @@ data class PlaylistEntity(
     val name: String,
     val description: String,
     val image: String?,
-    val insertedAt: Long?
+    val insertedAt: Long?,
+    val tracksCount: Int?,
+    val trackIds: ArrayList<Long>?
 )
 
 fun PlaylistEntity.mapToDomain(): Playlist {
@@ -19,6 +21,8 @@ fun PlaylistEntity.mapToDomain(): Playlist {
         name = this.name,
         description = this.description,
         image = this.image ?: "",
+        tracksCount = this.tracksCount ?: 0,
+        tracksIds = this.trackIds ?: arrayListOf()
     )
 }
 
@@ -28,6 +32,8 @@ fun Playlist.mapToPlaylistEntity(): PlaylistEntity {
         name = this.name,
         description = this.description,
         image = this.image,
-        insertedAt = null
+        insertedAt = null,
+        tracksCount = this.tracksCount,
+        trackIds = this.tracksIds
     )
 }
