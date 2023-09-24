@@ -8,7 +8,7 @@ interface PlaylistRepository {
 
     suspend fun save(playlist: Playlist)
 
-    suspend fun saveToPlaylist(playlist: Playlist, track: Track)
+    suspend fun saveToPlaylist(playlist: Playlist, track: Track): Boolean
 
     suspend fun getById(id: Long): Playlist
 

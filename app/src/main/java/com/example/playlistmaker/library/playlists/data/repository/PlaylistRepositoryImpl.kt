@@ -34,14 +34,18 @@ class PlaylistRepositoryImpl(
         database.playlistDao().insert(playlist.mapToPlaylistEntity().copy(image = imageFile))
     }
 
-    override suspend fun saveToPlaylist(playlist: Playlist, track: Track) {
-        database.playlistTracksDao().insert(track.mapToPlaylistTrackEntity())
+    override suspend fun saveToPlaylist(playlist: Playlist, track: Track): Boolean {
+        if (playlist.tracksIds?.contains(track.id) == true) {
+            return false
+        }
 
+        database.playlistTracksDao().insert(track.mapToPlaylistTrackEntity())
         val updatedPlaylist = playlist.apply {
             tracksIds?.add(track.id)
             tracksCount++
         }
         database.playlistDao().update(updatedPlaylist.mapToPlaylistEntity())
+        return true
     }
 
     override suspend fun getById(id: Long): Playlist {

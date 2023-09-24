@@ -16,7 +16,12 @@ class PlaylistViewHolder(
 
     fun bind(model: Playlist) {
         binding.playlistItemName.text = model.name
-        binding.playlistItemTrackCount.text = model.tracksCount.toString()
+        binding.playlistItemTrackCount.text =
+            binding.playlistItemTrackCount.resources.getQuantityString(
+                R.plurals.tracks_count,
+                model.tracksCount,
+                model.tracksCount
+            )
 
         val filePath = File(
             binding.root.context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),

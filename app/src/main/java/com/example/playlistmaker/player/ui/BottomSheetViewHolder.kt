@@ -15,7 +15,12 @@ class BottomSheetViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(model: Playlist) {
         binding.linearPlaylistName.text = model.name
-        binding.linearPlaylistTracksCount.text = model.tracksCount.toString()
+        binding.linearPlaylistTracksCount.text =
+            binding.linearPlaylistTracksCount.resources.getQuantityString(
+                R.plurals.tracks_count,
+                model.tracksCount,
+                model.tracksCount
+            )
 
         val filePath = File(
             binding.root.context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),

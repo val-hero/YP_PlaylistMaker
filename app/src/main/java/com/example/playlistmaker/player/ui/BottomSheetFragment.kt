@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentAddToPlaylistBottomsheetBinding
 import com.example.playlistmaker.player.ui.viewmodel.BottomSheetViewModel
@@ -15,7 +17,11 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
     private val viewModel by viewModel<BottomSheetViewModel>()
 
     private val adapter = BottomSheetAdapter {
-        viewModel.saveToPlaylist(it)
+        viewModel.saveToPlaylist(it) { isSaved ->
+            makeToast(isSaved, it.name)
+            if(isSaved)
+                dismiss()
+        }
     }
 
     override fun onCreateView(
@@ -35,9 +41,23 @@ class BottomSheetFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.playlistsRecycler.adapter = adapter
 
+        binding.newPlaylistButton.setOnClickListener {
+            findNavController().navigate(R.id.action_playerFragment_to_createPlaylistFragment)
+            dismiss()
+        }
+
         viewModel.playlists.observe(viewLifecycleOwner) {
             adapter.updatePlaylists(it)
         }
+    }
+
+    private fun makeToast(savedSuccessfully: Boolean, playlistName: String) {
+        Toast.makeText(
+            requireContext(),
+            if (savedSuccessfully) getString(R.string.playlist_added_message, playlistName)
+            else getString(R.string.already_in_playlist_message, playlistName),
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     companion object {

@@ -10,6 +10,7 @@ import com.example.playlistmaker.library.playlists.domain.usecase.GetPlaylists
 import com.example.playlistmaker.player.domain.usecase.SaveToPlaylist
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class BottomSheetViewModel(
     private val getPlaylistsUseCase: GetPlaylists,
@@ -31,9 +32,12 @@ class BottomSheetViewModel(
         }
     }
 
-    fun saveToPlaylist(playlist: Playlist) {
+    fun saveToPlaylist(playlist: Playlist, onFinish: (Boolean) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            saveToPlaylistUseCase(playlist, getSelectedTrackUseCase())
+            val result = saveToPlaylistUseCase(playlist, getSelectedTrackUseCase())
+            withContext(Dispatchers.Main) {
+                onFinish(result)
+            }
         }
     }
 }

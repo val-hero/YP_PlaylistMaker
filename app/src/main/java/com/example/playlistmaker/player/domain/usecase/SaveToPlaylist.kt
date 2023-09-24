@@ -6,6 +6,6 @@ import com.example.playlistmaker.library.playlists.domain.repository.PlaylistRep
 
 class SaveToPlaylist(private val playlistRepository: PlaylistRepository) {
 
-    suspend operator fun invoke(playlist: Playlist, track: Track) =
+    suspend operator fun invoke(playlist: Playlist, track: Track): Boolean =
         playlistRepository.saveToPlaylist(playlist, track)
 }
