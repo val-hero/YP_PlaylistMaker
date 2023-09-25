@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.FileOutputStream
+import java.time.Instant
 import java.util.Calendar
 
 class PlaylistRepositoryImpl(
@@ -38,7 +39,7 @@ class PlaylistRepositoryImpl(
         if (playlist.tracksIds?.contains(track.id) == true) {
             return false
         }
-        database.playlistTracksDao().insert(track.mapToPlaylistTrackEntity())
+        database.playlistTracksDao().insert(track.mapToPlaylistTrackEntity().copy(insertedAt = Instant.now().epochSecond))
 
         val updatedPlaylist = playlist.apply {
             tracksIds?.add(track.id)

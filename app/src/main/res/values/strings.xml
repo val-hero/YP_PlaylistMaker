@@ -51,6 +51,7 @@
     <string name="playlist_is_empty_message">В этом плейлисте нет списка треков, которым можно поделиться</string>
     <string name="playlist_delete_confirm_title">Хотите удалить плейлист «%1$s»?</string>
     <string name="save_playlist">Сохранить</string>
+    <string name="empty_playlist">В этом плейлисте нет треков</string>
 
     <plurals name="tracks_count">
         <item quantity="zero">%1$d треков</item>

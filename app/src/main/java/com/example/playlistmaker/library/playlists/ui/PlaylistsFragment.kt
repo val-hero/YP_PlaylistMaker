@@ -48,10 +48,10 @@ class PlaylistsFragment : Fragment() {
         }
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        viewModel.fetchPlaylists()
-//    }
+    override fun onResume() {
+        super.onResume()
+        viewModel.fetchPlaylists()
+    }
 
 
     companion object {

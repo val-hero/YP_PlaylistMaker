@@ -93,15 +93,7 @@ class PlaylistDetailsFragment : Fragment() {
             }
 
         binding.playlistShareIcon.setOnClickListener {
-            if (adapter.tracks.isEmpty()) {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.playlist_is_empty_message),
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                shareMessage?.let { msg -> sharePlaylist(msg) }
-            }
+            sharePlaylist()
         }
 
         viewModel.playlist.observe(viewLifecycleOwner) { playlist ->
@@ -121,6 +113,14 @@ class PlaylistDetailsFragment : Fragment() {
                     adapter.tracks.count()
                 )
             )
+
+            if (adapter.tracks.isEmpty()) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.empty_playlist),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         viewModel.playlistDuration.observe(viewLifecycleOwner) { totalMinutes ->
@@ -166,7 +166,7 @@ class PlaylistDetailsFragment : Fragment() {
         }
     }
 
-    private fun sharePlaylist(message: String) {
+    private fun createShareIntent(message: String) {
         Intent.createChooser(
             Intent().apply {
                 action = Intent.ACTION_SEND
@@ -181,7 +181,7 @@ class PlaylistDetailsFragment : Fragment() {
 
     private fun setupMenuOnClickListeners() {
         binding.playlistShareButton.setOnClickListener {
-            shareMessage?.let { msg -> sharePlaylist(msg) }
+            sharePlaylist()
         }
         binding.playlistDeleteButton.setOnClickListener {
             showDeleteDialog()
@@ -192,6 +192,19 @@ class PlaylistDetailsFragment : Fragment() {
                 R.id.action_playlistDetailsFragment_to_createPlaylistFragment,
                 bundleOf(CreatePlaylistFragment.PLAYLIST_ID to playlistId)
             )
+        }
+    }
+
+    private fun sharePlaylist() {
+        if (adapter.tracks.isEmpty()) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.playlist_is_empty_message),
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            shareMessage?.let { msg -> createShareIntent(msg) }
+            menuBottomSheetBehavior?.state = BottomSheetBehavior.STATE_HIDDEN
         }
     }
 
