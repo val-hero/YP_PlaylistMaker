@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.core.domain.model.Track
 import com.example.playlistmaker.core.domain.usecase.SaveTrack
+import com.example.playlistmaker.core.utils.asMinutesAndSeconds
 import com.example.playlistmaker.library.playlists.domain.model.Playlist
 import com.example.playlistmaker.library.playlists.domain.usecase.DeleteTrack
 import com.example.playlistmaker.library.playlists.domain.usecase.GetPlaylistDetails
@@ -30,6 +31,9 @@ class PlaylistDetailsViewModel(
 
     private val _playlistDuration = MutableLiveData<Int>()
     val playlistDuration: LiveData<Int> = _playlistDuration
+
+    private val _playlistInfoMessage = MutableLiveData<String>()
+    val playlistInfoMessage: LiveData<String> = _playlistInfoMessage
 
     fun fetchPlaylistDetails(playlistId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -69,5 +73,15 @@ class PlaylistDetailsViewModel(
         }
         _playlistDuration.value =
             SimpleDateFormat("mm", Locale.getDefault()).format(totalDuration).toInt()
+    }
+
+    fun createPlaylistInfoMessage(plurals: String) {
+        val playlist = _playlist.value
+        var tracksInfo = ""
+        _tracksInPlaylist.value?.forEachIndexed { index, element ->
+            tracksInfo += "${index + 1}. ${element.artistName} - ${element.trackName} (${element.duration.asMinutesAndSeconds()})\n"
+        }
+        val message = "${playlist?.name}\n${playlist?.description}\n$plurals" + "\n$tracksInfo\n"
+        _playlistInfoMessage.value = message
     }
 }

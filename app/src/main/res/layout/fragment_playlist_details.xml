@@ -22,6 +22,7 @@
             tools:src="@drawable/image_placeholder_512x512" />
 
         <androidx.appcompat.widget.Toolbar
+            android:id="@+id/playlist_details_toolbar"
             style="@style/Toolbar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
