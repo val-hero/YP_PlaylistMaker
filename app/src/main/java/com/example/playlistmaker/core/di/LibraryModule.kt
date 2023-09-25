@@ -17,6 +17,7 @@ import com.example.playlistmaker.library.playlists.domain.usecase.GetPlaylistDet
 import com.example.playlistmaker.library.playlists.domain.usecase.GetPlaylists
 import com.example.playlistmaker.library.playlists.domain.usecase.GetTracksInPlaylist
 import com.example.playlistmaker.library.playlists.domain.usecase.SavePlaylist
+import com.example.playlistmaker.library.playlists.domain.usecase.UpdatePlaylist
 import com.example.playlistmaker.library.playlists.ui.PlaylistsFragmentViewModel
 import com.example.playlistmaker.player.domain.usecase.SaveToPlaylist
 import org.koin.android.ext.koin.androidContext
@@ -37,7 +38,11 @@ val libraryModule = module {
     }
 
     viewModel<CreatePlaylistViewModel>() {
-        CreatePlaylistViewModel(savePlaylistUseCase = get())
+        CreatePlaylistViewModel(
+            savePlaylistUseCase = get(),
+            getPlaylistDetailsUseCase = get(),
+            updatePlaylistUseCase = get()
+        )
     }
 
     viewModel {
@@ -45,7 +50,8 @@ val libraryModule = module {
             getPlaylistDetailsUseCase = get(),
             getTracksInPlaylistUseCase = get(),
             saveTrackUseCase = get(),
-            deleteTrackUseCase = get()
+            deleteTrackUseCase = get(),
+            deletePlaylistUseCase = get()
         )
     }
 
@@ -58,6 +64,10 @@ val libraryModule = module {
 
     single<FavouriteTracksRepository> {
         FavouriteTracksRepositoryImpl(appDatabase = get())
+    }
+
+    factory {
+        UpdatePlaylist(playlistRepository = get())
     }
 
     factory {

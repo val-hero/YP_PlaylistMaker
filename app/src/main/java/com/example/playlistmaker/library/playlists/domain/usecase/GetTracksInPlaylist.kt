@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 class GetTracksInPlaylist(private val playlistRepository: PlaylistRepository) {
 
-    suspend operator fun invoke(trackIds: List<Long>): Flow<List<Track>> =
+    suspend operator fun invoke(trackIds: ArrayList<Long>): Flow<List<Track>> =
         playlistRepository.getAllTracks(trackIds)
 }

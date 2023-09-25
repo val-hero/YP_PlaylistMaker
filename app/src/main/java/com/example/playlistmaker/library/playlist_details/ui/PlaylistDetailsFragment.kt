@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistDetailsBinding
+import com.example.playlistmaker.library.playlist_creation.ui.CreatePlaylistFragment
 import com.example.playlistmaker.library.playlists.domain.model.Playlist
 import com.example.playlistmaker.search.ui.TrackAdapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -26,6 +28,7 @@ class PlaylistDetailsFragment : Fragment() {
     private var menuBottomSheetBehavior: BottomSheetBehavior<LinearLayout>? = null
     private var alertDialogBuilder: MaterialAlertDialogBuilder? = null
     private var selectedTrackId: Long? = null
+    private var playlistId: Long? = null
     private var shareMessage: String? = null
 
     private val adapter = TrackAdapter(
@@ -51,8 +54,8 @@ class PlaylistDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val playlistId = requireArguments().getLong(PLAYLIST_ID)
-        viewModel.fetchPlaylistDetails(playlistId)
+        playlistId = requireArguments().getLong(PLAYLIST_ID)
+        viewModel.fetchPlaylistDetails(playlistId!!)
 
         binding.playlistBottomSheetRecycler.adapter = adapter
 
@@ -106,8 +109,7 @@ class PlaylistDetailsFragment : Fragment() {
                 setupPlaylistViews(it)
                 setupMenuViews(it)
             }
-            viewModel.getTracksInPlaylist(playlist?.tracksIds as List<Long>)
-
+            viewModel.getTracksInPlaylist(playlist?.tracksIds ?: arrayListOf())
         }
 
         viewModel.tracksInPlaylist.observe(viewLifecycleOwner) { tracks ->
@@ -182,8 +184,27 @@ class PlaylistDetailsFragment : Fragment() {
             shareMessage?.let { msg -> sharePlaylist(msg) }
         }
         binding.playlistDeleteButton.setOnClickListener {
-
+            showDeleteDialog()
         }
+
+        binding.playlistEditButton.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_playlistDetailsFragment_to_createPlaylistFragment,
+                bundleOf(CreatePlaylistFragment.PLAYLIST_ID to playlistId)
+            )
+        }
+    }
+
+    private fun showDeleteDialog() {
+        MaterialAlertDialogBuilder(requireContext(), R.style.CustomAlertDialog).apply {
+            setTitle(getString(R.string.playlist_delete_confirm_title, binding.playlistName.text))
+            setPositiveButton(R.string.yes) { _, _ ->
+                viewModel.deletePlaylist {
+                    findNavController().popBackStack()
+                }
+            }
+            setNegativeButton(R.string.no) { _, _ -> }
+        }.show()
     }
 
     private fun setupBottomSheetCallbacks() {

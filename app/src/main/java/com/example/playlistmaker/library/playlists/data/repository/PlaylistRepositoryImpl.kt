@@ -38,8 +38,8 @@ class PlaylistRepositoryImpl(
         if (playlist.tracksIds?.contains(track.id) == true) {
             return false
         }
-
         database.playlistTracksDao().insert(track.mapToPlaylistTrackEntity())
+
         val updatedPlaylist = playlist.apply {
             tracksIds?.add(track.id)
             tracksCount++
@@ -57,13 +57,20 @@ class PlaylistRepositoryImpl(
         emit(playlists.map { it.mapToDomain() })
     }
 
-    override suspend fun getAllTracks(trackIds: List<Long>): Flow<List<Track>> = flow {
+    override suspend fun getAllTracks(trackIds: ArrayList<Long>): Flow<List<Track>> = flow {
         val tracks = database.playlistTracksDao().getByIds(trackIds)
         emit(tracks.map { it.mapToDomain() })
     }
 
-    override suspend fun delete(playlistId: Long) {
-        database.playlistDao().delete(playlistId)
+    override suspend fun deletePlaylist(playlist: Playlist) {
+        getAllTracks(playlist.tracksIds ?: arrayListOf()).collect {
+            it.forEach { track ->
+                if (track.playlistIds.count() < 2)
+                    database.playlistTracksDao().delete(track.id)
+            }
+        }
+
+        database.playlistDao().delete(playlist.mapToPlaylistEntity())
     }
 
     override suspend fun deleteTrack(playlist: Playlist, trackId: Long) {
@@ -71,9 +78,14 @@ class PlaylistRepositoryImpl(
             this.tracksIds?.remove(trackId)
             this.tracksCount--
         }
+        val track = database.playlistTracksDao().get(trackId)
+        track.playlistIds.remove(playlist.id)
+        database.playlistTracksDao().update(track)
+
         update(updatedPlaylist)
 
-        database.playlistTracksDao().delete(trackId)
+        if (track.playlistIds.isEmpty())
+            database.playlistTracksDao().delete(trackId)
     }
 
     override suspend fun update(playlist: Playlist) {

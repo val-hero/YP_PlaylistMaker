@@ -11,5 +11,6 @@ data class Track(
     val genre: String,
     val duration: Long,
     val imageUrl: String,
+    val playlistIds: ArrayList<Long>
 )
 

@@ -8,6 +8,7 @@ import com.example.playlistmaker.core.domain.model.Track
 import com.example.playlistmaker.core.domain.usecase.SaveTrack
 import com.example.playlistmaker.core.utils.asMinutesAndSeconds
 import com.example.playlistmaker.library.playlists.domain.model.Playlist
+import com.example.playlistmaker.library.playlists.domain.usecase.DeletePlaylist
 import com.example.playlistmaker.library.playlists.domain.usecase.DeleteTrack
 import com.example.playlistmaker.library.playlists.domain.usecase.GetPlaylistDetails
 import com.example.playlistmaker.library.playlists.domain.usecase.GetTracksInPlaylist
@@ -21,7 +22,8 @@ class PlaylistDetailsViewModel(
     private val getPlaylistDetailsUseCase: GetPlaylistDetails,
     private val getTracksInPlaylistUseCase: GetTracksInPlaylist,
     private val saveTrackUseCase: SaveTrack,
-    private val deleteTrackUseCase: DeleteTrack
+    private val deleteTrackUseCase: DeleteTrack,
+    private val deletePlaylistUseCase: DeletePlaylist
 ) : ViewModel() {
     private val _tracksInPlaylist = MutableLiveData<List<Track>>()
     val tracksInPlaylist: LiveData<List<Track>> = _tracksInPlaylist
@@ -41,7 +43,7 @@ class PlaylistDetailsViewModel(
         }
     }
 
-    fun getTracksInPlaylist(tracksIds: List<Long>) {
+    fun getTracksInPlaylist(tracksIds: ArrayList<Long>) {
         viewModelScope.launch(Dispatchers.IO) {
             getTracksInPlaylistUseCase(tracksIds).collect {
                 _tracksInPlaylist.postValue(it)
@@ -63,6 +65,17 @@ class PlaylistDetailsViewModel(
                 deleteTrackUseCase(it, trackId)
             }
             fetchPlaylistDetails(_playlist.value!!.id)
+        }
+    }
+
+    fun deletePlaylist(onFinish: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _playlist.value?.let {
+                deletePlaylistUseCase(it)
+            }
+            withContext(Dispatchers.Main) {
+                onFinish()
+            }
         }
     }
 

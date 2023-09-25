@@ -12,9 +12,9 @@ interface PlaylistRepository {
 
     suspend fun getById(id: Long): Playlist
 
-    suspend fun getAllTracks(trackIds: List<Long>): Flow<List<Track>>
+    suspend fun getAllTracks(trackIds: ArrayList<Long>): Flow<List<Track>>
 
-    suspend fun delete(playlistId: Long)
+    suspend fun deletePlaylist(playlist: Playlist)
 
     suspend fun deleteTrack(playlist: Playlist, trackId: Long)
 

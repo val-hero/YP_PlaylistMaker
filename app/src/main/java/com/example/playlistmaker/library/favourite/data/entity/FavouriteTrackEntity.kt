@@ -16,7 +16,8 @@ data class FavouriteTrackEntity(
     val genre: String,
     val duration: Long,
     val imageUrl: String,
-    val insertedAt: Long?
+    val insertedAt: Long?,
+    val playlistIds: ArrayList<Long>?
 )
 
 fun FavouriteTrackEntity.mapToDomain(): Track {
@@ -30,7 +31,8 @@ fun FavouriteTrackEntity.mapToDomain(): Track {
         previewUrl = this.previewUrl,
         genre = this.genre,
         duration = this.duration,
-        imageUrl = this.imageUrl
+        imageUrl = this.imageUrl,
+        playlistIds = this.playlistIds ?: arrayListOf()
     )
 }
 
@@ -46,6 +48,7 @@ fun Track.mapToFavouriteEntity(): FavouriteTrackEntity {
         genre = this.genre,
         duration = this.duration,
         imageUrl = this.imageUrl,
-        insertedAt = null
+        insertedAt = null,
+        playlistIds = this.playlistIds
     )
 }

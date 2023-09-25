@@ -32,7 +32,8 @@ val playerModule = module {
         PlayerBottomSheetViewModel(
             getPlaylistsUseCase = get(),
             saveToPlaylistUseCase = get(),
-            getSelectedTrackUseCase = get()
+            getSelectedTrackUseCase = get(),
+            saveTrackUseCase = get()
         )
     }
 

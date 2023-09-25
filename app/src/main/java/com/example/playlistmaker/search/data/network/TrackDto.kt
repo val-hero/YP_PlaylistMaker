@@ -26,6 +26,7 @@ fun TrackDto.mapToDomain(): Track {
         previewUrl = this.previewUrl ?: "",
         genre = this.primaryGenreName ?: "",
         duration = this.trackTimeMillis ?: 0L,
-        imageUrl = this.artworkUrl60 ?: ""
+        imageUrl = this.artworkUrl60 ?: "",
+        playlistIds = arrayListOf()
     )
 }

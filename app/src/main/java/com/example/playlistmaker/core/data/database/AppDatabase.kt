@@ -14,7 +14,7 @@ import com.example.playlistmaker.search.data.database.dao.SearchHistoryDao
 import com.example.playlistmaker.search.data.database.entity.SearchHistoryTrackEntity
 
 @Database(
-    version = 3,
+    version = 1,
     entities = [
         FavouriteTrackEntity::class,
         SearchHistoryTrackEntity::class,

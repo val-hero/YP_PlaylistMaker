@@ -27,6 +27,7 @@ class PlaylistsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        viewModel.fetchPlaylists()
         binding = FragmentPlaylistsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -47,10 +48,10 @@ class PlaylistsFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.fetchPlaylists()
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        viewModel.fetchPlaylists()
+//    }
 
 
     companion object {
