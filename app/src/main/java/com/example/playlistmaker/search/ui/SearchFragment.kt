@@ -22,13 +22,17 @@ class SearchFragment : Fragment() {
 
     private val viewModel by viewModel<SearchViewModel>()
 
-    private val searchAdapter = TrackAdapter {
-        openTrack(it)
-        viewModel.saveToHistory(it)
-    }
-    private val historyAdapter = TrackAdapter {
-        openTrack(it)
-    }
+    private val searchAdapter = TrackAdapter(
+        onClick = {
+            openTrack(it)
+            viewModel.saveToHistory(it)
+        },
+        onLongClick = { true }
+    )
+    private val historyAdapter = TrackAdapter(
+        onClick = { openTrack(it) },
+        onLongClick = { true }
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,6 +80,11 @@ class SearchFragment : Fragment() {
         viewModel.screenState.observe(viewLifecycleOwner) {
             render(it)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getLatestSearchResult()
     }
 
     private fun openTrack(track: Track) {

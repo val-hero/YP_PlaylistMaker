@@ -10,7 +10,8 @@ import com.example.playlistmaker.databinding.TrackItemBinding
 
 class TrackViewHolder(
     private val binding: TrackItemBinding,
-    private val onClick: (Track) -> Unit
+    private val onClick: (Track) -> Unit,
+    private val onLongClick: (Track) -> Boolean
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(model: Track) {
@@ -18,6 +19,7 @@ class TrackViewHolder(
         binding.artistName.text = model.artistName
         binding.trackDuration.text = model.duration.asMinutesAndSeconds()
         binding.root.setOnClickListener { onClick(model) }
+        binding.root.setOnLongClickListener { onLongClick(model) }
 
         Glide.with(itemView)
             .load(model.imageUrl)

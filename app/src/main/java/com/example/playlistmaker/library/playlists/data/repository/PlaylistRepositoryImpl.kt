@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.FileOutputStream
+import java.time.Instant
 import java.util.Calendar
 
 class PlaylistRepositoryImpl(
@@ -38,8 +39,8 @@ class PlaylistRepositoryImpl(
         if (playlist.tracksIds?.contains(track.id) == true) {
             return false
         }
+        database.playlistTracksDao().insert(track.mapToPlaylistTrackEntity().copy(insertedAt = Instant.now().epochSecond))
 
-        database.playlistTracksDao().insert(track.mapToPlaylistTrackEntity())
         val updatedPlaylist = playlist.apply {
             tracksIds?.add(track.id)
             tracksCount++
@@ -57,26 +58,67 @@ class PlaylistRepositoryImpl(
         emit(playlists.map { it.mapToDomain() })
     }
 
+    override suspend fun getAllTracks(trackIds: ArrayList<Long>): Flow<List<Track>> = flow {
+        val tracks = database.playlistTracksDao().getByIds(trackIds)
+        emit(tracks.map { it.mapToDomain() })
+    }
+
+    override suspend fun deletePlaylist(playlist: Playlist) {
+        getAllTracks(playlist.tracksIds ?: arrayListOf()).collect {
+            it.forEach { track ->
+                if (track.playlistIds.count() < 2)
+                    database.playlistTracksDao().delete(track.id)
+            }
+        }
+
+        database.playlistDao().delete(playlist.mapToPlaylistEntity())
+    }
+
+    override suspend fun deleteTrack(playlist: Playlist, trackId: Long) {
+        val updatedPlaylist = playlist.apply {
+            this.tracksIds?.remove(trackId)
+            this.tracksCount--
+        }
+        val track = database.playlistTracksDao().get(trackId)
+        track.playlistIds.remove(playlist.id)
+        database.playlistTracksDao().update(track)
+
+        update(updatedPlaylist)
+
+        if (track.playlistIds.isEmpty())
+            database.playlistTracksDao().delete(trackId)
+    }
+
+    override suspend fun update(playlist: Playlist) {
+        database.playlistDao().update(playlist.mapToPlaylistEntity())
+    }
+
     private fun saveImageToFile(uri: Uri): String? {
-        val imageFileName = Calendar.getInstance().timeInMillis.toString() + ".jpg"
-        val filePath = File(
-            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-            PLAYLIST_IMAGES_FOLDER
-        )
+        var imageFileName = Calendar.getInstance().timeInMillis.toString() + ".jpg"
+        val imageFilePath = getImageFilePath()
+
         return try {
-            if (!filePath.exists()) {
-                filePath.mkdirs()
+            if (!imageFilePath.exists()) {
+                imageFilePath.mkdirs()
             }
             BitmapFactory
                 .decodeStream(context.contentResolver.openInputStream(uri))
                 .compress(
                     Bitmap.CompressFormat.JPEG,
                     PLAYLIST_IMAGE_QUALITY,
-                    FileOutputStream(File(filePath, imageFileName))
+                    FileOutputStream(File(imageFilePath, imageFileName))
                 )
+            imageFileName = File(imageFilePath, imageFileName).path
             imageFileName
         } catch (e: Exception) {
             null
         }
+    }
+
+    private fun getImageFilePath(): File {
+        return File(
+            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+            PLAYLIST_IMAGES_FOLDER
+        )
     }
 }

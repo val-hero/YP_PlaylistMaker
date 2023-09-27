@@ -50,13 +50,8 @@ class SearchViewModel(
     private fun search(query: String) {
         if (query.isBlank()) return
 
-        if (latestSearchQuery == query) {
-            _screenState.value = SearchScreenState.Content(latestSearchResult)
-            return
-        }
         latestSearchQuery = query
         _screenState.value = SearchScreenState.Loading
-
         viewModelScope.launch {
             searchUseCase(query).collect { result ->
                 when (result) {
@@ -83,13 +78,21 @@ class SearchViewModel(
     }
 
     fun onSearchQueryChanged(newQuery: String?) {
-        if (latestSearchQuery.isNullOrEmpty() && searchFieldIsFocused) {
+        trackSearchDebounce(newQuery ?: "")
+
+        if (newQuery.isNullOrEmpty())
+            latestSearchQuery = null
+
+        if (newQuery.isNullOrEmpty() && searchFieldIsFocused) {
             fetchSearchHistory()
         } else {
             _screenState.value = SearchScreenState.Empty
         }
+    }
 
-        trackSearchDebounce(newQuery ?: "")
+    fun getLatestSearchResult() {
+        if (!latestSearchQuery.isNullOrBlank() && latestSearchResult.isNotEmpty())
+            _screenState.value = SearchScreenState.Content(latestSearchResult)
     }
 
     fun onSearchFieldFocusChanged(isFocused: Boolean) {

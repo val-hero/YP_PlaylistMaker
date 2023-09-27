@@ -15,7 +15,6 @@ val coreModule = module {
 
     single<AppDatabase> {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database_vh.db")
-            .fallbackToDestructiveMigration()
             .build()
     }
 

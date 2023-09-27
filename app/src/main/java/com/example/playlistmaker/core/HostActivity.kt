@@ -10,6 +10,7 @@ import com.example.playlistmaker.databinding.ActivityHostBinding
 
 class HostActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHostBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHostBinding.inflate(layoutInflater)
@@ -23,8 +24,7 @@ class HostActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.bottomNavigation.isVisible = when (destination.id) {
-                R.id.playerFragment,
-                R.id.createPlaylistFragment -> false
+                R.id.playerFragment, R.id.createPlaylistFragment, R.id.playlistDetailsFragment -> false
                 else -> true
             }
         }

@@ -55,4 +55,9 @@ class SettingsFragment : Fragment() {
             viewModel.openTerms(getString(R.string.user_agreement_link))
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.fetchCurrentTheme()
+    }
 }

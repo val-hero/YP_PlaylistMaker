@@ -7,7 +7,7 @@ import com.example.playlistmaker.player.domain.usecase.PauseTrack
 import com.example.playlistmaker.player.domain.usecase.PlayTrack
 import com.example.playlistmaker.player.domain.usecase.PrepareTrack
 import com.example.playlistmaker.player.domain.usecase.ReleasePlayer
-import com.example.playlistmaker.player.ui.viewmodel.BottomSheetViewModel
+import com.example.playlistmaker.player.ui.viewmodel.PlayerBottomSheetViewModel
 import com.example.playlistmaker.player.ui.viewmodel.PlayerViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -29,10 +29,11 @@ val playerModule = module {
     }
 
     viewModel {
-        BottomSheetViewModel(
+        PlayerBottomSheetViewModel(
             getPlaylistsUseCase = get(),
             saveToPlaylistUseCase = get(),
-            getSelectedTrackUseCase = get()
+            getSelectedTrackUseCase = get(),
+            saveTrackUseCase = get()
         )
     }
 
