@@ -1,6 +1,7 @@
 package com.example.playlistmaker.core
 
 import android.app.Application
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlistmaker.core.di.coreModule
 import com.example.playlistmaker.core.di.libraryModule
@@ -45,6 +46,11 @@ class App : Application() {
             else
                 AppCompatDelegate.MODE_NIGHT_NO
         )
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        switchTheme(getCurrentDarkTheme())
     }
 
 }

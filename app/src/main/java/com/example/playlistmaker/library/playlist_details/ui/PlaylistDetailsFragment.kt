@@ -139,14 +139,19 @@ class PlaylistDetailsFragment : Fragment() {
 
     private fun setupPlaylistViews(playlist: Playlist?) {
         with(binding) {
-            this.playlistName.text = playlist?.name
-            this.playlistDescription.text = playlist?.description
-            this.playlistDescription.isVisible = !playlist?.description.isNullOrBlank()
-            this.playlistTracksCount.text = playlist?.tracksCount.toString()
+            playlistName.text = playlist?.name
+            playlistDescription.text = playlist?.description
+            playlistDescription.isVisible = !playlist?.description.isNullOrBlank()
+            playlistTracksCount.text =
+                resources.getQuantityString(
+                    R.plurals.tracks_count,
+                    playlist!!.tracksCount,
+                    playlist.tracksCount
+                )
             Glide.with(requireContext())
-                .load(playlist?.image)
+                .load(playlist.image)
                 .placeholder(R.drawable.image_placeholder_512x512)
-                .into(this.playlistImage)
+                .into(playlistImage)
         }
     }
 

@@ -10,7 +10,7 @@ import com.example.playlistmaker.library.playlists.domain.model.Playlist
 class PlayerBottomSheetAdapter(
     private val onClick: (Playlist) -> Unit,
 ) : RecyclerView.Adapter<PlayerBottomSheetViewHolder>() {
-    private val playlists = arrayListOf<Playlist>()
+    val playlists = arrayListOf<Playlist>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlayerBottomSheetViewHolder {
         val layoutInspector = LayoutInflater.from(parent.context)

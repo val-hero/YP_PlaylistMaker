@@ -19,7 +19,7 @@ class PlayerBottomSheetFragment : BottomSheetDialogFragment() {
     private val adapter = PlayerBottomSheetAdapter {
         viewModel.saveToPlaylist(it) { isSaved ->
             makeToast(isSaved, it.name)
-            if(isSaved)
+            if (isSaved)
                 dismiss()
         }
     }
@@ -61,6 +61,6 @@ class PlayerBottomSheetFragment : BottomSheetDialogFragment() {
     }
 
     companion object {
-        const val TAG = "AddToPlaylistBottomSheet"
+        const val TAG = "add_to_playlist_bottom_sheet"
     }
 }

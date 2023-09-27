@@ -82,6 +82,11 @@ class SearchFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.getLatestSearchResult()
+    }
+
     private fun openTrack(track: Track) {
         if (!viewModel.trackIsClickable) return
 

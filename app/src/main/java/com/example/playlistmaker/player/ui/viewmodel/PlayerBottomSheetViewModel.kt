@@ -24,7 +24,6 @@ class PlayerBottomSheetViewModel(
 
     init {
         fetchPlaylists()
-
     }
 
     private fun fetchPlaylists() {

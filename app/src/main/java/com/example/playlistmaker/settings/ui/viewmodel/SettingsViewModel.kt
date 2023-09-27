@@ -5,13 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.settings.domain.usecase.ChangeAppTheme
 import com.example.playlistmaker.settings.domain.usecase.GetCurrentDarkTheme
+import com.example.playlistmaker.sharing.domain.model.EmailData
 import com.example.playlistmaker.sharing.domain.usecase.OpenTerms
 import com.example.playlistmaker.sharing.domain.usecase.SendMailToSupport
 import com.example.playlistmaker.sharing.domain.usecase.ShareApp
-import com.example.playlistmaker.sharing.domain.model.EmailData
 
 class SettingsViewModel(
-    getCurrentDarkThemeUseCase: GetCurrentDarkTheme,
+    private val getCurrentDarkThemeUseCase: GetCurrentDarkTheme,
     private val changeAppThemeUseCase: ChangeAppTheme,
     private val openTermsUseCase: OpenTerms,
     private val sendMailToSupportUseCase: SendMailToSupport,
@@ -21,7 +21,7 @@ class SettingsViewModel(
     val appThemeIsDark: LiveData<Boolean> = _appThemeIsDark
 
     init {
-        _appThemeIsDark.value = getCurrentDarkThemeUseCase()
+        fetchCurrentTheme()
     }
 
     fun switchTheme(togglePosition: Boolean) {
@@ -39,5 +39,9 @@ class SettingsViewModel(
 
     fun sendMailToSupport(emailData: EmailData) {
         sendMailToSupportUseCase(emailData)
+    }
+
+    fun fetchCurrentTheme() {
+        _appThemeIsDark.value = getCurrentDarkThemeUseCase()
     }
 }

@@ -37,6 +37,7 @@ class CreatePlaylistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         playlistId = arguments?.getLong(PLAYLIST_ID)
+
         if (playlistId != null) {
             viewModel.getPlaylistDetails(playlistId!!)
             viewModel.playlist.observe(viewLifecycleOwner) {
@@ -113,14 +114,14 @@ class CreatePlaylistFragment : Fragment() {
 
     private fun setupViews(playlist: Playlist) {
         with(binding) {
-            this.playlistNameInputText.setText(playlist.name)
-            this.playlistDescriptionText.setText(playlist.description)
-            this.createPlaylistButton.text = getString(R.string.save_playlist)
-            this.selectImageView.background = null
+            playlistNameInputText.setText(playlist.name)
+            playlistDescriptionText.setText(playlist.description)
+            createPlaylistButton.text = getString(R.string.save_playlist)
+            selectImageView.background = null
             Glide.with(requireContext())
                 .load(playlist.image)
                 .placeholder(R.drawable.image_placeholder_512x512)
-                .into(this.selectImageView)
+                .into(selectImageView)
         }
     }
 

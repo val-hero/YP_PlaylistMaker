@@ -21,9 +21,8 @@ class CreatePlaylistViewModel(
 
     fun createPlaylist(name: String, description: String, image: String, onFinish: () -> Unit) {
         viewModelScope.launch {
-            savePlaylistUseCase(
-                Playlist(name = name, description = description, image = image)
-            )
+            val playlist = Playlist(name = name, description = description, image = image)
+            savePlaylistUseCase(playlist)
             onFinish()
         }
     }
@@ -36,9 +35,9 @@ class CreatePlaylistViewModel(
 
     fun updatePlaylist(name: String, description: String, image: String, onFinish: () -> Unit) {
         viewModelScope.launch {
-            _playlist.value?.let {
+            _playlist.value?.let { playlist ->
                 updatePlaylistUseCase(
-                    it.copy(name = name, description = description, image = image)
+                    playlist.copy(name = name, description = description, image = image)
                 )
             }
             onFinish()

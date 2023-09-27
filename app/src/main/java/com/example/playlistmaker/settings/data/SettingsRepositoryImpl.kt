@@ -10,7 +10,6 @@ class SettingsRepositoryImpl(
     private val context: Context,
     private val sharedPreferences: SharedPreferences
 ) : SettingsRepository {
-
     private var appThemeIsDark = false
 
     override fun changeAppTheme(currentThemeIsDark: Boolean) {
